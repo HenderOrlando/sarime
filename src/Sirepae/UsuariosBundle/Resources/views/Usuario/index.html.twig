@@ -1,0 +1,178 @@
+{% extends 'SirepaeUsuariosBundle:Usuario:home.html.twig' %}
+
+{% block submenu %}
+<ul class="nav">
+    <li>
+        Administrar Usuarios
+        <ul class="nav  nav-sidebar">
+            <li class="{{ not (active_new is defined or active_edit is defined) and active_coordinadores_resumen is defined ?'active':''}}">
+                <a href="{{ path('coordinador') }}">
+                    Administrar Coordinadores 
+                </a>
+                {% if active_coordinadores_resumen is defined %}
+                    <ul class="nav  nav-sidebar">
+                        <li class="{{ active_new is defined?'active':''}}">
+                            <a href="{{ path('coordinador_new') }}">
+                                Nuevo Coordinador
+                            </a>
+                        </li>
+                        {% if active_edit is defined %}
+                            <li class="active">
+                                <a href="{{ path('coordinador_edit', { 'id': entity.id }) }}">
+                                    Edita Coordinador {{ entity.nombre }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </li>
+            <li class="{{ not (active_new is defined or active_edit is defined) and active_docentes_resumen is defined ?'active':''}}">
+                <a href="{{ path('docente') }}">
+                    Administrar Docentes 
+                </a>
+                {% if active_docentes_resumen is defined %}
+                    <ul class="nav  nav-sidebar">
+                        <li class="{{ active_new is defined?'active':''}}">
+                            <a href="{{ path('docente_new') }}">
+                                Nuevo Docente
+                            </a>
+                        </li>
+                        {% if active_edit is defined %}
+                            <li class="active">
+                                <a href="{{ path('docente_edit', { 'id': entity.id }) }}">
+                                    Edita Docente {{ entity.nombre }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </li>
+            <li class="{{ not (active_new is defined or active_edit is defined) and active_estudiantes_resumen is defined ?'active':''}}">
+                <a href="{{ path('estudiante') }}">
+                    Administrar Estudiantes 
+                </a>
+                {% if active_estudiantes_resumen is defined %}
+                    <ul class="nav  nav-sidebar">
+                        <li class="{{ active_new is defined?'active':''}}">
+                            <a href="{{ path('estudiante_new') }}">
+                                Nuevo Estudiante
+                            </a>
+                        </li>
+                        {% if active_edit is defined %}
+                            <li class="active">
+                                <a href="{{ path('estudiante_edit', { 'id': entity.id }) }}">
+                                    Edita Estudiante {{ entity.nombre }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </li>
+            <li class="{{ not (active_new is defined or active_edit is defined) and active_pacientes_resumen is defined ?'active':''}}">
+                <a href="{{ path('paciente') }}">
+                    Administrar Pacientes 
+                </a>
+                {% if active_pacientes_resumen is defined %}
+                    <ul class="nav  nav-sidebar">
+                        <li class="{{ active_new is defined?'active':''}}">
+                            <a href="{{ path('paciente_new') }}">
+                                Nuevo Paciente
+                            </a>
+                        </li>
+                        {% if active_edit is defined %}
+                            <li class="active">
+                                <a href="{{ path('paciente_edit', { 'id': entity.id }) }}">
+                                    Edita Paciente {{ entity.nombre }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </li>
+            <li class="{{ not (active_new is defined or active_edit is defined) and active_roles_resumen is defined ?'active':''}}">
+                <a href="{{ path('rol') }}">
+                    Administrar Roles 
+                </a>
+                {% if active_roles_resumen is defined %}
+                    <ul class="nav  nav-sidebar">
+                        <li class="{{ active_new is defined?'active':''}}">
+                            <a href="{{ path('rol_new') }}">
+                                Nuevo Rol
+                            </a>
+                        </li>
+                        {% if active_edit is defined %}
+                            <li class="active">
+                                <a href="{{ path('rol_edit', { 'id': entity.id }) }}">
+                                    Edita Rol {{ entity.nombre }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </li>
+        </ul>
+    </li>
+</ul>
+{% endblock submenu%}
+{% block content -%}
+    {% if active_coordinadores_resumen is defined %}
+        {% set title_ = 'Coordinadores' %}
+        {% set path_ = 'coordinador' %}
+    {% elseif active_docentes_resumen is defined %}
+        {% set title_ = 'Docentes' %}
+        {% set path_ = 'docente' %}
+    {% elseif active_usuarios_resumen is defined %}
+        {% set path_ = 'usuario' %}
+        {% set title_ = 'Usuarios' %}
+    {% endif %}
+    <ul class="list-unstyled list-inline">
+        <li>
+            <h1 class="title">
+                Tablero de {{ title_ }}
+            </h1>
+        </li>
+        {% if path_ == 'coordinador' or path_ == 'docente' %}
+        <li class="text-align pull-right title">
+            <a class="btn btn-primary btn-lg" href="{{ path( path_ ~ '_new') }}">
+                Nuevo {{ path_ }}
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+    <div class="table-responsive">
+
+        <table class="records_list">
+            <thead>
+                <tr>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Telefonos</th>
+                    <th>Direccion</th>
+                    {% if path_ == 'usuario' %}
+                        <th>Rol</th>
+                    {% endif %}
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.nombres }}</td>
+                    <td>{{ entity.apellidos }}</td>
+                    <td>{{ entity.telefonos }}</td>
+                    <td>{{ entity.direccion }}</td>
+                    {% if path_ == 'usuario' %}
+                        <td>{{ entity.rolUsuario }}</td>
+                    {% endif %}
+                    {#<td>{% if entity.fechacreado %}{{ entity.fechacreado|date('Y-m-d H:i:s') }}{% endif %}</td>#}
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-success btn-lg" href="{{ path('usuario_edit', { 'id': entity.id }) }}">Editar</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'SirepaeUsuariosBundle:Usuario:index.html.twig' %}
+
+{% block content -%}
+
+    <h1 class="title">Nuevo Paciente</h1>
+
+    {{ form(form) }}
+
+    <a class="btn btn-default btn-lg pull-right" href="{{ path('paciente') }}">Volver</a>
+{% endblock %}

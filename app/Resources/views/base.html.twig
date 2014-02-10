@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}SIREPAE - Sistema de Información Web de los Registro de Enfermería y Plan de Atención de Enfermería{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ asset('bundles/sirepaeusuarios/bootstrap/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/sirepaeusuarios/font-awesome/css/font-awesome.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/sirepaeusuarios/css/dashboard.css') }}">
+        <link rel="stylesheet" href="{{ asset('bundles/sirepaeusuarios/css/css.css') }}">
+        {% block stylesheets %}
+        {% endblock stylesheets %}
+        {#<link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />#}
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+        <script type="text/javascript" src="{{ asset('bundles/sirepaeusuarios/js/jquery-2.0.3.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('bundles/sirepaeusuarios/bootstrap/js/bootstrap.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('bundles/sirepaeusuarios/js/js.js') }}"></script>
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

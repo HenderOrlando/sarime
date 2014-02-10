@@ -1,0 +1,31 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <div class="text-center back-slide">
+        <img src="{{ asset('bundles/sirepaeusuarios/imgs/slide1.jpg') }}"/>
+    </div>
+    <div class="container">
+        {% if error %}
+            <div>{{ error }}</div>
+        {% endif %}
+        <div class="clear clear-fix clearfix"></div>
+        <form class="form-signin well well-lg" role="form" action="{{ path("fos_user_security_check") }}" method="post">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+            <div clasS="form-signin-heading title text-center">
+                <h1 class="">
+                    SIREPAE
+                </h1>
+                <h4 class="">
+                    Sistema de Información Web de los Registros de Enfermería y Plan de Atención de Enfermería
+                </h4>
+            </div>
+            <input type="text" id="username" name="_username" class="form-control input-lg" placeholder="Usuario" value="{{ last_username }}" required="" autofocus="">
+            <input type="password" id="password" name="_password" class="form-control input-lg" placeholder="Password" required="">
+            <label class="checkbox" for="remember_me">
+                <input id="remember_me" class="hide " type="checkbox" name="_remember_me-me"> 
+                <div class="btn btn-lg btn-info btn-toggle btn-block">Recordar</div>
+            </label>
+            <button type="submit" id="_submit" class="btn btn-lg btn-primary btn-block" />Entrar</button>
+        </form>
+    </div>
+{% endblock %}

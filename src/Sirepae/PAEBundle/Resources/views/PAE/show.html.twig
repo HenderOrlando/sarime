@@ -1,0 +1,48 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>PAE</h1>
+
+    <table class="record_properties">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th>Val_objetiva</th>
+                <td>{{ entity.valobjetiva }}</td>
+            </tr>
+            <tr>
+                <th>Val_subjetiva</th>
+                <td>{{ entity.valsubjetiva }}</td>
+            </tr>
+            <tr>
+                <th>Evaluacion</th>
+                <td>{{ entity.evaluacion }}</td>
+            </tr>
+            <tr>
+                <th>Objetivo</th>
+                <td>{{ entity.objetivo }}</td>
+            </tr>
+            <tr>
+                <th>Fecha_creado</th>
+                <td>{{ entity.fechacreado|date('Y-m-d H:i:s') }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+        <ul class="record_actions">
+    <li>
+        <a href="{{ path('pae') }}">
+            Back to the list
+        </a>
+    </li>
+    <li>
+        <a href="{{ path('pae_edit', { 'id': entity.id }) }}">
+            Edit
+        </a>
+    </li>
+    <li>{{ form(delete_form) }}</li>
+</ul>
+{% endblock %}

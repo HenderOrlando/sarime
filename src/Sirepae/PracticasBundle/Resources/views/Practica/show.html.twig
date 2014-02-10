@@ -1,0 +1,66 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>Practica</h1>
+
+    <table class="record_properties">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ entity.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Descripcion</th>
+                <td>{{ entity.descripcion }}</td>
+            </tr>
+            <tr>
+                <th>Fecha_creado</th>
+                <td>{{ entity.fechacreado|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Fecha_modifica</th>
+                <td>{{ entity.fechamodifica|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Área</th>
+                <td>{{ entity.areaPractica }}</td>
+            </tr>
+            <tr>
+                <th>Docente</th>
+                <td>{{ entity.docente }}</td>
+            </tr>
+            <tr>
+                <th>Estudiantes</th>
+                <td>
+                    <ul class="list-unstyled">
+                        {% for estudiante in entity.estudiantes %}
+                        <li>
+                            {{ estudiante.nombre }}
+                        </li>
+                        {% else %}
+                        <li>Estudiantes no encontrados</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+        <ul class="record_actions">
+    <li>
+        <a href="{{ path('practica') }}">
+            Back to the list
+        </a>
+    </li>
+    <li>
+        <a href="{{ path('practica_edit', { 'id': entity.id }) }}">
+            Edit
+        </a>
+    </li>
+    <li>{{ form(delete_form) }}</li>
+</ul>
+{% endblock %}

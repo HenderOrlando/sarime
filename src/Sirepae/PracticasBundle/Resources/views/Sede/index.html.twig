@@ -1,0 +1,62 @@
+{% extends 'SirepaePracticasBundle:Practica:index.html.twig' %}
+
+{% block content -%}
+    {% set path_ = 'sede' %}
+    {% set title_ = 'Sedes' %}
+    <ul class="list-unstyled list-inline">
+        <li>
+            <h1 class="title">
+                Tablero de {{ title_ }}
+            </h1>
+        </li>
+        <li class="text-align pull-right title">
+            <a class="btn btn-primary btn-lg" href="{{ path( path_ ~ '_new') }}">
+                Nueva {{ path_ }}
+            </a>
+        </li>
+    </ul>
+    <div class="table-responsive">
+        <table class="records_list">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Nombre del Director</th>
+                    <th>Descripcion</th>
+                    <th>Dirección</th>
+                    <th>Teléfono</th>
+                    <th>Correo Electrónico</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.nombre }}</td>
+                    <td>{{ entity.getNombreDirector }}</td>
+                    <td>{{ entity.descripcion }}</td>
+                    <td>{{ entity.direccion }}</td>
+                    <td>{{ entity.telefonos }}</td>
+                    <td>{{ entity.correo }}</td>
+                    <td>
+                        <ul class="list-unstyled">
+                            {% for sitio in entity.sitios %}
+                            <li>
+                                {{ sitio.nombre }}
+                            </li>
+                            {% else %}
+                            <li>Sitios no encontrados</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-success btn-lg" href="{{ path('sede_edit', { 'id': entity.id }) }}">Editar</a>
+                            <a class="btn btn-default btn-lg" href="{{ path('sitio_new_sede', { 'id': entity.id }) }}">Agregar Sitio</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

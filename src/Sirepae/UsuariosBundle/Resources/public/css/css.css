@@ -1,0 +1,48 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 07-feb-2014, 12:49:59
+    Author     : hender
+*/
+.body *:hover,
+body *:focus,
+body *.active,
+body *{
+    outline: none;
+}
+label.checkbox{
+    padding: 0;
+}
+.form-signin{
+    max-width: 640px;
+    margin: 15% auto 0 auto;
+    background-color: rgba(245, 245, 245, 0.8);
+}
+.form-signin-heading h1{
+    font-weight: bold;
+}
+.back-slide{
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+}
+.back-slide img{
+    margin-top: 10%
+}
+.text-bg{
+    font-size: 40px;
+    font-weight: bold;
+}
+.title{
+    text-transform:capitalize;
+    font-weight: bolder;
+}
+form.form-all-inline,
+form.form-all-inline div{
+    display: inline-block;
+    margin-top: 5px;
+}

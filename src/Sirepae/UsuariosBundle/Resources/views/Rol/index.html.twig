@@ -1,0 +1,45 @@
+{% extends 'SirepaeUsuariosBundle:Usuario:index.html.twig' %}
+
+{% block content -%}
+    {% if active_roles_resumen is defined %}
+        {% set path_ = 'rol' %}
+        {% set title_ = 'Roles' %}
+    {% endif %}
+    <ul class="list-unstyled list-inline">
+        <li>
+            <h1>
+                Tablero de {{ title_ }}
+            </h1>
+        </li>
+        <li class="text-align pull-right title">
+            <a class="btn btn-primary btn-lg" href="{{ path( path_ ~ '_new') }}">
+                Nuevo {{ path_ }}
+            </a>
+        </li>
+    </ul>
+
+    <table class="records_list">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripcion</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for entity in entities %}
+            <tr>
+                <td>{{ entity.nombre }}</td>
+                <td>{{ entity.descripcion }}</td>
+                <td>
+                <ul>
+                    <div class="btn-group">
+                        <a class="btn btn-success btn-lg" href="{{ path(path_ ~ '_edit', { 'id': entity.id }) }}">Editar</a>
+                    </div>
+                </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'SirepaeUsuariosBundle:Usuario:index.html.twig' %}
+
+{% block content -%}
+    <div class="col-sm-12">
+        <div class="pull-left">
+            <h1 class="title">Usuario {{ entity.nombres is null? entity.username:entity.nombres }}</h1>
+        </div>
+        <div class="pull-right">
+            {{ form(delete_form) }}
+        </div>
+    </div>
+
+    {{ form(edit_form) }}
+
+    <a class="btn btn-default btn-lg pull-right" href="{{ path('paciente') }}">Volver</a>
+{% endblock %}

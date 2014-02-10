@@ -1,0 +1,58 @@
+{% extends 'SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria:index.html.twig' %}
+
+
+{% block content -%}
+    {% set path_ = 'tipo' %}
+    {% set title_ = 'Tipos de Registros de Enfermería' %}
+    <ul class="list-unstyled list-inline">
+        <li>
+            <h1 class="title">
+                Tablero de {{ title_ }}
+            </h1>
+        </li>
+        <li class="text-align pull-right title">
+            <a class="btn btn-primary btn-lg" href="{{ path( path_ ~ '_new') }}">
+                Nuevo {{ path_ | replace({'_':' '}) }} de registro de enfermería
+            </a>
+        </li>
+    </ul>
+    <div class="table-responsive">
+        <table class="records_list">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripcion</th>
+                    <th>Registros</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.nombre }}</td>
+                    <td>{{ entity.descripcion }}</td>
+                    <td>
+                        <ul class="list-unstyled">
+                            {% set col_rre = [] %}
+                            {% if entity.registros is not empty %}
+                                {% for r in entity.registros %}
+                                    <li>
+                                        {{ r }}
+                                    </li>
+                                {% endfor %}
+                            {% else %}
+                                <li>Registros no encontrados</li>
+                            {% endif %}
+                        </ul>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-success btn-lg" href="{{ path(path_ ~ '_edit', { 'id': entity.id }) }}">Editar</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endblock %}

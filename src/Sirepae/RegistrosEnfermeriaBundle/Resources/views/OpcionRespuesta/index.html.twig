@@ -1,0 +1,48 @@
+{% extends 'SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria:index.html.twig' %}
+
+{% block content -%}
+    {% set path_ = 'opcion_respuesta' %}
+    {% set title_ = 'Opciones de Respuestas' %}
+    <ul class="list-unstyled list-inline">
+        <li>
+            <h1>
+                Tablero de {{ title_ }}
+            </h1>
+        </li>
+        <li class="text-align pull-right title">
+            <a class="btn btn-primary btn-lg" href="{{ path( path_ ~ '_new') }}">
+                Nueva {{ path_ }}
+            </a>
+        </li>
+    </ul>
+    <div class="table-responsive">
+        <table class="records_list">
+            <thead>
+                <tr>
+                    <th>Enunciado</th>
+                    <th>Descripcion</th>
+                    <th>Pregunta</th>
+                    <th>Tipo Respuesta</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.enunciado }}</td>
+                    <td>{{ entity.descripcion }}</td>
+                    <td>{{ entity.pregunta }}</td>
+                    <td>{{ entity.tipoRespuesta }}</td>
+                    <td>{% if entity.fechacreado %}{{ entity.fechacreado|date('Y-m-d H:i:s') }}{% endif %}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-success btn-lg" href="{{ path(path_ ~ '_edit', { 'id': entity.id }) }}">Editar</a>
+                            <a class="btn btn-info btn-lg" href="{{ path('addOpcionRespuesta_new', { 'id': entity.id }) }}">Agregar Respuesta</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

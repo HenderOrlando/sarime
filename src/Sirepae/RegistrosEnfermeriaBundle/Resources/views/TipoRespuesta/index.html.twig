@@ -1,0 +1,42 @@
+{% extends 'SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria:index.html.twig' %}
+
+{% block content -%}
+    {% set path_ = 'tipo_respuesta' %}
+    {% set title_ = 'Tipos de Respuestas' %}
+    <ul class="list-unstyled list-inline">
+        <li>
+            <h1>
+                Tablero de {{ title_ }}
+            </h1>
+        </li>
+        <li class="text-align pull-right title">
+            <a class="btn btn-primary btn-lg" href="{{ path( path_ ~ '_new') }}">
+                Nuevo {{ path_ | replace({'_':' '}) }}
+            </a>
+        </li>
+    </ul>
+    <div class="table-responsive">
+        <table class="records_list">
+            <thead>
+                <tr>
+                    <th>Enunciado</th>
+                    <th>Tipo Campo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.nombre }}</td>
+                    <td>{{ entity.tipoCampo }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-success btn-lg" href="{{ path(path_ ~ '_edit', { 'id': entity.id }) }}">Editar</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

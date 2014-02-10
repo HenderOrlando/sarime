@@ -1,0 +1,38 @@
+{% extends 'SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria:index.html.twig' %}
+
+{% block content -%}
+    <div class="col-sm-12">
+        <div class="pull-left">
+            <h1 class="title"> {{ entity.nombre }}</h1>
+        </div>
+        <div class="pull-right">
+            {{ form(delete_form) }}
+        </div>
+    </div>
+
+    {{ form(edit_form) }}
+
+    <a class="btn btn-default btn-lg pull-right" href="{{ path('registros_enfermeria') }}">Volver</a>
+     
+    <div class="row">
+        <div class="col-sm-12">
+            {% for registro in registros %}
+                <a class="btn btn-default btn-lg pull-right" href="{{ path('llenar_registro',{idRegistroEnfermeria: entity.id, idRegistro: registro.id}) }}">
+                    {{ registro }}
+                </a>
+            {% endfor %}
+        </div>
+        <div class="col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Registros Llenados</div>
+                <div class="panel-body">
+                    {% for rta in respuestas %}
+                        <a class="btn btn-default btn-lg pull-right" href="#">
+                            {{ rta.respuesta }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

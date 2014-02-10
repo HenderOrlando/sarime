@@ -1,0 +1,49 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>PAE list</h1>
+
+    <table class="records_list">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Val_objetiva</th>
+                <th>Val_subjetiva</th>
+                <th>Evaluacion</th>
+                <th>Objetivo</th>
+                <th>Fecha_creado</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for entity in entities %}
+            <tr>
+                <td><a href="{{ path('pae_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+                <td>{{ entity.valobjetiva }}</td>
+                <td>{{ entity.valsubjetiva }}</td>
+                <td>{{ entity.evaluacion }}</td>
+                <td>{{ entity.objetivo }}</td>
+                <td>{% if entity.fechacreado %}{{ entity.fechacreado|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>
+                <ul>
+                    <li>
+                        <a href="{{ path('pae_show', { 'id': entity.id }) }}">show</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('pae_edit', { 'id': entity.id }) }}">edit</a>
+                    </li>
+                </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+        <ul>
+        <li>
+            <a href="{{ path('pae_new') }}">
+                Create a new entry
+            </a>
+        </li>
+    </ul>
+    {% endblock %}

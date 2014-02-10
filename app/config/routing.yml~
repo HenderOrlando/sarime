@@ -1,0 +1,40 @@
+sirepae_usuarios:
+    resource: "@SirepaeUsuariosBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+sirepae_registro_enfermeria:
+    resource: "@SirepaeRegistroEnfermeriaBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+sirepae_pae:
+    resource: "@SirepaePAEBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+sarime_registro_enfermeria:
+    resource: "@SarimeRegistroEnfermeriaBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+sarime_usuarios:
+    resource: "@SarimeUsuariosBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+sarime_planes:
+    resource: "@SarimePlanesBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+sarime_enfermeria:
+    resource: "@SarimeEnfermeriaBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+sarime_practicas:
+    resource: "@SarimePracticasBundle/Controller/"
+    type:     annotation
+    prefix:   /
+

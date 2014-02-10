@@ -1,0 +1,10 @@
+{% extends 'SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria:index.html.twig' %}
+
+{% block content -%}
+
+    <h1 class="title">Nueva Opción de Respuesta {{ pregunta is not null?'para "' ~ pregunta.enunciado ~ '"':'' }}</h1>
+
+    {{ form(form) }}
+
+    <a class="btn btn-default btn-lg pull-right" href="{{ path('opcion_respuesta') }}">Volver</a>
+{% endblock %}

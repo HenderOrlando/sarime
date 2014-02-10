@@ -1,0 +1,55 @@
+{% extends 'SirepaePracticasBundle:Practica:index.html.twig' %}
+
+{% block content -%}
+    {% set path_ = 'area' %}
+    {% set title_ = 'Areas' %}
+    <ul class="list-unstyled list-inline">
+        <li>
+            <h1 class="title">
+                Tablero de {{ title_ }}
+            </h1>
+        </li>
+        <li class="text-align pull-right title">
+            <a class="btn btn-primary btn-lg" href="{{ path( path_ ~ '_new') }}">
+                Nueva {{ path_ }}
+            </a>
+        </li>
+    </ul>
+    <div class="table-responsive">
+        <table class="records_list">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripcion</th>
+                    <th>Sedes</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.nombre }}</td>
+                    <td>{{ entity.descripcion }}</td>
+                    <td>
+                        <ul class="list-unstyled">
+                            {% for materia in entity.materias %}
+                            <li>
+                                {{ materia.nombre }}
+                            </li>
+                            {% else %}
+                            <li>Materias no encontradas</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-success btn-lg" href="{{ path('area_edit', { 'id': entity.id }) }}">Editar</a>
+                            <a class="btn btn-default btn-lg" href="{{ path('materia_new_area', { 'id': entity.id }) }}">Agregar Materia</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

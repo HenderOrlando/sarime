@@ -1,0 +1,143 @@
+/*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 50px;
+  margin-right: 15px;
+}
+
+.navbar-default .navbar-nav>li>a.btn-warning,
+.navbar-default .navbar-nav>li>a.btn-success,
+.navbar-default .navbar-nav>li>a.btn-info,
+.navbar-default .navbar-nav>li>a.btn-danger,
+.navbar-default .navbar-nav>li>a.btn-primary,
+.navbar-inverse .navbar-nav>li>a.btn-warning,
+.navbar-inverse .navbar-nav>li>a.btn-success,
+.navbar-inverse .navbar-nav>li>a.btn-info,
+.navbar-inverse .navbar-nav>li>a.btn-danger,
+.navbar-inverse .navbar-nav>li>a.btn-primary{
+    color: #fff;
+}
+
+.navbar-default .navbar-nav>li>a.btn-primary.active,
+.navbar-default .navbar-nav>li>a.btn-primary:active,
+.navbar-default .navbar-nav>li>a.btn-primary:hover,
+.navbar-default .navbar-nav>li>a.btn-primary:focus,
+.navbar-inverse .navbar-nav>li>a.btn-primary.active,
+.navbar-inverse .navbar-nav>li>a.btn-primary:active,
+.navbar-inverse .navbar-nav>li>a.btn-primary:hover,
+.navbar-inverse .navbar-nav>li>a.btn-primary:focus{
+    color: rgb(255, 255, 255);
+    background-color: rgb(50, 118, 177);
+    border-color: rgb(40, 94, 142);
+}
+.navbar-default .navbar-nav>li>a.btn-warning,
+.navbar-default .navbar-nav>li>a.btn-success,
+.navbar-default .navbar-nav>li>a.btn-info,
+.navbar-default .navbar-nav>li>a.btn-danger,
+.navbar-default .navbar-nav>li>a.btn-primary,
+.navbar-inverse .navbar-nav>li>a.btn-warning,
+.navbar-inverse .navbar-nav>li>a.btn-success,
+.navbar-inverse .navbar-nav>li>a.btn-info,
+.navbar-inverse .navbar-nav>li>a.btn-danger,
+.navbar-inverse .navbar-nav>li>a.btn-primary{
+    color: #fff;
+}
+
+/*
+ * Global add-ons
+ */
+
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+
+/*
+ * Sidebar
+ */
+
+/* Hide for mobile, show later */
+.sidebar {
+  display: none;
+}
+@media (min-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: block;
+    padding: 70px 20px 20px;
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+  }
+}
+
+/* Sidebar navigation */
+.nav-sidebar {
+  margin-left: -20px;
+  margin-right: -21px; /* 20px padding + 1px border */
+  margin-bottom: 20px;
+}
+.nav-sidebar > li > a {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+ul.nav > li > ul.nav-sidebar{
+  margin-left: 0px;
+}
+ul.nav > li > ul.nav-sidebar > li > ul.nav-sidebar{
+  margin-left: 40px;
+  margin-right: 1px;
+}
+ul.nav .nav-sidebar > li > a {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.nav>li.active>a:hover, .nav>li.active>a:focus,
+.nav.nav-sidebar > .active > a {
+  color: #fff;
+  background-color: #428bca;
+}
+
+
+/*
+ * Main content
+ */
+
+.main {
+  padding: 20px;
+}
+@media (min-width: 768px) {
+  .main {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+.main .page-header {
+  margin-top: 0;
+}
+
+
+/*
+ * Placeholder dashboard ideas
+ */
+
+.placeholders {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.placeholders h4 {
+  margin-bottom: 0;
+}
+.placeholder {
+  margin-bottom: 20px;
+}
+.placeholder img {
+  border-radius: 50%;
+}

@@ -1,0 +1,54 @@
+{% extends 'SirepaeUsuariosBundle:Usuario:index.html.twig' %}
+
+{% block content -%}
+    {% set path_ = 'paciente' %}
+    {% set title_ = 'Pacientes' %}
+    <ul class="list-unstyled list-inline">
+        <li>
+            <h1 class="title">
+                Tablero de {{ title_ }}
+            </h1>
+        </li>
+        {% if path_ == 'coordinador' or path_ == 'docente' %}
+        <li class="text-align pull-right title">
+            <a class="btn btn-primary btn-lg" href="{{ path( path_ ~ '_new') }}">
+                Nuevo {{ path_ }}
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+    <div class="table-responsive">
+        <table class="records_list">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Direccion</th>
+                    <th>Telefonos</th>
+                    <th>Fecha_creado</th>
+                    <th>Cedula</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td><a href="{{ path('paciente_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+                    <td>{{ entity.nombres }}</td>
+                    <td>{{ entity.apellidos }}</td>
+                    <td>{{ entity.direccion }}</td>
+                    <td>{{ entity.telefonos }}</td>
+                    <td>{% if entity.fechacreado %}{{ entity.fechacreado|date('Y-m-d H:i:s') }}{% endif %}</td>
+                    <td>{{ entity.cedula }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-success btn-lg" href="{{ path('paciente_edit', { 'id': entity.id }) }}">Editar</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endblock %}

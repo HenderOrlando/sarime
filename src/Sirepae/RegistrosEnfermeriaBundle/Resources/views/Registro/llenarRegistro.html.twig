@@ -1,0 +1,18 @@
+{% extends 'SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria:index.html.twig' %}
+
+{% block content -%}
+    <div class="col-sm-12">
+        <div class="pull-left">
+            <h1 class="title">Registro {{ reg.nombre }} llenado por {{ entity.estudiante }} para {{ entity.paciente }}</h1>
+        </div>
+        {#
+        <div class="pull-right">
+            {{ form(delete_form) }}
+        </div>
+#}
+    </div>
+
+    {{ form(form) }}
+
+    <a class="btn btn-default btn-lg pull-right" href="{{ path('registros_enfermeria_edit',{'id':entity.id}) }}">Volver</a>
+{% endblock %}
