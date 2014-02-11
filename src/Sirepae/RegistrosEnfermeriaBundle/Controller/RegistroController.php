@@ -256,22 +256,31 @@ class RegistroController extends Controller
             ->getForm()
         ;
     }
-    
     /**
      * Muestra el Formulario de un Registro.
      *
-     * @Route("/llenar/{idRegistro}/{idRegistroEnfermeria}", name="llenar_registro")
+     * @Route("/editar-registro/{idRegistro}/{idRegistroEnfermeria}/{numero}/", name="editar_registro_enfermeria")
+     * @Route("/llenar-registro/{idRegistro}/{idRegistroEnfermeria}/", name="llenar_registro")
      * @Method("GET")
      * @Template()
      */
-    public function llenarRegistroAction($idRegistro, $idRegistroEnfermeria)
+    public function llenarRegistroAction(Request $request, $idRegistro, $idRegistroEnfermeria, $numero = null)
     {
+        $routeName = $request->get('_route');
+        $editar = false;
+        if(strpos($routeName, 'editar') !== false){
+            $editar = true;
+        }
         $em = $this->getDoctrine()->getManager();
 
         $registro = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Registro')->find($idRegistro);
         $registroEnfermeria = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->find($idRegistroEnfermeria);
         if($registro && $registroEnfermeria){
-            $form = $this->constructForm($registro, $registroEnfermeria);
+            $form = $this->constructForm($registro, $registroEnfermeria, $numero, $editar);
+            if(is_bool($form)){
+                return $this->redirect($this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())));
+                /*Mensaje por el form*/
+            }
             return array(
                 'reg' => $registro,
                 'entity' => $registroEnfermeria,
@@ -280,35 +289,53 @@ class RegistroController extends Controller
                 'active_edit'  =>  true,
             );
         }
-        $this->redirect($this->generateUrl('registros_enfermeria'));
+        return $this->redirect($this->generateUrl('registros_enfermeria'));
     }
     
     /**
      * Procesa y Guarda el Formulario de un Registro.
      *
-     * @Route("/guardar_llenar/{idRegistro}/{idRegistroEnfermeria}", name="guardar_llenar_registro")
+     * @Route("/actualizar_registro/{idRegistro}/{idRegistroEnfermeria}/{numero}/", name="update_llenar_registro")
+     * @Route("/guardar-registro/{idRegistro}/{idRegistroEnfermeria}/", name="guardar_llenar_registro")
      * @Method("POST")
      * @Template("SirepaeRegistrosEnfermeriaBundle:Registro:llenarRegistro.html.twig")
      */
-    public function guardarLlenarRegistroAction(Request $request, $idRegistro, $idRegistroEnfermeria)
+    public function guardarLlenarRegistroAction(Request $request, $idRegistro, $idRegistroEnfermeria, $numero = null)
     {
+        $routeName = $request->get('_route');
+        $editar = false;
+        if(strpos($routeName, 'update') !== false){
+            $editar = true;
+        }
+        
         $em = $this->getDoctrine()->getManager();
 
         $registro = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Registro')->find($idRegistro);
         $registroEnfermeria = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->find($idRegistroEnfermeria);
         if($registro && $registroEnfermeria){
-            $form = $this->constructForm($registro, $registroEnfermeria);
+            $form = $this->constructForm($registro, $registroEnfermeria, $numero, $editar);
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $rtas = array();
-                $em->transactional(function($em) use ($registroEnfermeria, $form){
+                $em->transactional(function($em) use ($registroEnfermeria, $form, $numero, $editar, $registro){
                     foreach($form->getData() as $id => $dato){
-                        $rta = new \Sirepae\RegistrosEnfermeriaBundle\Entity\Respuesta();
-                        $id = explode('-', $id);
-                        $preg_id = $id[0];
-                        $optRta_id = $id[1];
+                        if(count(explode('-', $id)) > 1){
+                            $id = explode('-', $id);
+                            $preg_id = $id[0];
+                            $optRta_id = $id[1];
+                        }else{
+                            $preg_id = $id;
+                            $optRta_id = $dato;
+                        }
                         $preg = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($preg_id);
+                        $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$preg->getId(), $numero);
+                        if(!$editar && ($registro->isUnico() && !$rtaRe) || (!$editar && !$registro->isUnico())){
+                            $rta = new \Sirepae\RegistrosEnfermeriaBundle\Entity\Respuesta();
+                        }elseif($editar && $rtaRe){
+                            $rta = $rtaRe->getRespuesta();
+                        }else{
+                            return $this->redirect($this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())));
+                        }
                         $optRta = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:OpcionRespuesta')->find($optRta_id);
                         if($optRta->getTipoRespuesta()->getTipoCampo() === 'date' || $optRta->getTipoRespuesta()->getTipoCampo() === 'time' || $optRta->getTipoRespuesta()->getTipoCampo() === 'datetime'){
                             $format = '';
@@ -327,13 +354,16 @@ class RegistroController extends Controller
                             ->setPregunta($preg)
                             ->setValor($dato);
                         $em->persist($rta);
-                        $rtaRe = new \Sirepae\RegistrosEnfermeriaBundle\Entity\RespuestaRegistroEnfermeria();
+                        if(!$editar){
+                            $rtaRe = new \Sirepae\RegistrosEnfermeriaBundle\Entity\RespuestaRegistroEnfermeria();
+                            $rtaRe->setNumero(count($em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$preg->getId()))+1);
+                        }
                         $rtaRe->setRespuesta($rta);
                         $rtaRe->setRegistroEnfermeria($registroEnfermeria);
                         $em->persist($rtaRe);
                     }
                 });
-                $this->redirect($this->generateUrl('registros_enfermeria'));
+                return $this->redirect($this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())));
             }
             return array(
                 'reg' => $registro,
@@ -343,7 +373,7 @@ class RegistroController extends Controller
                 'active_edit'  =>  true,
             );
         }
-        $this->redirect($this->generateUrl('registro_enfermeria'));
+        return $this->redirect($this->generateUrl('registros_enfermeria'));
     }
     public function canonicalize($string)
     {
@@ -352,9 +382,11 @@ class RegistroController extends Controller
     /**
      * @return \Symfony\Component\Form\FormBuilder FormBuilder
      */
-    public function constructForm(Registro $registro, \Sirepae\RegistrosEnfermeriaBundle\Entity\RegistroEnfermeria $registroEnfermeria, $btnSubmit = true){
+    public function constructForm(Registro $registro, \Sirepae\RegistrosEnfermeriaBundle\Entity\RegistroEnfermeria $registroEnfermeria, $numero = null, $editar = false, $btnSubmit = true){
         $form = $this->createFormBuilder();
+        $em = $this->getDoctrine()->getManager();
         foreach($registro->getPreguntas() as $preg){
+            $rta = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$preg->getId(), $numero);
             $datos = array();
             $datos['label'] = $preg->getEnunciado();
             $tipo_campo = 'choice';
@@ -362,10 +394,10 @@ class RegistroController extends Controller
             if(count($preg->getOpcionesRespuesta()) > 1){
                 $opts = array();
                 foreach($preg->getOpcionesRespuesta() as $optRta){
-                    $opts[$preg->getId().'-'.$optRta->getId()] = $optRta->getEnunciado();
+                    $opts[$optRta->getId()] = $optRta->getEnunciado();
                 }
                 $datos['choices'] = $opts;
-                $id_campo = $preg->getId().'-'.$optRta->getId();
+                $id_campo = $preg->getId();
             }else{
                 $optRta = $preg->getOpcionesRespuesta()->first();
                 $tipo_campo = $optRta->getTipoRespuesta()->getTipoCampo();
@@ -373,11 +405,24 @@ class RegistroController extends Controller
             }
             if($tipo_campo === 'date' || $tipo_campo === 'time' || $tipo_campo === 'datetime')
                 $datos['data'] = new \DateTime ('now');
+            if($editar && $rta){
+                if(is_null($rta->getRespuesta()->getValor()))
+                    $dato = $rta->getRespuesta()->getOpcionRespuesta()->getId();
+                else
+                    $dato = $rta->getRespuesta()->getValor();
+                if($tipo_campo === 'date' || $tipo_campo === 'time' || $tipo_campo === 'datetime')
+                    $dato = new \DateTime ($dato);
+                elseif($tipo_campo !== 'textarea' && $tipo_campo !== 'choice')
+                    $dato = $preg->getId().'-'.$dato;
+                $datos['data'] = $dato;
+            }elseif(!$editar && $rta){
+                return FALSE;
+            }
             $form->add($id_campo, $tipo_campo, $datos);
         }
-        if($btnSubmit){
+        if($btnSubmit && count($registro->getPreguntas())){
             $form
-                ->setAction($this->generateUrl('guardar_llenar_registro', array('idRegistro' => $registro->getId(), 'idRegistroEnfermeria' => $registroEnfermeria->getId())))
+                ->setAction($this->generateUrl(($editar?'update':'guardar').'_llenar_registro', array('idRegistro' => $registro->getId(), 'idRegistroEnfermeria' => $registroEnfermeria->getId(), 'numero' => $numero)))
                 ->setMethod('POST')
                 ->add('submit', 'submit', array('label' => 'Guardar '.$registro->getNombre(), 'attr' => array( 'class' => 'btn-success')))
                 ;

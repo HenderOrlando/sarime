@@ -12,7 +12,11 @@
 
     {{ form(edit_form) }}
 
-    <a class="btn btn-default btn-lg pull-right" href="{{ path('registros_enfermeria') }}">Volver</a>
+<div class="btn-group btn-group-lg pull-right">
+    <a class="btn btn-default btn-lg" href="{{ path('registros_enfermeria') }}">Volver</a>
+    <a class="btn btn-info btn-lg" href="{{ path('nota_new_registro_enfermeria',{id: entity.id}) }}">Agregar Nota</a>
+    <a class="btn btn-primary btn-lg" href="{{ path('nota_',{id: entity.id}) }}">Ver Nota</a>
+</div>
      
     <div class="row">
         <div class="col-sm-12">
@@ -23,16 +27,53 @@
             {% endfor %}
         </div>
         <div class="col-sm-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">Registros Llenados</div>
-                <div class="panel-body">
-                    {% for rta in respuestas %}
-                        <a class="btn btn-default btn-lg pull-right" href="#">
-                            {{ rta.respuesta }}
-                        </a>
-                    {% endfor %}
-                </div>
-            </div>
+                {% set preg_ = null %}
+                {% set optRta_ = null %}
+                {% set reg_ = null %}
+                {% set rta_ = null %}
+            {% for rta in respuestas %}
+                {% set preg = rta.respuesta.pregunta %}
+                {% set optRta = rta.respuesta.opcionRespuesta %}
+                {% set reg = preg.registro %}
+                {% if reg_ is null or reg_.id != reg.id or (reg_.id == reg.id and rta_.numero != rta.numero) %}
+                    {% set rta_ = rta %}
+                    {% if reg_ is not null %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% set reg_ = reg %}
+                    <div class="col-sm-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <a class="title" href="{{ path('editar_registro_enfermeria',{idRegistroEnfermeria: entity.id, idRegistro: reg_.id, numero: rta.numero}) }}">
+                                    {{ reg.nombre ~ rta.numero }}
+                                </a>
+                            </div>
+                            <div class="panel-body">
+                                <dl class="dl-horizontal">
+                                    <dt>{{ preg.enunciado }}</dt>
+                                    <dd>
+                                        {% if optRta.tipoRespuesta.tipoCampo == 'choice' %}
+                                            {{ optRta.enunciado }}
+                                        {% else %}
+                                            {{ rta.respuesta.valor }}
+                                        {% endif %}
+                                    </dd>
+                                </dl>
+                {% else %}
+                                <dl class="dl-horizontal">
+                                    <dt>{{ preg.enunciado }}</dt>
+                                    <dd>
+                                        {% if rta.respuesta.valor is null %}
+                                            {{ optRta.enunciado }}
+                                        {% else %}
+                                            {{ rta.respuesta.valor }}
+                                        {% endif %}
+                                    </dd>
+                                </dl>
+                {% endif %}
+            {% endfor %}
         </div>
     </div>
 {% endblock %}

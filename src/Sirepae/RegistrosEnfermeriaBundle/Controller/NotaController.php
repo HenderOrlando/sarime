@@ -21,18 +21,26 @@ class NotaController extends Controller
     /**
      * Lists all Nota entities.
      *
+     * @Route("/registro-enfermeria/{id}/", name="nota_")
      * @Route("/", name="nota")
      * @Method("GET")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction($id = null)
     {
         $em = $this->getDoctrine()->getManager();
-
-        $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Nota')->findAll();
+        
+        $re = null;
+        if(!is_null($id)){
+            $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Nota')->findByRegistroEnfermeria($id);
+        }
+        else
+            $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Nota')->findAll();
 
         return array(
             'entities' => $entities,
+            're'       => $re,
+            'active_notas_resumen'  =>  true
         );
     }
     /**
@@ -53,12 +61,14 @@ class NotaController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('nota_show', array('id' => $entity->getId())));
+            return $this->redirect($this->generateUrl('registros_enfermeria_edit',array('id' => $entity->getRegistroEnfermeria()->getId())));
         }
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_notas_resumen'  =>  true,
+            'active_new'  =>  true,
         );
     }
 
@@ -69,14 +79,14 @@ class NotaController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(Nota $entity)
+    private function createCreateForm(Nota $entity, \Sirepae\RegistrosEnfermeriaBundle\Entity\RegistroEnfermeria $re = null)
     {
-        $form = $this->createForm(new NotaType(), $entity, array(
+        $form = $this->createForm(new NotaType($re), $entity, array(
             'action' => $this->generateUrl('nota_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Crear', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -84,25 +94,34 @@ class NotaController extends Controller
     /**
      * Displays a form to create a new Nota entity.
      *
-     * @Route("/new", name="nota_new")
+     * @Route("/add-registro-enfermeria/{id}/", name="nota_new_registro_enfermeria")
+     * @Route("/new/", name="nota_new")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction( $id = null)
     {
         $entity = new Nota();
-        $form   = $this->createCreateForm($entity);
+        $re = null;
+        if(!is_null($id))
+            $re = $this->getDoctrine ()->getManager ()->getRepository ('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->find ($id);
+        if($re)
+            $entity->setRegistroEnfermeria($re);
+        $form   = $this->createCreateForm($entity, $re);
 
         return array(
             'entity' => $entity,
+            're'     => $re,
             'form'   => $form->createView(),
+            'active_notas_resumen'  =>  true,
+            'active_new'  =>  true,
         );
     }
 
     /**
      * Finds and displays a Nota entity.
      *
-     * @Route("/{id}", name="nota_show")
+     * @Route("/{id}/", name="nota_show")
      * @Method("GET")
      * @Template()
      */
@@ -121,6 +140,8 @@ class NotaController extends Controller
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
+            'active_notas_resumen'  =>  true,
+            'active_ver'  =>  true,
         );
     }
 
@@ -148,6 +169,8 @@ class NotaController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_notas_resumen'  =>  true,
+            'active_edit'  =>  true,
         );
     }
 
@@ -165,7 +188,7 @@ class NotaController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array('label' => 'Actualizar', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -200,6 +223,8 @@ class NotaController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_notas_resumen'  =>  true,
+            'active_edit'  =>  true,
         );
     }
     /**
@@ -240,7 +265,7 @@ class NotaController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('nota_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array('label' => 'Borrar', 'attr' => array( 'class' => 'btn-danger')))
             ->getForm()
         ;
     }

@@ -218,4 +218,8 @@ class RegistroEnfermeria
     public function getNombre(){
         return 'Registro del Estudiante '.$this->getEstudiante().' al Paciente '.$this->getPaciente();
     }
+    
+    public function __toString() {
+        return $this->getNombre();
+    }
 }

@@ -18,6 +18,16 @@ class Registro
      * @ORM\Column(type="string", length=150, nullable=true)
      */
     private $nombre;
+    
+    /** 
+     * @ORM\Column(type="boolean", nullable=false)
+     */
+    private $aplicaEnPaciente;
+    
+    /** 
+     * @ORM\Column(type="boolean", nullable=false)
+     */
+    private $unico;
 
     /** 
      * @ORM\Column(type="datetime", nullable=false)
@@ -45,6 +55,8 @@ class Registro
      */
     public function __construct()
     {
+        $this->unico = true;
+        $this->aplicaEnPaciente = false;
         $this->setFechaCreado(new \DateTime('now'));
         $this->preguntas = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -80,6 +92,52 @@ class Registro
     public function getNombre()
     {
         return $this->nombre;
+    }
+
+    /**
+     * Set aplicaEnPaciente
+     *
+     * @param boolean $aplicaEnPaciente
+     * @return Registro
+     */
+    public function setAplicaEnPaciente($aplicaEnPaciente)
+    {
+        $this->aplicaEnPaciente = $aplicaEnPaciente;
+    
+        return $this;
+    }
+
+    /**
+     * Get aplicaEnPaciente
+     *
+     * @return boolean 
+     */
+    public function getAplicaEnPaciente()
+    {
+        return $this->aplicaEnPaciente;
+    }
+
+    /**
+     * Set unico
+     *
+     * @param boolean $unico
+     * @return Registro
+     */
+    public function setUnico($unico)
+    {
+        $this->unico = $unico;
+    
+        return $this;
+    }
+
+    /**
+     * Get unico
+     *
+     * @return boolean 
+     */
+    public function isUnico()
+    {
+        return $this->unico;
     }
 
     /**

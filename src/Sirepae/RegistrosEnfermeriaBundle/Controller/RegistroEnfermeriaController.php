@@ -156,7 +156,7 @@ class RegistroEnfermeriaController extends Controller
         return array(
             'entity'        => $entity,
             'registros'     => $registros,
-            'respuestas'    => $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->find($entity->getId()),
+            'respuestas'    => $entity->getRespuestas(),
             'edit_form'     => $editForm->createView(),
             'delete_form'   => $deleteForm->createView(),
             'active_registrosEnfermeria_resumen'  =>  true,

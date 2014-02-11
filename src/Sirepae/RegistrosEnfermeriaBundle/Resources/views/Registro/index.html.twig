@@ -21,6 +21,8 @@
                 <tr>
                     <th>Nombre</th>
                     <th>Preguntas</th>
+                    <th>Único Registro</th>
+                    <th>Aplica a Pacientes</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -40,6 +42,12 @@
                                 <li>Preguntas no encontradas</li>
                             {% endif %}
                         </ul>
+                    </td>
+                    <td>
+                        {{ entity.unico?'Si':'No' }}
+                    </td>
+                    <td>
+                        {{ entity.aplicaEnPaciente?'Si':'No' }}
                     </td>
                     <td>
                     <ul>

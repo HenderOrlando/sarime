@@ -9,10 +9,15 @@ class RespuestaPaciente
 {
     /** 
      * @ORM\Id
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+    
+    /** 
+     * @ORM\Column(type="bigint", nullable=false)
+     */
+    private $numero;
 
     /** 
      * @ORM\Column(type="datetime", nullable=false)
@@ -44,6 +49,7 @@ class RespuestaPaciente
     
     
     public function __construct() {
+        $this->numero = 1;
         $this->setFechaCreado(new \DateTime('now'));
     }
 
@@ -78,6 +84,29 @@ class RespuestaPaciente
     public function getFechaCreado()
     {
         return $this->fecha_creado;
+    }
+
+    /**
+     * Set numero
+     *
+     * @param bigint $numero
+     * @return RespuestaPaciente
+     */
+    public function setNumero($numero)
+    {
+        $this->numero = $numero;
+    
+        return $this;
+    }
+
+    /**
+     * Get numero
+     *
+     * @return bigint
+     */
+    public function getNumero()
+    {
+        return $this->numero;
     }
 
     /**

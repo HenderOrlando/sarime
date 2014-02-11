@@ -6,6 +6,8 @@
 
     {{ form(form) }}
 
-    <a class="btn btn-default btn-lg pull-right" href="{{ path('registros_enfermeria') }}">Volver</a>
-    <a class="btn btn-default btn-lg pull-right" href="{{ path('paciente_new') }}">Agregar Paciente</a>
+    <div class="btn-group btn-group-lg pull-right">
+        <a class="btn btn-default btn-lg" href="{{ path('registros_enfermeria') }}">Volver</a>
+        <a class="btn btn-info btn-lg" href="{{ path('paciente_new') }}">Agregar Paciente</a>
+    </div>
 {% endblock %}

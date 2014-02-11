@@ -11,11 +11,16 @@ class RespuestaRegistroEnfermeria
 {
     /** 
      * @ORM\Id
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
+    /** 
+     * @ORM\Column(type="bigint", nullable=false)
+     */
+    private $numero;
+    
     /** 
      * @ORM\Column(type="datetime", nullable=false)
      */
@@ -34,7 +39,7 @@ class RespuestaRegistroEnfermeria
     /** 
      * @ORM\ManyToOne(
      *     targetEntity="\Sirepae\RegistrosEnfermeriaBundle\Entity\RegistroEnfermeria", 
-     *     inversedBy="respustas"
+     *     inversedBy="respuestas"
      * )
      * @ORM\JoinColumn(name="registro_enfermeria_id", referencedColumnName="id", nullable=false)
      */
@@ -45,6 +50,7 @@ class RespuestaRegistroEnfermeria
     
     
     public function __construct() {
+        $this->numero = 1;
         $this->setFechaCreado(new \DateTime('now'));
     }
 
@@ -79,6 +85,29 @@ class RespuestaRegistroEnfermeria
     public function getFechaCreado()
     {
         return $this->fecha_creado;
+    }
+
+    /**
+     * Set numero
+     *
+     * @param bigint $numero
+     * @return RespuestaPaciente
+     */
+    public function setNumero($numero)
+    {
+        $this->numero = $numero;
+    
+        return $this;
+    }
+
+    /**
+     * Get numero
+     *
+     * @return bigint
+     */
+    public function getNumero()
+    {
+        return $this->numero;
     }
 
     /**

@@ -40,7 +40,7 @@ class Practica
     private $estudiantes;
 
     /** 
-     * @ORM\ManyToOne(targetEntity="\Sirepae\PracticasBundle\Entity\Area", inversedBy="practica")
+     * @ORM\ManyToOne(targetEntity="\Sirepae\PracticasBundle\Entity\Area", inversedBy="practicas")
      * @ORM\JoinColumn(name="area_practica_id", referencedColumnName="id", nullable=false)
      */
     private $areaPractica;

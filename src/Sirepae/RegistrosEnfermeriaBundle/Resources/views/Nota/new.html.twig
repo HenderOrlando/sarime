@@ -1,15 +1,14 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria:index.html.twig' %}
 
-{% block body -%}
-    <h1>Nota creation</h1>
+{% block content -%}
+
+    <h1 class="title">Nueva Nota {{ re is not null?'para "' ~ re.nombre ~ '"':'' }}</h1>
 
     {{ form(form) }}
 
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('nota') }}">
-            Back to the list
-        </a>
-    </li>
-</ul>
+    {% if re is defined and re is not null %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('registros_enfermeria_edit',{id: re.id}) }}">Volver</a>
+    {% else %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('nota') }}">Volver</a>
+    {% endif %}
 {% endblock %}

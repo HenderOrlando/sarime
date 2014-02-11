@@ -179,12 +179,12 @@
                     </td>
                     <td>
                         <ul class="list-unstyled">
-                            {% set col_rre = [] %}
+                            {% set col_reg = [] %}
                             {% if entity.respuestas is not empty %}
                                 {% for rre in entity.respuestas %}
                                     {% set reg = rre.respuesta.pregunta.registro %}
                                     {% if reg.nombre not in col_reg %}
-                                        {% set col_rre = col_rre | merge([reg.nombre])%}
+                                        {% set col_reg = col_reg | merge([reg.nombre])%}
                                         <li>
                                             {{ reg }}
                                         </li>

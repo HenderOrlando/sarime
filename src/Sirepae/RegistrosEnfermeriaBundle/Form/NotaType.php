@@ -8,6 +8,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class NotaType extends AbstractType
 {
+    private $re;
+    
+    public function __construct(\Sirepae\RegistrosEnfermeriaBundle\Entity\RegistroEnfermeria $re = null) {
+        $this->re = $re;
+    }
         /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -16,9 +21,17 @@ class NotaType extends AbstractType
     {
         $builder
             ->add('nota')
-            ->add('fecha_creado')
-            ->add('registroEnfermeria')
+//            ->add('registroEnfermeria')
         ;
+        if(!is_null($this->re)){
+            $builder->add('registroEnfermeria',null, array(
+                'label' => false,
+                'data' => $this->re,
+                'attr' => array('class' => 'hide'),
+            ));
+        }else
+            $builder->add('registroEnfermeria');
+
     }
     
     /**

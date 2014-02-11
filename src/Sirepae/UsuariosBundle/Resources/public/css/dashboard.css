@@ -63,6 +63,7 @@ body {
 /* Hide for mobile, show later */
 .sidebar {
   display: none;
+  overflow-y: auto;
 }
 @media (min-width: 768px) {
   .sidebar {

@@ -16,6 +16,18 @@ class RegistroType extends AbstractType
     {
         $builder
             ->add('tipo')
+            ->add('unico', 'choice', array(
+                'choices'   =>  array(true => 'Un solo Registro', false => 'Varios Registros'),
+                'expanded'  =>  true,
+                'multiple'  =>  false,
+                'label'     =>  false,
+            ))
+            ->add('aplicaEnPaciente', 'choice', array(
+                'label'     =>  false,
+                'choices'   =>  array(true => 'Es Registro del Paciente', false => 'No es Registro del Paciente'),
+                'expanded'  =>  true,
+                'multiple'  =>  false,
+            ))
         ;
     }
     
