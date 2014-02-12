@@ -33,16 +33,18 @@ class DominioController extends Controller
 
         return array(
             'entities' => $entities,
+            'active_dominios_resumen'  =>  true,'active_nandas_resumen'  =>  true
         );
     }
     /**
      * Creates a new Dominio entity.
      *
+     * @Route("/nanda/{id}/", name="dominio_create_nanda")
      * @Route("/", name="dominio_create")
      * @Method("POST")
      * @Template("SirepaePAEBundle:Dominio:new.html.twig")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $id = null)
     {
         $entity = new Dominio();
         $form = $this->createCreateForm($entity);
@@ -53,12 +55,18 @@ class DominioController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('dominio_show', array('id' => $entity->getId())));
+            if (!is_null($id)) {
+                return $this->redirect($this->generateUrl('nanda_edit', array('id' => $id)));
+            } else {
+                return $this->redirect($this->generateUrl('dominio'));
+            }
         }
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_dominios_resumen'  =>  true,'active_nandas_resumen'  =>  true,
+            'active_dominios_new'  =>  true,
         );
     }
 
@@ -69,14 +77,18 @@ class DominioController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(Dominio $entity)
+    private function createCreateForm(Dominio $entity, \Sirepae\PAEBundle\Entity\NANDA $nanda = null)
     {
-        $form = $this->createForm(new DominioType(), $entity, array(
-            'action' => $this->generateUrl('dominio_create'),
+        $url = $this->generateUrl('dominio_create');
+        if (!is_null($nanda)) {
+            $url = $this->generateUrl('dominio_create_nanda', array('id' => $nanda->getId()));
+        }
+        $form = $this->createForm(new DominioType($nanda), $entity, array(
+            'action' => $url,
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Crear', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -84,18 +96,27 @@ class DominioController extends Controller
     /**
      * Displays a form to create a new Dominio entity.
      *
-     * @Route("/new", name="dominio_new")
+     * @Route("/new/nanda/{id}/", name="dominio_new_nanda")
+     * @Route("/new/", name="dominio_new")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction($id = null)
     {
         $entity = new Dominio();
-        $form   = $this->createCreateForm($entity);
-
+        $em = $this->getDoctrine()->getManager();
+        $nanda = null;
+        if(!is_null($id)){
+            $nanda = $em->getRepository('SirepaePAEBundle:NANDA')->find($id);
+            $entity->setNANDA($nanda);
+        }
+        $form   = $this->createCreateForm($entity, $nanda);
         return array(
+            'nanda' => $nanda,
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_dominios_resumen'  =>  true,'active_nandas_resumen'  =>  true,
+            'active_dominios_new'  =>  true,
         );
     }
 
@@ -121,6 +142,8 @@ class DominioController extends Controller
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
+            'active_dominios_resumen'  =>  true,'active_nandas_resumen'  =>  true,
+            'active_dominios_ver'  =>  true,
         );
     }
 
@@ -148,6 +171,8 @@ class DominioController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_dominios_resumen'  =>  true,'active_nandas_resumen'  =>  true,
+            'active_dominios_edit'  =>  true,
         );
     }
 
@@ -165,7 +190,7 @@ class DominioController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array('label' => 'Actualizar', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -200,6 +225,8 @@ class DominioController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_dominios_resumen'  =>  true,'active_nandas_resumen'  =>  true,
+            'active_dominios_edit'  =>  true,
         );
     }
     /**
@@ -240,7 +267,7 @@ class DominioController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('dominio_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array('label' => 'Borrar', 'attr' => array( 'class' => 'btn-danger')))
             ->getForm()
         ;
     }

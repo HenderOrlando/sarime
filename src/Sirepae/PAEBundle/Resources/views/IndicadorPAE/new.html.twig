@@ -1,15 +1,10 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaePAEBundle:IndicadorPAE:index.html.twig' %}
 
-{% block body -%}
-    <h1>IndicadorPAE creation</h1>
+{% block content -%}
+
+    <h1 class="title">Nuevo Indicador PAE</h1>
 
     {{ form(form) }}
 
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('indicador_pae') }}">
-            Back to the list
-        </a>
-    </li>
-</ul>
+    <a class="btn btn-default btn-lg pull-right" href="{{ path('indicador_pae') }}">Volver</a>
 {% endblock %}

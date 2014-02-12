@@ -1,15 +1,10 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaePAEBundle:ActividadPAE:index.html.twig' %}
 
-{% block body -%}
-    <h1>ActividadPAE creation</h1>
+{% block content -%}
+
+    <h1 class="title">Nuevo Actividad PAE</h1>
 
     {{ form(form) }}
 
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('actividad_pae') }}">
-            Back to the list
-        </a>
-    </li>
-</ul>
+    <a class="btn btn-default btn-lg pull-right" href="{{ path('actividad_pae') }}">Volver</a>
 {% endblock %}

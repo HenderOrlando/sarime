@@ -1,15 +1,16 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaePAEBundle:Diagnostico:index.html.twig' %}
 
-{% block body -%}
-    <h1>Diagnostico creation</h1>
+{% block content -%}
+
+    <h1 class="title">Nuevo Diagnóstico</h1>
 
     {{ form(form) }}
 
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('diagnostico') }}">
-            Back to the list
-        </a>
-    </li>
-</ul>
+    {% if dominio is not null %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('dominio_edit', {id: dominio.id}) }}">Volver</a>
+    {% elseif clase is not null %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('clase_edit', {id: clase.id}) }}">Volver</a>
+    {% else %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('diagnostico') }}">Volver</a>
+    {% endif %}
 {% endblock %}

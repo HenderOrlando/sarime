@@ -373,4 +373,8 @@ class PAE
     {
         return $this->estudiante;
     }
+    
+    public function __toString() {
+        return 'Plan de Atención de Enfermería de '.$this->getEstudiante()->getNombre().' ('.$this->getEstudiante()->getCodigo().') para el paciente '.$this->getPaciente()->getFullName().' ('.$this->getPaciente()->getCedula().')';
+    }
 }

@@ -46,3 +46,9 @@ form.form-all-inline div{
     display: inline-block;
     margin-top: 5px;
 }
+.text-upper{
+    text-transform: uppercase;
+}
+.text-lower{
+    text-transform: lowercase;
+}

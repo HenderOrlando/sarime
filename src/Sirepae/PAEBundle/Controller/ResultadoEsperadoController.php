@@ -33,16 +33,18 @@ class ResultadoEsperadoController extends Controller
 
         return array(
             'entities' => $entities,
+            'active_resultados_esperados_resumen'  =>  true,'active_nocs_resumen'  =>  true
         );
     }
     /**
      * Creates a new ResultadoEsperado entity.
      *
+     * @Route("/noc/{id}/", name="resultado_esperado_create_noc")
      * @Route("/", name="resultado_esperado_create")
      * @Method("POST")
      * @Template("SirepaePAEBundle:ResultadoEsperado:new.html.twig")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $id = null)
     {
         $entity = new ResultadoEsperado();
         $form = $this->createCreateForm($entity);
@@ -53,12 +55,18 @@ class ResultadoEsperadoController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('resultado_esperado_show', array('id' => $entity->getId())));
+            if (!is_null($id)) {
+                return $this->redirect($this->generateUrl('noc_edit', array('id' => $id)));
+            } else {
+                return $this->redirect($this->generateUrl('indicadores'));
+            }
         }
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_resultados_esperados_resumen'  =>  true,'active_nocs_resumen'  =>  true,
+            'active_resultados_esperados_new'  =>  true,
         );
     }
 
@@ -69,14 +77,18 @@ class ResultadoEsperadoController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(ResultadoEsperado $entity)
+    private function createCreateForm(ResultadoEsperado $entity, \Sirepae\PAEBundle\Entity\NOC $noc = null)
     {
+        $url = $this->generateUrl('resultado_esperado_create');
+        if (!is_null($noc)) {
+            $url = $this->generateUrl('resultado_esperado_create_noc', array('id' => $noc->getId()));
+        }
         $form = $this->createForm(new ResultadoEsperadoType(), $entity, array(
-            'action' => $this->generateUrl('resultado_esperado_create'),
+            'action' => $url,
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Crear', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -84,18 +96,28 @@ class ResultadoEsperadoController extends Controller
     /**
      * Displays a form to create a new ResultadoEsperado entity.
      *
-     * @Route("/new", name="resultado_esperado_new")
+     * @Route("/new/noc/{id}/", name="resultado_esperado_new_noc")
+     * @Route("/new/", name="resultado_esperado_new")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction($id = null)
     {
         $entity = new ResultadoEsperado();
-        $form   = $this->createCreateForm($entity);
+        $em = $this->getDoctrine()->getManager();
+        $noc = null;
+        if(!is_null($id)){
+            $noc = $em->getRepository('SirepaePAEBundle:NOC')->find($id);
+            $entity->setNOC($noc);
+        }
+        $form   = $this->createCreateForm($entity, $noc);
 
         return array(
+            'noc' => $noc,
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_resultados_esperados_resumen'  =>  true,'active_nocs_resumen'  =>  true,
+            'active_resultados_esperados_new'  =>  true,
         );
     }
 
@@ -121,6 +143,8 @@ class ResultadoEsperadoController extends Controller
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
+            'active_resultados_esperados_resumen'  =>  true,'active_nocs_resumen'  =>  true,
+            'active_resultados_esperados_ver'  =>  true,
         );
     }
 
@@ -148,6 +172,8 @@ class ResultadoEsperadoController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_resultados_esperados_resumen'  =>  true,'active_nocs_resumen'  =>  true,
+            'active_resultados_esperados_edit'  =>  true,
         );
     }
 
@@ -165,7 +191,7 @@ class ResultadoEsperadoController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array('label' => 'Actualizar', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -200,6 +226,8 @@ class ResultadoEsperadoController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_resultados_esperados_resumen'  =>  true,'active_nocs_resumen'  =>  true,
+            'active_resultados_esperados_edit'  =>  true,
         );
     }
     /**
@@ -240,7 +268,7 @@ class ResultadoEsperadoController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('resultado_esperado_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array('label' => 'Borrar', 'attr' => array( 'class' => 'btn-danger')))
             ->getForm()
         ;
     }

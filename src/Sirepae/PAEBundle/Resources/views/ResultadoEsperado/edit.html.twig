@@ -1,16 +1,52 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaePAEBundle:NIC:index.html.twig' %}
 
-{% block body -%}
-    <h1>ResultadoEsperado edit</h1>
+{% block content -%}
+    <div class="col-sm-12">
+        <div class="pull-left">
+            <h1 class="title">Resultado Esperado {{ entity.codigo }}
+        </div>
+        <div class="pull-right">
+            {{ form(delete_form) }}
+        </div>
+    </div>
 
     {{ form(edit_form) }}
-
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('resultado_esperado') }}">
-            Back to the list
-        </a>
-    </li>
-    <li>{{ form(delete_form) }}</li>
-</ul>
+<div class="btn-group btn-group-lg pull-right">
+    <a class="btn btn-info btn-lg" href="{{ path('indicador_new_resultado_esperado',{id_resultado_esperado: entity.id}) }}">Agregar Indicador</a>
+    <a class="btn btn-info btn-lg" href="{{ path('escala_new_resultado_esperado',{id: entity.id}) }}">Agregar Escala</a>
+    <a class="btn btn-default btn-lg" href="{{ path('resultado_esperado') }}">Volver</a>
+</div>
+<div class="clearfix"></div>
+<h4>Escalas</h4>
+<div class="row">
+    {% for escala in entity.escalas %}
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a class="btn-link btn" href="{{ path('escala_edit', {id: escala.id}) }}">
+                        <h3 class="panel-title">
+                            {{ escala.nombre }} - <span class="text-muted">{{ escala.valor }}</span>
+                        </h3>
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+<h4>Indicadores</h4>
+<div class="row">
+    {% for indicador in entity.indicadores %}
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a class="btn-link btn" href="{{ path('indicador_edit', {id: indicador.id}) }}">
+                        <h3 class="panel-title">
+                            {{ indicador.definicion }} - <span class="badge">{{ indicador.planesCuidado | length }}</span>
+                        </h3>
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}

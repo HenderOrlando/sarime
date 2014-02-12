@@ -325,9 +325,16 @@ class RegistroController extends Controller
                             $optRta_id = $id[1];
                         }else{
                             $preg_id = $id;
-                            $optRta_id = $dato;
+                            if(!empty($dato) && is_array($dato)){
+                                $optRta_id = $dato[0];
+                            }else{
+                                $optRta_id = $dato;
+                            }
                         }
                         $preg = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($preg_id);
+                        if(empty($dato)){
+                            $optRta_id = $preg->getOpcionesRespuesta()->first()->getId();
+                        }
                         $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$preg->getId(), $numero);
                         if(!$editar && ($registro->isUnico() && !$rtaRe) || (!$editar && !$registro->isUnico())){
                             $rta = new \Sirepae\RegistrosEnfermeriaBundle\Entity\Respuesta();
@@ -337,7 +344,8 @@ class RegistroController extends Controller
                             return $this->redirect($this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())));
                         }
                         $optRta = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:OpcionRespuesta')->find($optRta_id);
-                        if($optRta->getTipoRespuesta()->getTipoCampo() === 'date' || $optRta->getTipoRespuesta()->getTipoCampo() === 'time' || $optRta->getTipoRespuesta()->getTipoCampo() === 'datetime'){
+                        $tipoCampo = $optRta->getTipoRespuesta()->getTipoCampo();
+                        if($tipoCampo === 'date' || $tipoCampo === 'time' || $tipoCampo === 'datetime'){
                             $format = '';
                             if($optRta->getTipoRespuesta()->getTipoCampo() === 'date')
                                 $format .= 'Y/m/d';
@@ -346,9 +354,16 @@ class RegistroController extends Controller
                             else
                                 $format .= 'Y/m/d H:i:s';
                             $dato = $dato->format($format);
+                        }elseif($tipoCampo === 'choice'){
+                            if($preg->isMultiRta())
+                                if(empty($dato))
+                                    $dato = '';
+                                else
+                                    $dato = implode('\#_*/|\*_#/',$dato);
+                            else
+                                $dato = null;
                         }
-                        if($optRta->getTipoRespuesta()->getTipoCampo() === 'choice')
-                            $dato = null;
+                        
                         $rta
                             ->setOpcionRespuesta($optRta)
                             ->setPregunta($preg)
@@ -391,11 +406,13 @@ class RegistroController extends Controller
             $datos['label'] = $preg->getEnunciado();
             $tipo_campo = 'choice';
             $id_campo = '';
+            $opts = array();
             if(count($preg->getOpcionesRespuesta()) > 1){
-                $opts = array();
                 foreach($preg->getOpcionesRespuesta() as $optRta){
                     $opts[$optRta->getId()] = $optRta->getEnunciado();
                 }
+                $datos['multiple'] = $preg->isMultiRta();
+                $datos['expanded'] = $preg->isExpandido();
                 $datos['choices'] = $opts;
                 $id_campo = $preg->getId();
             }else{
@@ -406,16 +423,23 @@ class RegistroController extends Controller
             if($tipo_campo === 'date' || $tipo_campo === 'time' || $tipo_campo === 'datetime')
                 $datos['data'] = new \DateTime ('now');
             if($editar && $rta){
-                if(is_null($rta->getRespuesta()->getValor()))
+                if(is_null($rta->getRespuesta()->getValor())){
                     $dato = $rta->getRespuesta()->getOpcionRespuesta()->getId();
-                else
+                }
+                else{
                     $dato = $rta->getRespuesta()->getValor();
-                if($tipo_campo === 'date' || $tipo_campo === 'time' || $tipo_campo === 'datetime')
+                }
+                if($tipo_campo === 'date' || $tipo_campo === 'time' || $tipo_campo === 'datetime'){
                     $dato = new \DateTime ($dato);
-                elseif($tipo_campo !== 'textarea' && $tipo_campo !== 'choice')
+                }
+                elseif($tipo_campo === 'choice' && $preg->isMultiRta()){
+                    $dato = explode('\#_*/|\*_#/',$dato);
+                }
+                elseif($tipo_campo !== 'textarea' && $tipo_campo !== 'choice'){
                     $dato = $preg->getId().'-'.$dato;
+                }
                 $datos['data'] = $dato;
-            }elseif(!$editar && $rta){
+            }elseif(!$editar && $rta || $editar && !$rta){
                 return FALSE;
             }
             $form->add($id_campo, $tipo_campo, $datos);

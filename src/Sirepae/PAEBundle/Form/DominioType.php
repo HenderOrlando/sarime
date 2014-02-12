@@ -17,7 +17,6 @@ class DominioType extends AbstractType
         $builder
             ->add('nombre')
             ->add('descripcion')
-            ->add('fecha_creado')
             ->add('codigo')
             ->add('NANDA')
         ;

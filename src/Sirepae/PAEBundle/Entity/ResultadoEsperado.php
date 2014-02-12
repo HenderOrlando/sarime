@@ -51,7 +51,7 @@ class ResultadoEsperado
     private $NOC;
 
     /** 
-     * @ORM\ManyToMany(targetEntity="\Sirepae\PAEBundle\Entity\Escala", mappedBy="resultadosEsperados")
+     * @ORM\ManyToMany(targetEntity="\Sirepae\PAEBundle\Entity\Escala", mappedBy="resultadosEsperados", cascade={"all"})
      */
     private $escalas;
     
@@ -282,5 +282,9 @@ class ResultadoEsperado
     public function getEscalas()
     {
         return $this->escalas;
+    }
+    
+    public function __toString() {
+        return $this->getDefinicion().' - '.$this->getCodigo();
     }
 }

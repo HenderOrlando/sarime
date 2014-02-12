@@ -15,14 +15,13 @@ class PAEType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('paciente')
+            ->add('estudiante')
             ->add('val_objetiva')
             ->add('val_subjetiva')
             ->add('evaluacion')
             ->add('objetivo')
-            ->add('fecha_creado')
-            ->add('calificacion')
-            ->add('paciente')
-            ->add('estudiante')
+            ->add('calificacion', new CalificacionType())
         ;
     }
     

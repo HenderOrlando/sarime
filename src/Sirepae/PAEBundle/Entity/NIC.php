@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping AS ORM;
 class NIC extends \Sirepae\PAEBundle\Entity\Libro
 {
     /** 
-     * @ORM\OneToMany(targetEntity="\Sirepae\PAEBundle\Entity\Intervencion", mappedBy="nIC")
+     * @ORM\OneToMany(targetEntity="\Sirepae\PAEBundle\Entity\Intervencion", mappedBy="nic")
      */
     private $intervenciones;
     

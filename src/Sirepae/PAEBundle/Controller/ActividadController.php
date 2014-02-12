@@ -33,16 +33,19 @@ class ActividadController extends Controller
 
         return array(
             'entities' => $entities,
+            'active_actividades_resumen'  =>  true,'active_nics_resumen'  =>  true
         );
     }
     /**
      * Creates a new Actividad entity.
      *
      * @Route("/", name="actividad_create")
+     * @Route("/nic/{id}/", name="actividad_create_nic")
+     * @Route("/intervencion/{id_intervencion}/", name="actividad_create_intervencion")
      * @Method("POST")
      * @Template("SirepaePAEBundle:Actividad:new.html.twig")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $id = null, $id_intervencion = null)
     {
         $entity = new Actividad();
         $form = $this->createCreateForm($entity);
@@ -53,12 +56,20 @@ class ActividadController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('actividad_show', array('id' => $entity->getId())));
+            if (!is_null($id)) {
+                return $this->redirect($this->generateUrl('nic_edit', array('id' => $id)));
+            } elseif (!is_null($id_intervencion)) {
+                return $this->redirect($this->generateUrl('intervencion_edit', array('id' => $id_intervencion)));
+            } else {
+                return $this->redirect($this->generateUrl('actividad'));
+            }
         }
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_actividades_resumen'  =>  true,'active_nics_resumen'  =>  true,
+            'active_actividades_new'  =>  true,
         );
     }
 
@@ -69,14 +80,20 @@ class ActividadController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(Actividad $entity)
+    private function createCreateForm(Actividad $entity, \Sirepae\PAEBundle\Entity\NIC $nic = null, \Sirepae\PAEBundle\Entity\Intervencion $int = null)
     {
-        $form = $this->createForm(new ActividadType(), $entity, array(
-            'action' => $this->generateUrl('actividad_create'),
+        $url = $this->generateUrl('actividad_create');
+        if (!is_null($nic)) {
+            $url = $this->generateUrl('actividad_create_nic', array('id' => $nic->getId()));
+        }elseif(!is_null($int)){
+            $url = $this->generateUrl('actividad_create_intervencion', array('id_intervencion' => $int->getId()));
+        }
+        $form = $this->createForm(new ActividadType($nic), $entity, array(
+            'action' => $url,
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Crear', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -84,18 +101,34 @@ class ActividadController extends Controller
     /**
      * Displays a form to create a new Actividad entity.
      *
-     * @Route("/new", name="actividad_new")
+     * @Route("/new/", name="actividad_new")
+     * @Route("/new/nic/{id}/", name="add_actividad")
+     * @Route("/new/intervencion/{id_intervencion}/", name="add_actividad_intervencion")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction($id=null, $id_intervencion = null)
     {
         $entity = new Actividad();
-        $form   = $this->createCreateForm($entity);
-
+        $em = $this->getDoctrine()->getManager();
+        $nic = null;
+        if(!is_null($id)){
+            $nic = $em->getRepository('SirepaePAEBundle:NIC')->find($id);
+        }
+        $int = null;
+        if(!is_null($id_intervencion)){
+            $int = $em->getRepository('SirepaePAEBundle:Intervencion')->find($id_intervencion);
+            $entity->setIntervencion($int);
+        }
+        $form   = $this->createCreateForm($entity, $nic, $int);
+        
         return array(
+            'nic' => $nic,
+            'int' => $int,
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_actividades_resumen'  =>  true,'active_nics_resumen'  =>  true,
+            'active_actividades_new'  =>  true,
         );
     }
 
@@ -121,6 +154,8 @@ class ActividadController extends Controller
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
+            'active_actividades_resumen'  =>  true,'active_nics_resumen'  =>  true,
+            'active_actividades_ver'  =>  true,
         );
     }
 
@@ -148,6 +183,8 @@ class ActividadController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_actividades_resumen'  =>  true,'active_nics_resumen'  =>  true,
+            'active_actividades_edit'  =>  true,
         );
     }
 
@@ -165,7 +202,7 @@ class ActividadController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array('label' => 'Actualizar', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -200,6 +237,8 @@ class ActividadController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_actividades_resumen'  =>  true,'active_nics_resumen'  =>  true,
+            'active_actividades_edit'  =>  true,
         );
     }
     /**
@@ -240,7 +279,7 @@ class ActividadController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('actividad_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array('label' => 'Borrar', 'attr' => array( 'class' => 'btn-danger')))
             ->getForm()
         ;
     }

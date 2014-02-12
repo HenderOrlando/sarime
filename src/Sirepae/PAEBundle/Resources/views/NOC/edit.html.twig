@@ -1,16 +1,44 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaePAEBundle:NOC:index.html.twig' %}
 
-{% block body -%}
-    <h1>NOC edit</h1>
+{% block content -%}
+    <div class="col-sm-12">
+        <div class="pull-left">
+            <h1 class="title">NOC {{ entity.isbn }} <span class="text-muted">{{ entity.version }}</span></h1>
+        </div>
+        <div class="pull-right">
+            {{ form(delete_form) }}
+        </div>
+    </div>
 
     {{ form(edit_form) }}
-
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('noc') }}">
-            Back to the list
-        </a>
-    </li>
-    <li>{{ form(delete_form) }}</li>
-</ul>
+<div class="btn-group btn-group-lg pull-right">
+    <a class="btn btn-info btn-lg" href="{{ path('resultado_esperado_new_noc',{id: entity.id}) }}">Agregar Resultado Esperado</a>
+    <a class="btn btn-info btn-lg" href="{{ path('indicador_new_noc',{id: entity.id}) }}">Agregar Indicador</a>
+    <a class="btn btn-default btn-lg" href="{{ path('noc') }}">Volver</a>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+    {% for resultado_esperado in entity.resultadosEsperados %}
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a class="btn-link btn" href="{{ path('resultado_esperado_edit', {id: resultado_esperado.id}) }}">
+                        <h3 class="panel-title">
+                            {{ resultado_esperado.dominio }} - <span class="text-muted">{{ resultado_esperado.codigo }}</span>
+                        </h3>
+                    </a>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                    {% for indicador in resultado_esperado.indicadores %}
+                        <li>
+                            {{ indicador.definicion }} <span class="badge">{{ indicador.planesCuidado | length }}</span>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}

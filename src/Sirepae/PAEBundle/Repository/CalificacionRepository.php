@@ -2,7 +2,7 @@
 namespace Sirepae\PAEBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 
-class ClasificacionRepository extends EntityRepository
+class CalificacionRepository extends EntityRepository
 {
     public function findAllOrderedByName()
     {

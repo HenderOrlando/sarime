@@ -33,16 +33,18 @@ class EscalaController extends Controller
 
         return array(
             'entities' => $entities,
+            'active_escalas_resumen'  =>  true,            'active_nocs_resumen'  =>  true
         );
     }
     /**
      * Creates a new Escala entity.
      *
+     * @Route("/resultado-esperado/{id}/", name="escala_create_resultado_esperado")
      * @Route("/", name="escala_create")
      * @Method("POST")
      * @Template("SirepaePAEBundle:Escala:new.html.twig")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $id = null)
     {
         $entity = new Escala();
         $form = $this->createCreateForm($entity);
@@ -53,12 +55,18 @@ class EscalaController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('escala_show', array('id' => $entity->getId())));
+            if (!is_null($id)) {
+                return $this->redirect($this->generateUrl('resultado_esperado_edit', array('id' => $id)));
+            } else {
+                return $this->redirect($this->generateUrl('escala'));
+            }
         }
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_escalas_resumen'  =>  true,            'active_nocs_resumen'  =>  true,
+            'active_escalas_new'  =>  true,
         );
     }
 
@@ -69,14 +77,18 @@ class EscalaController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(Escala $entity)
+    private function createCreateForm(Escala $entity, \Sirepae\PAEBundle\Entity\ResultadoEsperado $re = null)
     {
+        $url = $this->generateUrl('resultado_esperado_create');
+        if (!is_null($re)) {
+            $url = $this->generateUrl('escala_create_resultado_esperado', array('id' => $re->getId()));
+        }
         $form = $this->createForm(new EscalaType(), $entity, array(
-            'action' => $this->generateUrl('escala_create'),
+            'action' => $url,
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Crear', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -84,18 +96,28 @@ class EscalaController extends Controller
     /**
      * Displays a form to create a new Escala entity.
      *
-     * @Route("/new", name="escala_new")
+     * @Route("/new/escala/{id}/", name="escala_new_resultado_esperado")
+     * @Route("/new/", name="escala_new")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction($id = null)
     {
         $entity = new Escala();
-        $form   = $this->createCreateForm($entity);
+        $em = $this->getDoctrine()->getManager();
+        $re = null;
+        if(!is_null($id)){
+            $re = $em->getRepository('SirepaePAEBundle:ResultadoEsperado')->find($id);
+            $entity->addResultadosEsperado($re);
+        }
+        $form   = $this->createCreateForm($entity, $re);
 
         return array(
+            'resultado_esperado' => $re,
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_escalas_resumen'  =>  true,            'active_nocs_resumen'  =>  true,
+            'active_escalas_new'  =>  true,
         );
     }
 
@@ -121,6 +143,8 @@ class EscalaController extends Controller
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
+            'active_escalas_resumen'  =>  true,            'active_nocs_resumen'  =>  true,
+            'active_escalas_ver'  =>  true,
         );
     }
 
@@ -148,6 +172,8 @@ class EscalaController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_escalas_resumen'  =>  true,            'active_nocs_resumen'  =>  true,
+            'active_escalas_edit'  =>  true,
         );
     }
 
@@ -165,7 +191,7 @@ class EscalaController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array('label' => 'Actualizar', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -200,6 +226,8 @@ class EscalaController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_escalas_resumen'  =>  true,            'active_nocs_resumen'  =>  true,
+            'active_escalas_edit'  =>  true,
         );
     }
     /**
@@ -240,7 +268,7 @@ class EscalaController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('escala_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array('label' => 'Borrar', 'attr' => array( 'class' => 'btn-danger')))
             ->getForm()
         ;
     }

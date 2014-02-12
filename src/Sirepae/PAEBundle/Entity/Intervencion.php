@@ -43,7 +43,7 @@ class Intervencion
      * @ORM\ManyToOne(targetEntity="\Sirepae\PAEBundle\Entity\NIC", inversedBy="intervenciones")
      * @ORM\JoinColumn(name="nic_id", referencedColumnName="id", nullable=false)
      */
-    private $nIC;
+    private $nic;
     
     
     /******************* MÉTODOS *******************/
@@ -195,25 +195,29 @@ class Intervencion
     }
 
     /**
-     * Set nIC
+     * Set nic
      *
-     * @param \Sirepae\PAEBundle\Entity\NIC $nIC
+     * @param \Sirepae\PAEBundle\Entity\NIC $nic
      * @return Intervencion
      */
-    public function setNIC(\Sirepae\PAEBundle\Entity\NIC $nIC)
+    public function setNIC(NIC $nic)
     {
-        $this->nIC = $nIC;
+        $this->nic = $nic;
     
         return $this;
     }
 
     /**
-     * Get nIC
+     * Get nic
      *
      * @return \Sirepae\PAEBundle\Entity\NIC 
      */
     public function getNIC()
     {
-        return $this->nIC;
+        return $this->nic;
+    }
+    
+    public function __toString() {
+        return $this->getNombre().' Cod. '.$this->getCodigo();
     }
 }

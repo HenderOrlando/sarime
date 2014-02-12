@@ -1,49 +1,305 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaeUsuariosBundle:Usuario:home.html.twig' %}
 
-{% block body -%}
-    <h1>PAE list</h1>
-
-    <table class="records_list">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Val_objetiva</th>
-                <th>Val_subjetiva</th>
-                <th>Evaluacion</th>
-                <th>Objetivo</th>
-                <th>Fecha_creado</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for entity in entities %}
-            <tr>
-                <td><a href="{{ path('pae_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
-                <td>{{ entity.valobjetiva }}</td>
-                <td>{{ entity.valsubjetiva }}</td>
-                <td>{{ entity.evaluacion }}</td>
-                <td>{{ entity.objetivo }}</td>
-                <td>{% if entity.fechacreado %}{{ entity.fechacreado|date('Y-m-d H:i:s') }}{% endif %}</td>
-                <td>
-                <ul>
-                    <li>
-                        <a href="{{ path('pae_show', { 'id': entity.id }) }}">show</a>
+{% block submenu %}
+<ul class="nav">
+    <li>
+        Administrar Plan de Atención de Enfermería
+        <ul class="nav  nav-sidebar">
+            <li class="{{ not (active_new is defined or active_edit is defined) and active_nics_resumen is defined ?'active':''}}">
+                <a href="{{ path('nic') }}">
+                    Administrar NIC 
+                </a>
+                {% if active_nics_resumen is defined %}
+                    <ul class="nav  nav-sidebar">
+                        <li class="{{ active_new is defined?'active':''}}">
+                            <a href="{{ path('nic_new') }}">
+                                Nueva versión del NIC
+                            </a>
+                        </li>
+                        {% if active_edit is defined %}
+                            <li class="active">
+                                <a href="{{ path('nic_edit', { 'id': entity.id }) }}">
+                                    Edita NIC {{ entity.isbn }} <span class="text-muted">{{ entity.version }}</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="{{ not (active_intervenciones_new is defined or active_intervenciones_edit is defined) and active_intervenciones_resumen is defined?'active':''}}">
+                            <a href="{{ path('intervencion') }}">
+                                Administrar Intervenciones
+                            </a>
+                            {% if active_intervenciones_resumen is defined %}
+                                <ul class="nav  nav-sidebar">
+                                    <li class="{{ active_intervenciones_new is defined?'active':''}}">
+                                        <a href="{{ path('intervencion_new') }}">
+                                            Nueva Intervención
+                                        </a>
+                                    </li>
+                                    {% if active_intervenciones_edit is defined %}
+                                        <li class="active">
+                                            <a href="{{ path('intervencion_edit', { 'id': entity.id }) }}">
+                                                Edita Intervención {{ entity.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                        <li class="{{ not (active_actividades_new is defined or active_actividades_edit is defined) and active_actividades_resumen is defined?'active':''}}">
+                            <a href="{{ path('actividad') }}">
+                                Administrar Actividades
+                            </a>
+                            {% if active_actividades_resumen is defined %}
+                                <ul class="nav  nav-sidebar">
+                                    <li class="{{ active_actividades_new is defined?'active':''}}">
+                                        <a href="{{ path('actividad_new') }}">
+                                            Nueva Actividad
+                                        </a>
+                                    </li>
+                                    {% if active_actividades_edit is defined %}
+                                        <li class="active">
+                                            <a href="{{ path('actividad_edit', { 'id': entity.id }) }}">
+                                                Edita Actividad {{ entity.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                    </ul>
+                {% endif %}
+            </li>
+            <li class="{{ not (active_new is defined or active_edit is defined) and active_nandas_resumen is defined ?'active':''}}">
+                <a href="{{ path('nanda') }}">
+                    Administrar NANDA 
+                </a>
+                {% if active_nandas_resumen is defined %}
+                    <ul class="nav  nav-sidebar">
+                        <li class="{{ active_new is defined?'active':''}}">
+                            <a href="{{ path('nanda_new') }}">
+                                Nueva versión del NANDA
+                            </a>
+                        </li>
+                        {% if active_edit is defined %}
+                            <li class="active">
+                                <a href="{{ path('nanda_edit', { 'id': entity.id }) }}">
+                                    Edita NANDA {{ entity.isbn }} <span class="text-muted">{{ entity.version }}</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="{{ not (active_dominios_new is defined or active_dominios_edit is defined) and active_dominios_resumen is defined?'active':''}}">
+                            <a href="{{ path('dominio') }}">
+                                Administrar Dominios
+                            </a>
+                            {% if active_dominios_resumen is defined %}
+                                <ul class="nav  nav-sidebar">
+                                    <li class="{{ active_dominios_new is defined?'active':''}}">
+                                        <a href="{{ path('dominio_new') }}">
+                                            Nuevo Dominio
+                                        </a>
+                                    </li>
+                                    {% if active_dominios_edit is defined %}
+                                        <li class="active">
+                                            <a href="{{ path('dominio_edit', { 'id': entity.id }) }}">
+                                                Edita Dominio {{ entity.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                        <li class="{{ not (active_clases_new is defined or active_clases_edit is defined) and active_clases_resumen is defined?'active':''}}">
+                            <a href="{{ path('clase') }}">
+                                Administrar Clases
+                            </a>
+                            {% if active_clases_resumen is defined %}
+                                <ul class="nav  nav-sidebar">
+                                    <li class="{{ _clases_new is defined?'active':''}}">
+                                        <a href="{{ path('clase_new') }}">
+                                            Nueva Clase
+                                        </a>
+                                    </li>
+                                    {% if active_clases_edit is defined %}
+                                        <li class="active">
+                                            <a href="{{ path('clase_edit', { 'id': entity.id }) }}">
+                                                Edita Clase {{ entity.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                        <li class="{{ not (active_diagnosticos_new is defined or active_diagnosticos_edit is defined) and active_diagnosticos_resumen is defined?'active':''}}">
+                            <a href="{{ path('diagnostico') }}">
+                                Administrar Diagnóstico
+                            </a>
+                            {% if active_diagnosticos_resumen is defined %}
+                                <ul class="nav  nav-sidebar">
+                                    <li class="{{ active_diagnosticos_new is defined?'active':''}}">
+                                        <a href="{{ path('diagnostico_new') }}">
+                                            Nuevo Diagnóstico
+                                        </a>
+                                    </li>
+                                    {% if active_diagnosticos_edit is defined %}
+                                        <li class="active">
+                                            <a href="{{ path('diagnostico_edit', { 'id': entity.id }) }}">
+                                                Edita Diagnóstico {{ entity.definicion }}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                    </ul>
+                {% endif %}
+            </li>
+            <li class="{{ not (active_new is defined or active_edit is defined) and active_nocs_resumen is defined ?'active':''}}">
+                <a href="{{ path('noc') }}">
+                    Administrar NOC
+                </a>
+                {% if active_nocs_resumen is defined %}
+                    <ul class="nav  nav-sidebar">
+                        <li class="{{ active_new is defined?'active':''}}">
+                            <a href="{{ path('noc_new') }}">
+                                Nueva versión del NOC
+                            </a>
+                        </li>
+                        {% if active_edit is defined %}
+                            <li class="active">
+                                <a href="{{ path('noc_edit', { 'id': entity.id }) }}">
+                                    Edita NOC {{ entity.isbn }} <span class="text-muted">{{ entity.version }}</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="{{ not (active_resultados_esperados_new is defined or active_resultados_esperados_edit is defined) and active_resultados_esperados_resumen is defined?'active':''}}">
+                            <a href="{{ path('resultado_esperado') }}">
+                                Administrar Resultados Esperados
+                            </a>
+                            <ul class="nav  nav-sidebar">
+                                {% if active_resultados_esperados_resumen is defined %}
+                                    <li class="{{ active_resultados_esperados_new is defined?'active':''}}">
+                                        <a href="{{ path('resultado_esperado_new') }}">
+                                            Nuevo Resultado Esperado
+                                        </a>
+                                    </li>
+                                    {% if active_resultados_esperados_edit is defined %}
+                                        <li class="active">
+                                            <a href="{{ path('resultado_esperado_edit', { 'id': entity.id }) }}">
+                                                Edita Resultado Esperado {{ entity.codigo }}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                {% endif %}
+                            </ul>
+                        </li>
+                        <li class="{{ not (active_indicadores_new is defined or active_indicadores_edit is defined) and active_indicadores_resumen is defined?'active':''}}">
+                            <a href="{{ path('indicador') }}">
+                                Administrar Indicadores
+                            </a>
+                            <ul class="nav  nav-sidebar">
+                                {% if active_indicadores_resumen is defined %}
+                                    <li class="{{ active_indicadores_new is defined?'active':''}}">
+                                        <a href="{{ path('indicador_new') }}">
+                                            Nuevo Indicador
+                                        </a>
+                                    </li>
+                                    {% if active_indicadores_edit is defined %}
+                                        <li class="active">
+                                            <a href="{{ path('indicador_edit', { 'id': entity.id }) }}">
+                                                Edita Indicador {{ entity.codigo }}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                {% endif %}
+                            </ul>
+                        </li>
+                        <li class="{{ not (active_escalas_new is defined or active_escalas_edit is defined) and active_escalas_resumen is defined?'active':''}}">
+                            <a href="{{ path('escala') }}">
+                                Administrar Escalas
+                            </a>
+                            <ul class="nav  nav-sidebar">
+                                {% if active_escalas_resumen is defined %}
+                                    <li class="{{ active_escalas_new is defined?'active':''}}">
+                                        <a href="{{ path('escala_new') }}">
+                                            Nueva Escala
+                                        </a>
+                                    </li>
+                                    {% if active_escalas_edit is defined %}
+                                        <li class="active">
+                                            <a href="{{ path('escala_edit', { 'id': entity.id }) }}">
+                                                Edita Escala {{ entity.nombre }}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                {% endif %}
+                            </ul>
+                        </li>
+                    </ul>
+                {% endif %}
+            </li>
+            <li class="{{ not (active_new is defined or active_edit is defined) and active_paes_resumen is defined ?'active':''}}">
+                <a href="{{ path('pae') }}">
+                    Administrar PAE
+                </a>
+                {% if active_paes_resumen is defined %}
+                    <li class="{{ active_new is defined?'active':''}}">
+                        <a href="{{ path('pae_new') }}">
+                            Nuevo PAE
+                        </a>
                     </li>
-                    <li>
-                        <a href="{{ path('pae_edit', { 'id': entity.id }) }}">edit</a>
-                    </li>
-                </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-        <ul>
+                    {% if active_edit is defined %}
+                        <li class="active">
+                            <a href="{{ path('pae_edit', { 'id': entity.id }) }}">
+                                Edita PAE {{ entity }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            </li>
+        </ul>
+    </li>
+</ul>
+{% endblock submenu%}
+{% block content -%}
+    {% set path_ = 'pae' %}
+    {% set title_ = 'Planes de Atención de Enfermería' %}
+    <ul class="list-unstyled list-inline">
         <li>
-            <a href="{{ path('pae_new') }}">
-                Create a new entry
+            <h1 class="title">
+                Tablero de {{ title_ }}
+            </h1>
+        </li>
+        <li class="text-align pull-right title">
+            <a class="btn btn-primary btn-lg" href="{{ path( path_ ~ '_new') }}">
+                Nuevo <span class="text-upper" >{{ path_ }}</span>
             </a>
         </li>
     </ul>
-    {% endblock %}
+    <div class="table-responsive">
+        <table class="records_list">
+            <thead>
+                <tr>
+                    <th>Valoración Objetiva</th>
+                    <th>Valoración Subjetiva</th>
+                    <th>Evaluación</th>
+                    <th>Objetivo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.valobjetiva }}</td>
+                    <td>{{ entity.valsubjetiva }}</td>
+                    <td>{{ entity.evaluacion }}</td>
+                    <td>{{ entity.objetivo }}</td>
+                    <td>
+                        <div class="btn-group btn-group-lg">
+                            <a class="btn btn-primary" href="{{ path(path_ ~ '_edit', { 'id': entity.id }) }}">Editar</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -33,16 +33,19 @@ class DiagnosticoController extends Controller
 
         return array(
             'entities' => $entities,
+            'active_diagnosticos_resumen'  =>  true,'active_nandas_resumen'  =>  true
         );
     }
     /**
      * Creates a new Diagnostico entity.
      *
+     * @Route("/dominio/{id}/", name="diagnostico_create_dominio")
+     * @Route("/clase/{id_clase}/", name="diagnostico_create_clase")
      * @Route("/", name="diagnostico_create")
      * @Method("POST")
      * @Template("SirepaePAEBundle:Diagnostico:new.html.twig")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $id = null, $id_clase = null)
     {
         $entity = new Diagnostico();
         $form = $this->createCreateForm($entity);
@@ -53,12 +56,20 @@ class DiagnosticoController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('diagnostico_show', array('id' => $entity->getId())));
+            if (!is_null($id)) {
+                return $this->redirect($this->generateUrl('dominio_edit', array('id' => $id)));
+            } elseif(!is_null($id_clase)){
+                return $this->redirect($this->generateUrl('clase_edit', array('id' => $id_clase)));
+            } else {
+                return $this->redirect($this->generateUrl('diagnostico'));
+            }
         }
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_diagnosticos_resumen'  =>  true,'active_nandas_resumen'  =>  true,
+            'active_diagnosticos_new'  =>  true,
         );
     }
 
@@ -69,14 +80,20 @@ class DiagnosticoController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(Diagnostico $entity)
+    private function createCreateForm(Diagnostico $entity, \Sirepae\PAEBundle\Entity\Dominio $dominio = null, \Sirepae\PAEBundle\Entity\Clase $clase = null)
     {
-        $form = $this->createForm(new DiagnosticoType(), $entity, array(
-            'action' => $this->generateUrl('diagnostico_create'),
+        $url = $this->generateUrl('diagnostico_create');
+        if (!is_null($dominio)) {
+            $url = $this->generateUrl('diagnostico_create_dominio', array('id' => $dominio->getId()));
+        }elseif (!is_null($clase)) {
+            $url = $this->generateUrl('diagnostico_create_clase', array('id_clase' => $clase->getId()));
+        }
+        $form = $this->createForm(new DiagnosticoType($dominio), $entity, array(
+            'action' => $url,
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Crear', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -84,18 +101,34 @@ class DiagnosticoController extends Controller
     /**
      * Displays a form to create a new Diagnostico entity.
      *
+     * @Route("/dominio/{id}/", name="diagnostico_new_dominio")
+     * @Route("/clase/{id_clase}/", name="diagnostico_new_clase")
      * @Route("/new", name="diagnostico_new")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction($id = null, $id_clase = null)
     {
         $entity = new Diagnostico();
-        $form   = $this->createCreateForm($entity);
+        $em = $this->getDoctrine()->getManager();
+        $dominio = null;
+        if (!is_null($id)) {
+            $dominio = $em->getRepository('SirepaePAEBundle:Dominio')->find($id);
+        }
+        $clase = null;
+        if(!is_null($id_clase)){
+            $clase = $em->getRepository('SirepaePAEBundle:Clase')->find($id_clase);
+            $entity->setClase($clase);
+        }
+        $form   = $this->createCreateForm($entity, $dominio, $clase);
 
         return array(
+            'clase' => $clase,
             'entity' => $entity,
+            'dominio' => $dominio,
             'form'   => $form->createView(),
+            'active_diagnosticos_resumen'  =>  true,'active_nandas_resumen'  =>  true,
+            'active_diagnosticos_new'  =>  true,
         );
     }
 
@@ -121,6 +154,8 @@ class DiagnosticoController extends Controller
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
+            'active_diagnosticos_resumen'  =>  true,'active_nandas_resumen'  =>  true,
+            'active_diagnosticos_ver'  =>  true,
         );
     }
 
@@ -148,6 +183,8 @@ class DiagnosticoController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_diagnosticos_resumen'  =>  true,'active_nandas_resumen'  =>  true,
+            'active_diagnosticos_edit'  =>  true,
         );
     }
 
@@ -165,7 +202,7 @@ class DiagnosticoController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array('label' => 'Actualizar', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -200,6 +237,8 @@ class DiagnosticoController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_diagnosticos_resumen'  =>  true,'active_nandas_resumen'  =>  true,
+            'active_diagnosticos_edit'  =>  true,
         );
     }
     /**
@@ -240,7 +279,7 @@ class DiagnosticoController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('diagnostico_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array('label' => 'Borrar', 'attr' => array( 'class' => 'btn-danger')))
             ->getForm()
         ;
     }

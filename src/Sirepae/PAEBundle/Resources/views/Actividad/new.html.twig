@@ -1,15 +1,16 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaePAEBundle:Actividad:index.html.twig' %}
 
-{% block body -%}
-    <h1>Actividad creation</h1>
+{% block content -%}
+
+    <h1 class="title">Nueva Actividad</h1>
 
     {{ form(form) }}
 
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('actividad') }}">
-            Back to the list
-        </a>
-    </li>
-</ul>
+    {% if nic is not null %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('nic_edit', {id: nic.id}) }}">Volver</a>
+    {% elseif int is not null %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('intervencion_edit', {id: int.id}) }}">Volver</a>
+    {% else %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('actividad') }}">Volver</a>
+    {% endif %}
 {% endblock %}

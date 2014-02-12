@@ -17,7 +17,6 @@ class NANDAType extends AbstractType
         $builder
             ->add('isbn')
             ->add('version')
-            ->add('fecha_creado')
         ;
     }
     

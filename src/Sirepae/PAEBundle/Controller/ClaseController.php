@@ -33,16 +33,19 @@ class ClaseController extends Controller
 
         return array(
             'entities' => $entities,
+            'active_clases_resumen'  =>  true            ,'active_nandas_resumen'  =>  true
         );
     }
     /**
      * Creates a new Clase entity.
      *
+     * @Route("/dominio/{id_dominio}/", name="clase_create_dominio")
+     * @Route("/nanda/{id}/", name="clase_create_nanda")
      * @Route("/", name="clase_create")
      * @Method("POST")
      * @Template("SirepaePAEBundle:Clase:new.html.twig")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $id = null, $id_dominio = null)
     {
         $entity = new Clase();
         $form = $this->createCreateForm($entity);
@@ -53,12 +56,20 @@ class ClaseController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('clase_show', array('id' => $entity->getId())));
+            if (!is_null($id)) {
+                return $this->redirect($this->generateUrl('nanda_edit', array('id' => $id)));
+            } elseif (!is_null($id_dominio)) {
+                return $this->redirect($this->generateUrl('dominio_edit', array('id' => $id_dominio)));
+            } else {
+                return $this->redirect($this->generateUrl('clase'));
+            }
         }
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_clases_resumen'  =>  true            ,'active_nandas_resumen'  =>  true,
+            'active_clases_new'  =>  true,
         );
     }
 
@@ -69,14 +80,20 @@ class ClaseController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(Clase $entity)
+    private function createCreateForm(Clase $entity, \Sirepae\PAEBundle\Entity\NANDA $nanda = null, \Sirepae\PAEBundle\Entity\Dominio $dominio = null)
     {
-        $form = $this->createForm(new ClaseType(), $entity, array(
-            'action' => $this->generateUrl('clase_create'),
+        $url = $this->generateUrl('clase_create');
+        if (!is_null($nanda)) {
+            $url = $this->generateUrl('clase_create_nanda', array('id' => $nanda->getId()));
+        }elseif(!is_null($dominio)){
+            $url = $this->generateUrl('clase_create_dominio', array('id_dominio' => $dominio->getId()));
+        }
+        $form = $this->createForm(new ClaseType($nanda), $entity, array(
+            'action' => $url,
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Crear', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -84,18 +101,33 @@ class ClaseController extends Controller
     /**
      * Displays a form to create a new Clase entity.
      *
-     * @Route("/new", name="clase_new")
+     * @Route("/new/dominio/{id_dominio}/", name="clase_new_dominio")
+     * @Route("/new/nanda/{id}/", name="clase_new_nanda")
+     * @Route("/new/", name="clase_new")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction($id_dominio = null, $id = null)
     {
         $entity = new Clase();
-        $form   = $this->createCreateForm($entity);
-
+        $em = $this->getDoctrine()->getManager();
+        $nanda = null;
+        if(!is_null($id)){
+            $nanda = $em->getRepository('SirepaePAEBundle:NANDA')->find($id);
+        }
+        $dominio = null;
+        if(!is_null($id_dominio)){
+            $dominio = $em->getRepository('SirepaePAEBundle:Dominio')->find($id_dominio);
+            $entity->setDominio($dominio);
+        }
+        $form   = $this->createCreateForm($entity, $nanda, $dominio);
         return array(
+            'nanda' => $nanda,
             'entity' => $entity,
+            'dominio' => $dominio,
             'form'   => $form->createView(),
+            'active_clases_resumen'  =>  true            ,'active_nandas_resumen'  =>  true,
+            'active_clases_new'  =>  true,
         );
     }
 
@@ -121,6 +153,8 @@ class ClaseController extends Controller
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
+            'active_clases_resumen'  =>  true            ,'active_nandas_resumen'  =>  true,
+            'active_clases_ver'  =>  true,
         );
     }
 
@@ -148,6 +182,8 @@ class ClaseController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_clases_resumen'  =>  true            ,'active_nandas_resumen'  =>  true,
+            'active_clases_edit'  =>  true,
         );
     }
 
@@ -165,7 +201,7 @@ class ClaseController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array('label' => 'Actualizar', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -200,6 +236,8 @@ class ClaseController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_clases_resumen'  =>  true            ,'active_nandas_resumen'  =>  true,
+            'active_clases_edit'  =>  true,
         );
     }
     /**
@@ -240,7 +278,7 @@ class ClaseController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('clase_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array('label' => 'Borrar', 'attr' => array( 'class' => 'btn-danger')))
             ->getForm()
         ;
     }

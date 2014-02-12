@@ -20,11 +20,13 @@
      
     <div class="row">
         <div class="col-sm-12">
-            {% for registro in registros %}
-                <a class="btn btn-default btn-lg pull-right" href="{{ path('llenar_registro',{idRegistroEnfermeria: entity.id, idRegistro: registro.id}) }}">
-                    {{ registro }}
-                </a>
-            {% endfor %}
+            <div class="btn-group btn-group-lg">
+                {% for registro in registros %}
+                    <a class="btn btn-default btn-lg pull-right" href="{{ path('llenar_registro',{idRegistroEnfermeria: entity.id, idRegistro: registro.id}) }}">
+                        {{ registro }}
+                    </a>
+                {% endfor %}
+            </div>
         </div>
         <div class="col-sm-12">
                 {% set preg_ = null %}
@@ -54,10 +56,19 @@
                                 <dl class="dl-horizontal">
                                     <dt>{{ preg.enunciado }}</dt>
                                     <dd>
-                                        {% if optRta.tipoRespuesta.tipoCampo == 'choice' %}
+                                        {% if rta.respuesta.valor is null %}
                                             {{ optRta.enunciado }}
                                         {% else %}
-                                            {{ rta.respuesta.valor }}
+                                            {% if preg.isMultiRta %}
+                                                {% for r_ in rta.respuesta.valor|split('\#_*/|\*_#/') %}
+                                                    {{ optRtas[r_]['enunciado'] }}
+                                                    {% if not loop.last %}
+                                                        ,
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% else %}
+                                                {{ rta.respuesta.valor }}
+                                            {% endif %}
                                         {% endif %}
                                     </dd>
                                 </dl>
@@ -68,7 +79,19 @@
                                         {% if rta.respuesta.valor is null %}
                                             {{ optRta.enunciado }}
                                         {% else %}
-                                            {{ rta.respuesta.valor }}
+                                            {% if rta.respuesta.valor is empty %}
+                                                No definido(a)
+                                            {% elseif preg.isMultiRta %}
+                                                {% for r_ in rta.respuesta.valor|split('|') %}
+                                                    {% set r_ = r_|replace({'\\#_*/': '', '\\*_#/' : ''}) %}
+                                                    {{ optRtas[r_]['enunciado'] }}
+                                                    {% if not loop.last %}
+                                                        ,
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% else %}
+                                                {{ rta.respuesta.valor }}
+                                            {% endif %}
                                         {% endif %}
                                     </dd>
                                 </dl>

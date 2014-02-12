@@ -8,6 +8,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class DiagnosticoType extends AbstractType
 {
+    private $dominio;
+    
+    public function __construct(\Sirepae\PAEBundle\Entity\Dominio $dominio = null) {
+        $this->dominio = $dominio;
+    }
         /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -16,9 +21,18 @@ class DiagnosticoType extends AbstractType
     {
         $builder
             ->add('definicion')
-            ->add('fecha_creado')
-            ->add('clase')
         ;
+        $opts = array();
+        if(!is_null($this->dominio)){
+            $opts = array(
+                'class' => 'SirepaePAEBundle:Clase',
+                'query_builder' => function(\Doctrine\ORM\EntityRepository $er) {
+                    return $er->createQueryBuilder('d')
+                       ->andWhere('d.dominio = '.$this->dominio->getId());
+                }
+            );
+        }
+        $builder->add('clase', null, $opts);
     }
     
     /**

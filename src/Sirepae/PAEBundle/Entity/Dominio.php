@@ -216,4 +216,8 @@ class Dominio
     {
         return $this->NANDA;
     }
+    
+    public function __toString() {
+        return $this->getNombre().' ('.$this->getCodigo().')';
+    }
 }

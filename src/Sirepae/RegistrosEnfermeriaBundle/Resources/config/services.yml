@@ -1,0 +1,6 @@
+## YAML Template.
+services:
+    sirepae.twig.sirepae_extension:
+        class: Sirepae\RegistrosEnfermeriaBundle\Twig\SirepaeExtension
+        tags:
+            - { name: twig.extension }

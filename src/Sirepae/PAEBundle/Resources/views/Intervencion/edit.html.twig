@@ -1,16 +1,36 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaePAEBundle:Intervencion:index.html.twig' %}
 
-{% block body -%}
-    <h1>Intervencion edit</h1>
+{% block content -%}
+    <div class="col-sm-12">
+        <div class="pull-left">
+            <h1 class="title">Intervencion {{ entity.nombre }}</h1>
+        </div>
+        <div class="pull-right">
+            {{ form(delete_form) }}
+        </div>
+    </div>
 
     {{ form(edit_form) }}
 
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('intervencion') }}">
-            Back to the list
-        </a>
-    </li>
-    <li>{{ form(delete_form) }}</li>
-</ul>
+    <div class="btn-group btn-group-lg pull-right">
+        <a class="btn btn-info btn-lg" href="{{ path('add_actividad_intervencion',{id_intervencion: entity.id}) }}">Agregar Actividad</a>
+        <a class="btn btn-default btn-lg" href="{{ path('intervencion') }}">Volver</a>
+    </div>
+<div class="clearfix"></div>
+<div class="row">
+    {% for actividad in entity.actividades %}
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a class="btn-link btn" href="{{ path('actividad_edit', {id: actividad.id}) }}">
+                        <h3 class="panel-title">
+                            {{ actividad.nombre }}
+                            <span class="badge">{{ actividad.PlanesCuidado | length }}</span>
+                        </h3>
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}

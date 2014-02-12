@@ -40,7 +40,7 @@ class Escala
     private $indicadorPlanCuidado;
 
     /** 
-     * @ORM\ManyToMany(targetEntity="\Sirepae\PAEBundle\Entity\ResultadoEsperado", inversedBy="escalas")
+     * @ORM\ManyToMany(targetEntity="\Sirepae\PAEBundle\Entity\ResultadoEsperado", inversedBy="escalas", cascade={"all"})
      * @ORM\JoinTable(
      *     name="ResultadoEsperadoEscala", 
      *     joinColumns={@ORM\JoinColumn(name="escala_id", referencedColumnName="id", nullable=false)}, 

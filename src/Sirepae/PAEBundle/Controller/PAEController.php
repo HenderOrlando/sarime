@@ -33,6 +33,7 @@ class PAEController extends Controller
 
         return array(
             'entities' => $entities,
+            'active_paes_resumen'  =>  true
         );
     }
     /**
@@ -53,12 +54,14 @@ class PAEController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('pae_show', array('id' => $entity->getId())));
+            return $this->redirect($this->generateUrl('pae'));
         }
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_paes_resumen'  =>  true,
+            'active_new'  =>  true,
         );
     }
 
@@ -76,7 +79,7 @@ class PAEController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Crear', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -96,6 +99,8 @@ class PAEController extends Controller
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_paes_resumen'  =>  true,
+            'active_new'  =>  true,
         );
     }
 
@@ -121,6 +126,8 @@ class PAEController extends Controller
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
+            'active_paes_resumen'  =>  true,
+            'active_ver'  =>  true,
         );
     }
 
@@ -148,6 +155,8 @@ class PAEController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_paes_resumen'  =>  true,
+            'active_edit'  =>  true,
         );
     }
 
@@ -165,7 +174,7 @@ class PAEController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array('label' => 'Actualizar', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -200,6 +209,8 @@ class PAEController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_paes_resumen'  =>  true,
+            'active_edit'  =>  true,
         );
     }
     /**
@@ -240,7 +251,7 @@ class PAEController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('pae_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array('label' => 'Borrar', 'attr' => array( 'class' => 'btn-danger')))
             ->getForm()
         ;
     }

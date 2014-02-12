@@ -8,6 +8,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class ClaseType extends AbstractType
 {
+    private $nanda;
+    
+    public function __construct(\Sirepae\PAEBundle\Entity\NANDA $nanda = null) {
+        $this->nanda = $nanda;
+    }
         /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -17,9 +22,18 @@ class ClaseType extends AbstractType
         $builder
             ->add('nombre')
             ->add('descripcion')
-            ->add('fecha_creado')
-            ->add('dominio')
-        ;
+         ;
+        $opts = array();
+        if(!is_null($this->nanda)){
+            $opts = array(
+                'class' => 'SirepaePAEBundle:Dominio',
+                'query_builder' => function(\Doctrine\ORM\EntityRepository $er) {
+                    return $er->createQueryBuilder('d')
+                           ->andWhere('d.NANDA = '.$this->nanda->getId());
+                    }
+                );
+            }
+        $builder->add('dominio', null, $opts);
     }
     
     /**

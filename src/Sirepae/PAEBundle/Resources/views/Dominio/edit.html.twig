@@ -1,16 +1,46 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaePAEBundle:Dominio:index.html.twig' %}
 
-{% block body -%}
-    <h1>Dominio edit</h1>
+{% block content -%}
+    <div class="col-sm-12">
+        <div class="pull-left">
+            <h1 class="title">Dominio {{ entity.nombre }}</h1>
+        </div>
+        <div class="pull-right">
+            {{ form(delete_form) }}
+        </div>
+    </div>
 
     {{ form(edit_form) }}
 
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('dominio') }}">
-            Back to the list
-        </a>
-    </li>
-    <li>{{ form(delete_form) }}</li>
-</ul>
+<div class="btn-group btn-group-lg pull-right">
+    <a class="btn btn-info btn-lg" href="{{ path('diagnostico_new_dominio',{id: entity.id}) }}">Agregar Diagnostico</a>
+    <a class="btn btn-info btn-lg" href="{{ path('clase_new_dominio',{id_dominio: entity.id}) }}">Agregar Clase</a>
+    <a class="btn btn-default btn-lg" href="{{ path('dominio') }}">Volver</a>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+    {% for clase in entity.clases %}
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a class="btn-link btn" href="{{ path('clase_edit', {id: clase.id}) }}">
+                        <h3 class="panel-title">
+                            {{ clase.nombre }}
+                        </h3>
+                    </a>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                    {% for diagnostico in clase.diagnosticos %}
+                        <li>
+                            {{ diagnostico.definicion }}
+                            <span class="badge">{{ diagnostico.planesCuidado | length }}</span>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}

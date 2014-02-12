@@ -1,15 +1,10 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaePAEBundle:NANDA:index.html.twig' %}
 
-{% block body -%}
-    <h1>NANDA creation</h1>
+{% block content -%}
+
+    <h1 class="title">Nuevo NANDA</h1>
 
     {{ form(form) }}
 
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('nanda') }}">
-            Back to the list
-        </a>
-    </li>
-</ul>
+    <a class="btn btn-default btn-lg pull-right" href="{{ path('nanda') }}">Volver</a>
 {% endblock %}

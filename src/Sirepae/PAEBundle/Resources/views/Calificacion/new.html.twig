@@ -1,15 +1,10 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaePAEBundle:Calificacion:index.html.twig' %}
 
-{% block body -%}
-    <h1>Calificacion creation</h1>
+{% block content -%}
+
+    <h1 class="title">Nuevo Calificacion</h1>
 
     {{ form(form) }}
 
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('calificacion') }}">
-            Back to the list
-        </a>
-    </li>
-</ul>
+    <a class="btn btn-default btn-lg pull-right" href="{{ path('calificacion') }}">Volver</a>
 {% endblock %}

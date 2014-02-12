@@ -188,4 +188,8 @@ class Clase
     {
         return $this->dominio;
     }
+    
+    public function __toString() {
+        return $this->getNombre();
+    }
 }

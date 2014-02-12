@@ -44,10 +44,18 @@ $(function(){
     $('input:not(:checkbox):not(:radio), textarea').addClass('form-control')
     $('table').addClass('table table-striped')
     $(':checkbox').each(function(){
-        $(this).hide().siblings('label').first().addClass('btn btn-default btn-toggle');
+        var id = $(this).attr('id');
+        if($(this).siblings('label').length > 1)
+            $(this).hide().siblings('label[for='+id+']').first().addClass('btn btn-default btn-toggle');
+        else
+            $(this).hide().siblings('label').first().addClass('btn btn-default btn-toggle');
         if($(this).is(':checked'))
-            $(this).siblings('label').first().addClass('active');
+            if($(this).siblings('label').length > 1)
+                $(this).siblings('label[for='+id+']').first().addClass('active');
+            else
+                $(this).siblings('label').first().addClass('active');
     });
+    $('h1').addClass('title');
     $('button, :button').each(function(){
         if(!$(this).hasClass('btn-primary') && !$(this).hasClass('btn-success') && !$(this).hasClass('btn-info') && !$(this).hasClass('btn-warning') && !$(this).hasClass('btn-danger') && !$(this).hasClass('btn-link'))
             $(this).addClass('btn-default');

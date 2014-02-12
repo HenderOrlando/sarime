@@ -33,13 +33,15 @@ class NotaController extends Controller
         $re = null;
         if(!is_null($id)){
             $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Nota')->findByRegistroEnfermeria($id);
+            $re = $this->getDoctrine ()->getManager ()->getRepository ('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->find ($id);
         }
         else
             $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Nota')->findAll();
 
         return array(
-            'entities' => $entities,
-            're'       => $re,
+            'entities'              =>  $entities,
+            'id_re'                 =>  $id,
+            're'                    =>  $re,
             'active_notas_resumen'  =>  true
         );
     }

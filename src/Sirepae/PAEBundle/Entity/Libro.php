@@ -115,4 +115,8 @@ class Libro
     {
         return $this->fecha_creado;
     }
+    
+    public function __toString() {
+        return $this->getIsbn().' version '.$this->getVersion();
+    }
 }

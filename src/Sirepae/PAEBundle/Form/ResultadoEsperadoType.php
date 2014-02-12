@@ -19,9 +19,7 @@ class ResultadoEsperadoType extends AbstractType
             ->add('dominio')
             ->add('clase')
             ->add('codigo')
-            ->add('fecha_creado')
             ->add('NOC')
-            ->add('escalas')
         ;
     }
     

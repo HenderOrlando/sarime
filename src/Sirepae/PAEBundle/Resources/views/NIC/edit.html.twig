@@ -1,16 +1,44 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaePAEBundle:NIC:index.html.twig' %}
 
-{% block body -%}
-    <h1>NIC edit</h1>
+{% block content -%}
+    <div class="col-sm-12">
+        <div class="pull-left">
+            <h1 class="title">NIC {{ entity.isbn }} <span class="text-muted">{{ entity.version }}</span></h1>
+        </div>
+        <div class="pull-right">
+            {{ form(delete_form) }}
+        </div>
+    </div>
 
     {{ form(edit_form) }}
-
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('nic') }}">
-            Back to the list
-        </a>
-    </li>
-    <li>{{ form(delete_form) }}</li>
-</ul>
+<div class="btn-group btn-group-lg pull-right">
+    <a class="btn btn-info btn-lg" href="{{ path('add_intervencion',{id: entity.id}) }}">Agregar Intervención</a>
+    <a class="btn btn-info btn-lg" href="{{ path('add_actividad',{id: entity.id}) }}">Agregar Actividad</a>
+    <a class="btn btn-default btn-lg" href="{{ path('nic') }}">Volver</a>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+    {% for intervencion in entity.intervenciones %}
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a class="btn-link btn" href="{{ path('intervencion_edit', {id: intervencion.id}) }}">
+                        <h3 class="panel-title">
+                            {{ intervencion.nombre }} - <span class="text-muted">{{ intervencion.codigo }}</span>
+                        </h3>
+                    </a>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                    {% for actividad in intervencion.actividades %}
+                        <li>
+                            {{ actividad.nombre }}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}

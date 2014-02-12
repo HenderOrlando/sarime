@@ -17,7 +17,6 @@ class CalificacionType extends AbstractType
         $builder
             ->add('valor')
             ->add('observacion')
-            ->add('fecha_creado')
             ->add('PAE')
             ->add('docente')
         ;

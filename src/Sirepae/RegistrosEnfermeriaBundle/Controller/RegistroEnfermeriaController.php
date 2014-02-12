@@ -152,9 +152,15 @@ class RegistroEnfermeriaController extends Controller
         $deleteForm = $this->createDeleteForm($id);
         
         $registros = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Registro')->findAll();
+        $optRtas = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:OpcionRespuesta')->findArrayAll();
+        
+        $filter = new \Twig_SimpleFilter('explode', function($string, $delimiter){
+            return explode($delimiter, $string);
+        });
 
         return array(
             'entity'        => $entity,
+            'optRtas'        => $optRtas,
             'registros'     => $registros,
             'respuestas'    => $entity->getRespuestas(),
             'edit_form'     => $editForm->createView(),

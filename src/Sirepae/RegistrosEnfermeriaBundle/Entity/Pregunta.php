@@ -35,6 +35,11 @@ class Pregunta
     private $expandido;
 
     /** 
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $requerido;
+
+    /** 
      * @ORM\Column(type="datetime", nullable=false)
      */
     private $fecha_creado;
@@ -75,6 +80,7 @@ class Pregunta
         $this->respuestas = new \Doctrine\Common\Collections\ArrayCollection();
         $this->multi_rta = false;
         $this->expandido = false;
+        $this->requerido = false;
     }
     
     /**
@@ -147,11 +153,11 @@ class Pregunta
     }
 
     /**
-     * Get multi_rta
+     * Is multi_rta
      *
      * @return boolean 
      */
-    public function getMultiRta()
+    public function isMultiRta()
     {
         return $this->multi_rta;
     }
@@ -170,13 +176,36 @@ class Pregunta
     }
 
     /**
-     * Get expandido
+     * Is expandido
      *
      * @return boolean 
      */
-    public function getExpandido()
+    public function isExpandido()
     {
         return $this->expandido;
+    }
+
+    /**
+     * Set requerido
+     *
+     * @param boolean $requerido
+     * @return Pregunta
+     */
+    public function setRequerido($requerido)
+    {
+        $this->requerido = $requerido;
+    
+        return $this;
+    }
+
+    /**
+     * Is requerido
+     *
+     * @return boolean 
+     */
+    public function isRequerido()
+    {
+        return $this->requerido;
     }
 
     /**

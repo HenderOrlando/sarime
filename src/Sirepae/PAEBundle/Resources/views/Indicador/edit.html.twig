@@ -1,16 +1,16 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaePAEBundle:Indicador:index.html.twig' %}
 
-{% block body -%}
-    <h1>Indicador edit</h1>
+{% block content -%}
+    <div class="col-sm-12">
+        <div class="pull-left">
+            <h1 class="title">Indicador {{ entity.definicion }}</h1>
+        </div>
+        <div class="pull-right">
+            {{ form(delete_form) }}
+        </div>
+    </div>
 
     {{ form(edit_form) }}
 
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('indicador') }}">
-            Back to the list
-        </a>
-    </li>
-    <li>{{ form(delete_form) }}</li>
-</ul>
+    <a class="btn btn-default btn-lg pull-right" href="{{ path('indicador') }}">Volver</a>
 {% endblock %}

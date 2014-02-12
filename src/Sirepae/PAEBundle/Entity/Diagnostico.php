@@ -238,4 +238,8 @@ class Diagnostico
     {
         return $this->clase;
     }
+    
+    public function __toString() {
+        return $this->getDefinicion();
+    }
 }

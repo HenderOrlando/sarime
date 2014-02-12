@@ -33,16 +33,19 @@ class IndicadorController extends Controller
 
         return array(
             'entities' => $entities,
+            'active_indicadores_resumen'  =>  true,'active_nocs_resumen'  =>  true
         );
     }
     /**
      * Creates a new Indicador entity.
      *
+     * @Route("/resultado-esperado/{id_resultado_esperado}/", name="indicador_create_resultado_esperado")
+     * @Route("/noc/{id}/", name="indicador_create_noc")
      * @Route("/", name="indicador_create")
      * @Method("POST")
      * @Template("SirepaePAEBundle:Indicador:new.html.twig")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $id = null, $id_resultado_esperado = null)
     {
         $entity = new Indicador();
         $form = $this->createCreateForm($entity);
@@ -53,12 +56,20 @@ class IndicadorController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('indicador_show', array('id' => $entity->getId())));
+            if (!is_null($id)) {
+                return $this->redirect($this->generateUrl('noc_edit', array('id' => $id)));
+            }elseif (!is_null($id_resultado_esperado)) {
+                return $this->redirect($this->generateUrl('resultado_esperado_edit', array('id' => $id_resultado_esperado)));
+            } else {
+                return $this->redirect($this->generateUrl('indicador'));
+            }
         }
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_indicadores_resumen'  =>  true,'active_nocs_resumen'  =>  true,
+            'active_indicadores_new'  =>  true,
         );
     }
 
@@ -69,14 +80,20 @@ class IndicadorController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(Indicador $entity)
+    private function createCreateForm(Indicador $entity, \Sirepae\PAEBundle\Entity\NOC $noc = null, \Sirepae\PAEBundle\Entity\ResultadoEsperado $resultado = null)
     {
-        $form = $this->createForm(new IndicadorType(), $entity, array(
-            'action' => $this->generateUrl('indicador_create'),
+        $url = $this->generateUrl('indicador_create');
+        if (!is_null($noc)) {
+            $url = $this->generateUrl('indicador_create_noc', array('id' => $noc->getId()));
+        }elseif (!is_null($resultado)) {
+            $url = $this->generateUrl('indicador_create_resultado_esperado', array('id_resultado_esperado' => $resultado->getId()));
+        }
+        $form = $this->createForm(new IndicadorType($noc), $entity, array(
+            'action' => $url,
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Crear', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -84,18 +101,35 @@ class IndicadorController extends Controller
     /**
      * Displays a form to create a new Indicador entity.
      *
+     * @Route("/new/resultado-esperado/{id_resultado_esperado}/", name="indicador_new_resultado_esperado")
+     * @Route("/new/noc/{id}/", name="indicador_new_noc")
      * @Route("/new", name="indicador_new")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction($id = null, $id_resultado_esperado = null)
     {
         $entity = new Indicador();
-        $form   = $this->createCreateForm($entity);
+        $em = $this->getDoctrine()->getManager();
+        
+        $noc = null;
+        if(!is_null($id)){
+            $noc = $em->getRepository('SirepaePAEBundle:NOC')->find($id);
+        }
+        $resultado_esperado = null;
+        if(!is_null($id_resultado_esperado)){
+            $resultado_esperado = $em->getRepository('SirepaePAEBundle:ResultadoEsperado')->find($id_resultado_esperado);
+            $entity->setResultadoEsperado($resultado_esperado);
+        }
+        $form   = $this->createCreateForm($entity, $noc, $resultado_esperado);
 
         return array(
+            'noc' => $noc,
             'entity' => $entity,
+            'resultado_esperado' => $resultado_esperado,
             'form'   => $form->createView(),
+            'active_indicadores_resumen'  =>  true,'active_nocs_resumen'  =>  true,
+            'active_indicadores_new'  =>  true,
         );
     }
 
@@ -121,6 +155,8 @@ class IndicadorController extends Controller
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
+            'active_indicadores_resumen'  =>  true,'active_nocs_resumen'  =>  true,
+            'active_indicadores_ver'  =>  true,
         );
     }
 
@@ -148,6 +184,8 @@ class IndicadorController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_indicadores_resumen'  =>  true,'active_nocs_resumen'  =>  true,
+            'active_indicadores_edit'  =>  true,
         );
     }
 
@@ -165,7 +203,7 @@ class IndicadorController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array('label' => 'Actualizar', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -200,6 +238,8 @@ class IndicadorController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_indicadores_resumen'  =>  true,'active_nocs_resumen'  =>  true,
+            'active_indicadores_edit'  =>  true,
         );
     }
     /**
@@ -240,7 +280,7 @@ class IndicadorController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('indicador_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array('label' => 'Borrar', 'attr' => array( 'class' => 'btn-danger')))
             ->getForm()
         ;
     }

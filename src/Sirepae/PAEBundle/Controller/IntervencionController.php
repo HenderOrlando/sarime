@@ -33,16 +33,18 @@ class IntervencionController extends Controller
 
         return array(
             'entities' => $entities,
+            'active_intervenciones_resumen'  =>  true,'active_nics_resumen'  =>  true
         );
     }
     /**
      * Creates a new Intervencion entity.
      *
      * @Route("/", name="intervencion_create")
+     * @Route("/nic/{id}", name="intervencion_create_nic")
      * @Method("POST")
      * @Template("SirepaePAEBundle:Intervencion:new.html.twig")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $id = null)
     {
         $entity = new Intervencion();
         $form = $this->createCreateForm($entity);
@@ -53,12 +55,18 @@ class IntervencionController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('intervencion_show', array('id' => $entity->getId())));
+            if (is_null($id)) {
+                return $this->redirect($this->generateUrl('intervencion'));
+            } else {
+                return $this->redirect($this->generateUrl('nic_edit', array('id' => $id)));
+            }
         }
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_intervenciones_resumen'  =>  true,'active_nics_resumen'  =>  true,
+            'active_intervenciones_new'  =>  true,
         );
     }
 
@@ -69,14 +77,18 @@ class IntervencionController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(Intervencion $entity)
+    private function createCreateForm(Intervencion $entity, \Sirepae\PAEBundle\Entity\NIC $nic = null)
     {
+        $url = $this->generateUrl('intervencion_create');
+        if (!is_null($nic)) {
+            $url = $this->generateUrl('intervencion_create_nic', array('id' => $nic->getId()));
+        }
         $form = $this->createForm(new IntervencionType(), $entity, array(
-            'action' => $this->generateUrl('intervencion_create'),
+            'action' => $url,
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Crear', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -84,18 +96,29 @@ class IntervencionController extends Controller
     /**
      * Displays a form to create a new Intervencion entity.
      *
-     * @Route("/new", name="intervencion_new")
+     * @Route("/new/", name="intervencion_new")
+     * @Route("/nic/{id}/", name="add_intervencion")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction($id = null)
     {
         $entity = new Intervencion();
-        $form   = $this->createCreateForm($entity);
+        $em = $this->getDoctrine()->getManager();
+        
+        $nic = null;
+        if(!is_null($id)){
+            $nic = $em->getRepository('SirepaePAEBundle:NIC')->find($id);
+            $entity->setNIC($nic);
+        }
+        $form   = $this->createCreateForm($entity, $nic);
 
         return array(
+            'nic' => $nic,
             'entity' => $entity,
             'form'   => $form->createView(),
+            'active_intervenciones_resumen'  =>  true,'active_nics_resumen'  =>  true,
+            'active_intervenciones_new'  =>  true,
         );
     }
 
@@ -121,6 +144,8 @@ class IntervencionController extends Controller
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
+            'active_intervenciones_resumen'  =>  true,'active_nics_resumen'  =>  true,
+            'active_intervenciones_ver'  =>  true,
         );
     }
 
@@ -148,6 +173,8 @@ class IntervencionController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_intervenciones_resumen'  =>  true,'active_nics_resumen'  =>  true,
+            'active_intervenciones_edit'  =>  true,
         );
     }
 
@@ -165,7 +192,7 @@ class IntervencionController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array('label' => 'Actualizar', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }
@@ -200,6 +227,8 @@ class IntervencionController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'active_intervenciones_resumen'  =>  true,'active_nics_resumen'  =>  true,
+            'active_intervenciones_edit'  =>  true,
         );
     }
     /**
@@ -240,7 +269,7 @@ class IntervencionController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('intervencion_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array('label' => 'Borrar', 'attr' => array( 'class' => 'btn-danger')))
             ->getForm()
         ;
     }

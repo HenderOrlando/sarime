@@ -8,7 +8,13 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class IndicadorType extends AbstractType
 {
-        /**
+    private $noc;
+    
+    public function __construct(\Sirepae\PAEBundle\Entity\NOC $noc = null) {
+        $this->noc = $noc;
+    }
+
+    /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
@@ -17,9 +23,18 @@ class IndicadorType extends AbstractType
         $builder
             ->add('definicion')
             ->add('codigo')
-            ->add('fecha_creado')
-            ->add('resultadoEsperado')
         ;
+        $opts = array();
+        if(!is_null($this->noc)){
+            $opts = array(
+                'class' => 'SirepaePAEBundle:ResultadoEsperado',
+                'query_builder' => function(\Doctrine\ORM\EntityRepository $er) {
+                    return $er->createQueryBuilder('re')
+                           ->andWhere('re.NOC = '.$this->noc->getId());
+                    }
+                );
+            }
+        $builder->add('resultadoEsperado', null, $opts);
     }
     
     /**

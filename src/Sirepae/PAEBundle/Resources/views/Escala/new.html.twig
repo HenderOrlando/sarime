@@ -1,15 +1,10 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaePAEBundle:Escala:index.html.twig' %}
 
-{% block body -%}
-    <h1>Escala creation</h1>
+{% block content -%}
+
+    <h1 class="title">Nuevo Escala</h1>
 
     {{ form(form) }}
 
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('escala') }}">
-            Back to the list
-        </a>
-    </li>
-</ul>
+    <a class="btn btn-default btn-lg pull-right" href="{{ path('escala') }}">Volver</a>
 {% endblock %}

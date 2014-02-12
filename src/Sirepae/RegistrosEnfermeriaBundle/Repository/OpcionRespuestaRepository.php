@@ -12,4 +12,16 @@ class OpcionRespuestaRepository extends EntityRepository
             )
             ->getResult();
     }
+    public function findArrayAll()
+    {
+        $q = $this->getEntityManager()
+            ->createQuery(
+                'SELECT p FROM SirepaeRegistrosEnfermeriaBundle:OpcionRespuesta p ORDER BY p.id ASC'
+            )
+            ->getArrayResult();
+        $a = array();
+        foreach($q as $b)
+            $a[$b['id']] = $b;
+        return $a;
+    }
 }

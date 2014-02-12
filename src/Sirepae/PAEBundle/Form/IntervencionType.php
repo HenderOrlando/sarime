@@ -18,8 +18,7 @@ class IntervencionType extends AbstractType
             ->add('nombre')
             ->add('descripcion')
             ->add('codigo')
-            ->add('fecha_creado')
-            ->add('nIC')
+            ->add('nic')
         ;
     }
     

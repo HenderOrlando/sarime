@@ -1,16 +1,45 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaePAEBundle:NANDA:index.html.twig' %}
 
-{% block body -%}
-    <h1>NANDA edit</h1>
+{% block content -%}
+    <div class="col-sm-12">
+        <div class="pull-left">
+            <h1 class="title">NANDA {{ entity.isbn }} <span class="text-muted">{{ entity.version }}</span></h1>
+        </div>
+        <div class="pull-right">
+            {{ form(delete_form) }}
+        </div>
+    </div>
 
     {{ form(edit_form) }}
 
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('nanda') }}">
-            Back to the list
-        </a>
-    </li>
-    <li>{{ form(delete_form) }}</li>
-</ul>
+<div class="btn-group btn-group-lg pull-right">
+    <a class="btn btn-info btn-lg" href="{{ path('dominio_new_nanda',{id: entity.id}) }}">Agregar Dominio</a>
+    <a class="btn btn-info btn-lg" href="{{ path('clase_new_nanda',{id: entity.id}) }}">Agregar Clase</a>
+    <a class="btn btn-default btn-lg" href="{{ path('nanda') }}">Volver</a>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+    {% for dominio in entity.dominios %}
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a class="btn-link btn" href="{{ path('dominio_edit', {id: dominio.id}) }}">
+                        <h3 class="panel-title">
+                            {{ dominio.nombre }} - <span class="text-muted">{{ dominio.codigo }}</span>
+                        </h3>
+                    </a>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                    {% for clase in dominio.clases %}
+                        <li>
+                            {{ clase.nombre }}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}

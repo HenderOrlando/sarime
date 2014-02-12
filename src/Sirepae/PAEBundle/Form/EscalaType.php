@@ -18,7 +18,6 @@ class EscalaType extends AbstractType
             ->add('nombre')
             ->add('descripcion')
             ->add('valor')
-            ->add('fecha_creado')
             ->add('resultadosEsperados')
         ;
     }
