@@ -50,7 +50,7 @@ class Sede
     private $nombre_director;
 
     /** 
-     * @ORM\OneToMany(targetEntity="\Sirepae\PracticasBundle\Entity\Sitio", mappedBy="sede")
+     * @ORM\OneToMany(targetEntity="\Sirepae\PracticasBundle\Entity\Sitio", mappedBy="sede", cascade={"all"})
      */
     private $sitios;
     

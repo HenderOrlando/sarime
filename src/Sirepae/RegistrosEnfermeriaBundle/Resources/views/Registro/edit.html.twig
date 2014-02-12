@@ -13,4 +13,25 @@
     {{ form(edit_form) }}
 
     <a class="btn btn-default btn-lg pull-right" href="{{ path('registro') }}">Volver</a>
+<div class="clearfix"></div>
+<div class="row">
+    {% for pregunta in entity.preguntas %}
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a class="btn-link btn" href="{{ path('pregunta_edit', {id: pregunta.id}) }}">
+                        <h3 class="panel-title">
+                            {{ pregunta.enunciado }}
+                        </h3>
+                    </a>
+                    <span class="pull-right">
+                        {% if pregunta.respuestas is empty %}
+                            {% render(controller("SirepaeRegistrosEnfermeriaBundle:Pregunta:getDeleteForm", { 'id': pregunta.id })) %}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}

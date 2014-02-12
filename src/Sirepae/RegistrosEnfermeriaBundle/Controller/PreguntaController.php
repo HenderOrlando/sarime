@@ -241,12 +241,38 @@ class PreguntaController extends Controller
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Pregunta entity.');
             }
-
-            $em->remove($entity);
-            $em->flush();
+            $em->transactional(function($em) use ($entity){
+                foreach ($entity->getOpcionesRespuesta() as $or){
+                    $em->remove($or);
+                }
+                $em->remove($entity);
+            });
         }
 
         return $this->redirect($this->generateUrl('pregunta'));
+    }
+    
+    /**
+     * Displays a form to edit an existing Pregunta entity.
+     *
+     * @Route("/{id}/delete/", name="pregunta_borrar")
+     * @Method("GET")
+     * @Template("SirepaeUsuariosBundle:Usuario:onlyForm.html.twig")
+     */
+    public function getDeleteFormAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Pregunta entity.');
+        }
+        $deleteForm = $this->createDeleteForm($id);
+
+        return array(
+            'form' => $deleteForm->createView(),
+        );
     }
 
     /**

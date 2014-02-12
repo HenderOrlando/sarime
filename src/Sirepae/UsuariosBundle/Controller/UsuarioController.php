@@ -28,8 +28,14 @@ class UsuarioController extends Controller
     public function homeAction()
     {
         $em = $this->getDoctrine()->getManager();
+        $res = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->findAll();
+        $paes = $em->getRepository('SirepaePAEBundle:PAE')->findAll();
+        $ps = $em->getRepository('SirepaePracticasBundle:Practica')->findAll();
 
         return array(
+            'res'   => $res,
+            'paes'  => $paes,
+            'ps'    => $ps,
             'active_home_resumen' => true,
         );
     }

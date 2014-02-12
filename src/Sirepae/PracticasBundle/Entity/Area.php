@@ -40,7 +40,7 @@ class Area
     private $materias;
 
     /** 
-     * @ORM\ManyToMany(targetEntity="\Sirepae\PracticasBundle\Entity\Sitio", inversedBy="areas")
+     * @ORM\ManyToMany(targetEntity="\Sirepae\PracticasBundle\Entity\Sitio", inversedBy="areas", cascade={"all"})
      * @ORM\JoinTable(
      *     name="SitioArea", 
      *     joinColumns={@ORM\JoinColumn(name="area_id", referencedColumnName="id", nullable=false)}, 

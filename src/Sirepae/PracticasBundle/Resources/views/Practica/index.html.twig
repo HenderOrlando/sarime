@@ -139,6 +139,7 @@
                     <th>Coordinador</th>
                     <th>Docente</th>
                     <th>Área</th>
+                    <th>Sitio</th>
                     <th>Fecha_modifica</th>
                     <th>Actions</th>
                 </tr>
@@ -150,6 +151,7 @@
                     <td>{{ entity.descripcion }}</td>
                     <td>{{ entity.coordinador }}</td>
                     <td>{{ entity.docente }}</td>
+                    <td>{{ entity.sitio }}</td>
                     <td>{{ entity.areaPractica }}</td>
                     <td>{% if entity.fechamodifica %}{{ entity.fechamodifica|date('Y-m-d H:i:s') }}{% endif %}</td>
                     <td>

@@ -52,3 +52,8 @@ form.form-all-inline div{
 .text-lower{
     text-transform: lowercase;
 }
+.panel-heading .pull-right{
+    position: absolute;
+    right: 20px;
+    top: 4px;
+}

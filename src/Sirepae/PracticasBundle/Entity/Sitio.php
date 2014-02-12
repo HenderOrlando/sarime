@@ -35,15 +35,20 @@ class Sitio
     private $nombre_director;
 
     /** 
-     * @ORM\ManyToOne(targetEntity="\Sirepae\PracticasBundle\Entity\Sede", inversedBy="sitios")
+     * @ORM\ManyToOne(targetEntity="\Sirepae\PracticasBundle\Entity\Sede", inversedBy="sitios", cascade={"all"})
      * @ORM\JoinColumn(name="sede_id", referencedColumnName="id", nullable=false)
      */
     private $sede;
 
     /** 
-     * @ORM\ManyToMany(targetEntity="\Sirepae\PracticasBundle\Entity\Area", mappedBy="sitios")
+     * @ORM\ManyToMany(targetEntity="\Sirepae\PracticasBundle\Entity\Area", mappedBy="sitios", cascade={"all"})
      */
     private $areas;
+    
+    /** 
+     * @ORM\OneToMany(targetEntity="\Sirepae\PracticasBundle\Entity\Practica", mappedBy="sitio", cascade={"all"})
+     */
+    private $practicas;
     
     
     /******************* MÉTODOS *******************/
@@ -215,6 +220,39 @@ class Sitio
     public function getAreas()
     {
         return $this->areas;
+    }
+    
+    /**
+     * Add practicas
+     *
+     * @param \Sirepae\PracticasBundle\Entity\Practica $practicas
+     * @return Sede
+     */
+    public function addPractica(\Sirepae\PracticasBundle\Entity\Practica $practicas)
+    {
+        $this->practicas[] = $practicas;
+    
+        return $this;
+    }
+
+    /**
+     * Remove practicas
+     *
+     * @param \Sirepae\PracticasBundle\Entity\Practica $practicas
+     */
+    public function removePractica(\Sirepae\PracticasBundle\Entity\Practica $practicas)
+    {
+        $this->practicas->removeElement($practicas);
+    }
+
+    /**
+     * Get practicas
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getPracticas()
+    {
+        return $this->practicas;
     }
     
     public function __toString() {

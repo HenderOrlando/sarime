@@ -22,7 +22,8 @@
                     <th>Nombre</th>
                     <th>Descripcion</th>
                     <th>Nombre del Director</th>
-                    {#<th>Áreas</th>#}
+                    <th>Áreas en el Sitio del Prácticas</th>
+                    <th>Prácticas</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -32,7 +33,7 @@
                     <td>{{ entity.nombre }} - {{ entity.sede.nombre }}</td>
                     <td>{{ entity.descripcion }}</td>
                     <td>{{ entity.nombredirector }}</td>
-                    {#<td>
+                    <td>
                         <ul class="list-unstyled">
                             {% if entity.areas is not empty %}
                                 {% for area in entity.areas %}
@@ -44,13 +45,24 @@
                                 <li>No tiene áreas definidas</li>
                             {% endif %}
                         </ul>
-                    </td>#}
+                    </td>
                     <td>
+                        <ul class="list-unstyled">
+                            {% if entity.practicas is not empty %}
+                                {% for practica in entity.practicas %}
+                                <li>
+                                    {{ practica.nombre }} - <span class="text-muted">{{ practica.docente.fullNombre }}</span>
+                                </li>
+                                {% endfor %}
+                            {% else %}
+                                <li>No tiene áreas definidas</li>
+                            {% endif %}
+                        </ul>
+                    </td>
                     <td>
                         <div class="btn-group">
                             <a class="btn btn-success btn-lg" href="{{ path('sitio_edit', { 'id': entity.id }) }}">Editar</a>
                         </div>
-                    </td>
                     </td>
                 </tr>
             {% endfor %}

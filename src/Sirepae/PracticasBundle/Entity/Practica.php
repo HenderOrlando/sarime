@@ -57,6 +57,12 @@ class Practica
      */
     private $coordinador;
     
+    /** 
+     * @ORM\ManyToOne(targetEntity="\Sirepae\PracticasBundle\Entity\Sitio", inversedBy="practicas", cascade={"all"})
+     * @ORM\JoinColumn(name="sitio_id", referencedColumnName="id", nullable=true)
+     */
+    private $sitio;
+    
     
     /******************* MÉTODOS *******************/
     
@@ -281,6 +287,29 @@ class Practica
     public function getCoordinador()
     {
         return $this->coordinador;
+    }
+    
+    /**
+     * Set sitio
+     *
+     * @param \Sirepae\PracticasBundle\Entity\Sitio $sitio
+     * @return Sitio
+     */
+    public function setSitio(\Sirepae\PracticasBundle\Entity\Sitio $sitio)
+    {
+        $this->sitio = $sitio;
+    
+        return $this;
+    }
+
+    /**
+     * Get sitio
+     *
+     * @return \Sirepae\PracticasBundle\Entity\Sitio 
+     */
+    public function getSitio()
+    {
+        return $this->sitio;
     }
     
     public function __toString() {

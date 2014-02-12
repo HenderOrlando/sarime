@@ -239,6 +239,41 @@ class RegistroController extends Controller
 
         return $this->redirect($this->generateUrl('registro'));
     }
+    /**
+     * Deletes a Registro dinamico.
+     *
+     * @Route("/llenado/{nombre}/{idRegistro}/{idRegistroEnfermeria}/{numero}/", name="borrar_registro_dinamico")
+     * @Method("DELETE")
+     */
+    public function deleteRegistroDinamicoAction(Request $request, $numero, $idRegistro, $idRegistroEnfermeria, $nombre)
+    {
+        $form = $this->createDeleteFormLleno($nombre, $numero, $idRegistro, $idRegistroEnfermeria);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $data = $form->getData();
+            $idRegistroEnfermeria_ = $data['id_registro_enfermeria'];
+            $numero_ = $data['numero'];
+            if($idRegistroEnfermeria == $idRegistroEnfermeria_ && $numero == $numero_){
+                $em = $this->getDoctrine()->getManager();
+                $registro = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Registro')->find($idRegistro);
+                if($registro){
+                    $em->transactional(function($em) use ($idRegistroEnfermeria_, $registro, $numero_){
+                        foreach($registro->getPreguntas() as $pregunta){
+                            $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($idRegistroEnfermeria_, $pregunta->getId(), $numero_);
+                            $rta = $rtaRe->getRespuesta();
+                            $em->remove($rtaRe);
+                            $em->remove($rta);
+                        }
+                    });
+                }
+            } else {
+                throw $this->createNotFoundException('Unable to find Registro Lleno entity.');
+            }
+        }
+
+        return $this->redirect($this->generateUrl('registros_enfermeria_edit',array('id' => $idRegistroEnfermeria_)));
+    }
 
     /**
      * Creates a form to delete a Registro entity by id.
@@ -255,6 +290,31 @@ class RegistroController extends Controller
             ->add('submit', 'submit', array('label' => 'Borrar', 'attr' => array( 'class' => 'btn-danger')))
             ->getForm()
         ;
+    }
+
+    /**
+     * Creates a form to delete a Registro entity by id.
+     *
+     * @param mixed $id The entity id
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createDeleteFormLleno($nombre, $numero, $idRegistro, $idRegistroEnfermeria)
+    {
+        return $this->createFormBuilder()
+                    ->setAction($this->generateUrl('borrar_registro_dinamico', array(
+                        'nombre' => str_replace(' ', '-', $this->canonicalize($nombre)),
+                        'numero' => $numero,
+                        'idRegistro' => $idRegistro,
+                        'idRegistroEnfermeria' => $idRegistroEnfermeria,
+                    )))
+                    ->add('id_registro', 'hidden', array('data' => $idRegistro))
+                    ->add('id_registro_enfermeria', 'hidden', array('data' => $idRegistroEnfermeria))
+                    ->add('numero', 'hidden', array('data' => $numero))
+                    ->setMethod('DELETE')
+                    ->add('submit', 'submit', array('label' => 'Borrar', 'attr' => array( 'class' => 'btn-danger')))
+                    ->getForm()
+                ;
     }
     /**
      * Muestra el Formulario de un Registro.
@@ -281,10 +341,15 @@ class RegistroController extends Controller
                 return $this->redirect($this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())));
                 /*Mensaje por el form*/
             }
+            $deleteForm = null;
+            if($editar){
+                $deleteForm = $this->createDeleteFormLleno($registro->getNombre(), $numero, $idRegistro, $idRegistroEnfermeria)->createView();
+            }
             return array(
                 'reg' => $registro,
                 'entity' => $registroEnfermeria,
                 'form' => $form->createView(),
+                'delete_form' => $deleteForm,
                 'active_registrosEnfermeria_resumen'  =>  true,
                 'active_edit'  =>  true,
             );
@@ -417,8 +482,12 @@ class RegistroController extends Controller
                 $id_campo = $preg->getId();
             }else{
                 $optRta = $preg->getOpcionesRespuesta()->first();
-                $tipo_campo = $optRta->getTipoRespuesta()->getTipoCampo();
-                $id_campo = $preg->getId().'-'.$optRta->getId();
+                if($optRta){
+                    $tipo_campo = $optRta->getTipoRespuesta()->getTipoCampo();
+                    $id_campo = $preg->getId().'-'.$optRta->getId();
+                }else{
+                    return $this->redirect($this->generateUrl('addOpcionRespuesta_new',array('id' => $preg->getId())));
+                }
             }
             if($tipo_campo === 'date' || $tipo_campo === 'time' || $tipo_campo === 'datetime')
                 $datos['data'] = new \DateTime ('now');

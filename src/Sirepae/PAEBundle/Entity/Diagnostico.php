@@ -15,6 +15,11 @@ class Diagnostico
     private $id;
 
     /** 
+     * @ORM\Column(type="string", length=150, nullable=false)
+     */
+    private $nombre;
+    
+    /** 
      * @ORM\Column(type="text", nullable=false)
      */
     private $definicion;
@@ -71,6 +76,28 @@ class Diagnostico
         return $this->id;
     }
 
+    /**
+     * Set nombre
+     *
+     * @param string $nombre
+     * @return Clase
+     */
+    public function setNombre($nombre)
+    {
+        $this->nombre = $nombre;
+    
+        return $this;
+    }
+
+    /**
+     * Get nombre
+     *
+     * @return string 
+     */
+    public function getNombre()
+    {
+        return $this->nombre;
+    }
     /**
      * Set definicion
      *

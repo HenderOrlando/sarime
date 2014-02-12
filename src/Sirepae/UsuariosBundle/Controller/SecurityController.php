@@ -11,11 +11,12 @@
 
 namespace Sirepae\UsuariosBundle\Controller;
 
-use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use FOS\UserBundle\Controller\SecurityController as BaseController;
 
-class SecurityController extends ContainerAware
+class SecurityController extends BaseController
 {
     public function loginAction(Request $request)
     {
@@ -30,6 +31,7 @@ class SecurityController extends ContainerAware
             $session->remove(SecurityContext::AUTHENTICATION_ERROR);
         } else {
             $error = '';
+//            return new RedirectResponse($this->container->get('router')->generate('home'), 307);
         }
 
         if ($error) {

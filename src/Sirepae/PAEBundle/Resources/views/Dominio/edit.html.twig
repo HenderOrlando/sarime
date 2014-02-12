@@ -33,7 +33,7 @@
                     <ul class="list-unstyled">
                     {% for diagnostico in clase.diagnosticos %}
                         <li>
-                            {{ diagnostico.definicion }}
+                            {{ diagnostico.nombre }}
                             <span class="badge">{{ diagnostico.planesCuidado | length }}</span>
                         </li>
                     {% endfor %}

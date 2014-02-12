@@ -19,6 +19,7 @@
         <table class="records_list">
             <thead>
                 <tr>
+                    <th>Nombre</th>
                     <th>Definicion</th>
                     <th>Acciones</th>
                 </tr>
@@ -26,6 +27,7 @@
             <tbody>
             {% for entity in entities %}
                 <tr>
+                    <td>{{ entity.nombre }}</td>
                     <td>{{ entity.definicion }}</td>
                     <td>
                         <div class="btn-group btn-group-lg">
