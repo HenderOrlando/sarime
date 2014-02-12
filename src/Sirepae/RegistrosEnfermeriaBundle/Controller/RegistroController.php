@@ -337,8 +337,8 @@ class RegistroController extends Controller
         $registroEnfermeria = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->find($idRegistroEnfermeria);
         if($registro && $registroEnfermeria){
             $form = $this->constructForm($registro, $registroEnfermeria, $numero, $editar);
-            if(is_bool($form)){
-                return $this->redirect($this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())));
+            if(!method_exists($form,'createView')){
+                return $form;
                 /*Mensaje por el form*/
             }
             $deleteForm = null;
@@ -472,6 +472,7 @@ class RegistroController extends Controller
             $tipo_campo = 'choice';
             $id_campo = '';
             $opts = array();
+            $datos['required'] = $preg->isRequerido();
             if(count($preg->getOpcionesRespuesta()) > 1){
                 foreach($preg->getOpcionesRespuesta() as $optRta){
                     $opts[$optRta->getId()] = $optRta->getEnunciado();
@@ -508,8 +509,13 @@ class RegistroController extends Controller
                     $dato = $preg->getId().'-'.$dato;
                 }
                 $datos['data'] = $dato;
-            }elseif(!$editar && $rta || $editar && !$rta){
-                return FALSE;
+            }elseif(!$editar && $rta && $registro->isUnico()){
+                return $this->redirect($this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())));
+//                return $this->redirect($this->generateUrl('editar_registro_enfermeria', array(
+//                    'idRegistro' => $registro->getId(),
+//                    'idRegistroEnfermeria' => $registroEnfermeria->getId(),
+//                    'numero' => $numero,
+//                )));
             }
             $form->add($id_campo, $tipo_campo, $datos);
         }

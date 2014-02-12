@@ -17,10 +17,11 @@ class PreguntaType extends AbstractType
         $builder
             ->add('enunciado')
             ->add('ayuda')
-            ->add('multi_rta')
-            ->add('expandido')
             ->add('registro')
             ->add('orden')
+            ->add('multi_rta')
+            ->add('expandido')
+            ->add('requerido')
         ;
     }
     
