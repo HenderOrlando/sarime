@@ -30,7 +30,7 @@ class Dominio
     private $fecha_creado;
 
     /** 
-     * @ORM\Column(type="string", length=4, nullable=false)
+     * @ORM\Column(type="string", length=6, nullable=false)
      */
     private $codigo;
 
