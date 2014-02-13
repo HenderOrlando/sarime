@@ -39,11 +39,13 @@ class FactorRelacionadoController extends Controller
     /**
      * Creates a new FactorRelacionado entity.
      *
+     * @Route("/diagnostico/{id}/", name="factor_relacionado_create_diagnostico")
+     * @Route("/clase/{id_clase}/", name="factor_relacionado_create_clase")
      * @Route("/", name="factor_relacionado_create")
      * @Method("POST")
      * @Template("SirepaePAEBundle:FactorRelacionado:new.html.twig")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $id = null, $id_clase = null)
     {
         $entity = new FactorRelacionado();
         $form = $this->createCreateForm($entity);
@@ -54,6 +56,11 @@ class FactorRelacionadoController extends Controller
             $em->persist($entity);
             $em->flush();
 
+            if(!is_null($id)){
+                return $this->redirect($this->generateUrl('diagnostico_edit',array('id' => $id)));
+            }elseif(!is_null($id_clase)){
+                return $this->redirect($this->generateUrl('clase_edit',array('id' => $id_clase)));
+            }
             return $this->redirect($this->generateUrl('factor_relacionado'));
         }
 
@@ -72,10 +79,16 @@ class FactorRelacionadoController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(FactorRelacionado $entity)
+    private function createCreateForm(FactorRelacionado $entity, \Sirepae\PAEBundle\Entity\Clase $clase = null, \Sirepae\PAEBundle\Entity\Diagnostico $diagnostico = null)
     {
-        $form = $this->createForm(new FactorRelacionadoType(), $entity, array(
-            'action' => $this->generateUrl('factor_relacionado_create'),
+        $url = $this->generateUrl('factor_relacionado_create');
+        if (!is_null($clase)) {
+            $url = $this->generateUrl('factor_relacionado_create_clase', array('id_clase' => $clase->getId()));
+        }elseif (!is_null($diagnostico)) {
+            $url = $this->generateUrl('factor_relacionado_create_diagnostico', array('id' => $diagnostico->getId()));
+        }
+        $form = $this->createForm(new FactorRelacionadoType($clase), $entity, array(
+            'action' => $url,
             'method' => 'POST',
         ));
 
@@ -87,20 +100,34 @@ class FactorRelacionadoController extends Controller
     /**
      * Displays a form to create a new FactorRelacionado entity.
      *
-     * @Route("/new", name="factor_relacionado_new")
+     * @Route("/new/clase/{id_clase}/", name="factor_relacionado_new_clase")
+     * @Route("/new/diagnostico/{id}/", name="factor_relacionado_new_diagnostico")
+     * @Route("/new/", name="factor_relacionado_new")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction($id = null, $id_clase = null)
     {
         $entity = new FactorRelacionado();
-        $form   = $this->createCreateForm($entity);
+        $em = $this->getDoctrine()->getManager();
 
+        $diagnostico = null;
+        if(!is_null($id)){
+            $diagnostico = $em->getRepository('SirepaePAEBundle:Diagnostico')->find($id);
+            $entity->setDiagnostico($diagnostico);
+        }
+        $clase = null;
+        if(!is_null($id_clase)){
+            $clase = $em->getRepository('SirepaePAEBundle:Clase')->find($id_clase);
+        }
+        $form   = $this->createCreateForm($entity, $clase, $diagnostico);
         return array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-            'active_factores_relacionados_resumen'  =>  true,'active_nandas_resumen'  =>  true,
+            'entity'        => $entity,
+            'clase'         => $clase,
+            'diagnostico'   => $diagnostico,
             'active_factores_relacionados_new'  =>  true,
+            'form'          => $form->createView(),
+            'active_factores_relacionados_resumen'  =>  true,'active_nandas_resumen'  =>  true,
         );
     }
 

@@ -3,7 +3,7 @@
 {% block content -%}
     <div class="col-sm-12">
         <div class="pull-left">
-            <h1 class="title">Diagnóstico de la Clase {{ entity.clase.nombre }}</h1>
+            <h1 class="title">Diagnóstico {{ entity.nombre }}</h1>
         </div>
         <div class="pull-right">
             {{ form(delete_form) }}
@@ -12,5 +12,63 @@
 
     {{ form(edit_form) }}
 
-    <a class="btn btn-default btn-lg pull-right" href="{{ path('diagnostico') }}">Volver</a>
+<div class="btn-group btn-group-lg pull-right">
+    <a class="btn btn-default" href="{{ path('diagnostico') }}">Volver</a>
+    <a class="btn btn-info" href="{{ path('evidencia_new_diagnostico',{id: entity.id}) }}">Agregar Evidencias</a>
+    <a class="btn btn-info" href="{{ path('factor_relacionado_new_diagnostico',{id: entity.id}) }}">Agregar Factores Relacionados</a>
+</div>
+
+<div class="clearfix"></div>
+<div class="row">
+    <div class="col-sm-6">
+         <div class="panel panel-default">
+            <div class="panel-heading">Evidencias</div>
+            <div class="panel-body">
+                {% for evidencia in entity.evidencias %}
+                    <div class="col-sm-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <a class="" href="{{ path('evidencia_edit', {id: evidencia.id}) }}">
+                                    <h3 class="panel-title">
+                                        {{ evidencia.nombre }}
+                                    </h3>
+                                </a>
+                            </div>
+                            {% if evidencia.descripcion is not empty %}
+                            <div class="panel-body">
+                                {{ evidencia.descripcion }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Factres Relacionados</div>
+            <div class="panel-body">
+                {% for factorRelacionado in entity.factoresRelacionados %}
+                    <div class="col-sm-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <a class="" href="{{ path('factor_relacionado_edit', {id: factorRelacionado.id}) }}">
+                                    <h3 class="panel-title">
+                                        {{ factorRelacionado.nombre }}
+                                    </h3>
+                                </a>
+                            </div>
+                            {% if factorRelacionado.descripcion is not empty %}
+                            <div class="panel-body">
+                                {{ factorRelacionado.descripcion }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -17,6 +17,7 @@ class NANDAType extends AbstractType
         $builder
             ->add('isbn')
             ->add('version')
+            ->add('usado')
         ;
     }
     

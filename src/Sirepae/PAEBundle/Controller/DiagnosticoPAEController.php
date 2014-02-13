@@ -255,4 +255,125 @@ class DiagnosticoPAEController extends Controller
             ->getForm()
         ;
     }
+    
+    /**
+     * Deletes a Diagnostico pae entity.
+     *
+     * @Route("/{id_diagnostico}/pae/{id_pae}/factorRelacionado/{id_factorRelacionado}/", name="toggle_diagnostico_to_pae_fr")
+     * @Route("/{id_diagnostico}/pae/{id_pae}/evidencia/{id_evidencia}/", name="toggle_diagnostico_to_pae_e")
+     * @Method("GET")
+     */
+    public function toggleDiagnosticoPAEAction(Request $request, $id_diagnostico,$id_pae, $id_factorRelacionado = null, $id_evidencia = null)
+    {
+//        if($request->isXmlHttpRequest()){
+            $json = array(
+                'error' =>  false,
+                'msg'   =>  'Hecho',
+                'clear'   =>  false,
+            );
+            $em = $this->getDoctrine()->getManager();
+            $diagnostico = $em->getRepository('SirepaePAEBundle:Diagnostico')->find($id_diagnostico);
+            if($diagnostico){
+                $pae = $em->getRepository('SirepaePAEBundle:PAE')->find($id_pae);
+                if($pae){
+                    if(is_null($id_factorRelacionado)){
+                        $evidencia = $em->getRepository('SirepaePAEBundle:Evidencia')->find($id_evidencia);
+                        if($evidencia){
+                            $dpae = $em->getRepository('SirepaePAEBundle:DiagnosticoPAE')->findOneBy(array(
+                                'diagnostico' => $id_diagnostico,
+                                'planCuidado' => $id_pae,
+                            ));
+                            if($dpae){
+                                $existe = false;
+                                foreach($dpae->getEvidencias() as $evidencia_){
+                                    if($evidencia_->getId() == $id_evidencia){
+                                        $dpae->removeEvidencia($evidencia_);
+//                                        $em->persist($dpae);
+//                                        $em->flush();
+                                        $json['add']  = false;
+                                        $existe = true;
+                                        break;
+                                    }
+                                }
+                                if(!$existe){
+                                    $dpae->addEvidencia($evidencia);
+//                                    $em->persist($dpae);
+//                                    $em->flush();
+                                    $json['add']  = true;
+//                                        $json['clear']  = true;
+                                }
+                            }else{
+                                $dpae = new \Sirepae\PAEBundle\Entity\DiagnosticoPAE();
+                                $dpae
+                                    ->setDiagnostico($diagnostico)
+                                    ->addEvidencia($evidencia)
+                                    ->setPlanCuidado($pae);
+                                $em->persist($dpae);
+                                $json['add']  = true;
+                            }
+                            $em->flush();
+                        }else{
+                            $json['error']  = true;
+                            $json['msg']    = 'Evidencia no válida';
+                        }
+                    }elseif(is_null($id_evidencia)){
+                        $factorRelacionado = $em->getRepository('SirepaePAEBundle:FactorRelacionado')->find($id_factorRelacionado);
+                        if($factorRelacionado){
+                            $dpae = $em->getRepository('SirepaePAEBundle:DiagnosticoPAE')->findOneBy(array(
+                                'diagnostico' => $id_diagnostico,
+                                'planCuidado' => $id_pae,
+                            ));
+                            if($dpae){
+                                $existe = false;
+                                foreach($dpae->getFactorRelacionados() as $factorRelacionado_){
+                                    if($factorRelacionado_->getId() == $id_factorRelacionado){
+                                        $dpae->removeFactorRelacionado($factorRelacionado_);
+//                                        $em->persist($dpae);
+//                                        $em->flush();
+                                        $json['add']  = false;
+                                        $existe = true;
+                                        break;
+                                    }
+                                }
+                                if(!$existe){
+                                    $dpae->addFactorRelacionado($factorRelacionado);
+//                                    $em->persist($dpae);
+//                                    $em->flush();
+                                    $json['add']  = true;
+//                                        $json['clear']  = true;
+                                }
+                                $em->flush();
+                            }else{
+                                $dpae = new \Sirepae\PAEBundle\Entity\DiagnosticoPAE();
+                                $dpae
+                                    ->setDiagnostico($diagnostico)
+                                    ->addFactorRelacionado($factorRelacionado)
+                                    ->setPlanCuidado($pae);
+                                $em->persist($dpae);
+                                $json['add']  = true;
+                            }
+                            $em->flush();
+                        }else{
+                            $json['error']  = true;
+                            $json['msg']    = 'FactorRelacionado no válida';
+                        }
+                    }else{
+                        $json['error']  = true;
+                        $json['msg']    = 'Datos no encontrados';
+                    }
+                }else{
+                    $json['error']  = true;
+                    $json['msg']    = 'PAE no válido';
+                }
+            }else{
+                $json['error']  = true;
+                $json['msg']    = 'Diagnostico no válido';
+            }
+
+            return \Symfony\Component\HttpFoundation\JsonResponse::create($json);
+            
+//        }else{
+//            throw $this->createNotFoundException('Diagnostico o Plan de Atención de Enfermería no Encontradas');
+//        }
+    }
 }

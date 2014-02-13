@@ -16,7 +16,10 @@ class ActividadPAEType extends AbstractType
     {
         $builder
             ->add('fecha_creado')
-            ->add('planCuidado')
+            ->add('planCuidado',null,array(
+                'expanded'  =>  true,
+                'multiple'  =>  true,
+            ))
             ->add('actividad')
         ;
     }

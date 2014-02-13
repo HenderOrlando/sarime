@@ -20,6 +20,11 @@ class Diagnostico
     private $nombre;
     
     /** 
+     * @ORM\Column(type="string", length=8, nullable=true)
+     */
+    private $codigo;
+    
+    /** 
      * @ORM\Column(type="text", nullable=false)
      */
     private $definicion;
@@ -254,6 +259,30 @@ class Diagnostico
         $this->clase = $clase;
     
         return $this;
+    }
+    
+    
+    /**
+     * Set codigo
+     *
+     * @param string $codigo
+     * @return Indicador
+     */
+    public function setCodigo($codigo)
+    {
+        $this->codigo = $codigo;
+    
+        return $this;
+    }
+
+    /**
+     * Get codigo
+     *
+     * @return string 
+     */
+    public function getCodigo()
+    {
+        return $this->codigo;
     }
 
     /**

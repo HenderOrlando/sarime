@@ -12,5 +12,10 @@
 
     {{ form(edit_form) }}
 
-    <a class="btn btn-default btn-lg pull-right" href="{{ path('evidencia') }}">Volver</a>
+    {% if diagnostico is defined %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('diagnostico_edit',{id:diagnostico.id}) }}">Volver</a>
+    {% else %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('evidencia') }}">Volver</a>
+    {% endif %}
+
 {% endblock %}

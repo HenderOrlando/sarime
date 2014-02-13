@@ -145,6 +145,19 @@ class Actividad
     
         return $this;
     }
+    
+    /**
+     * Exist pae
+     *
+     * @param \Sirepae\PAEBundle\Entity\PAE $pae
+     * @return boolean
+     */
+    public function existPAE(\Sirepae\PAEBundle\Entity\PAE $pae)
+    {
+        return $this->PlanesCuidado->exists(function($key, ActividadPAE $apae) use ($pae){
+            return $apae->getPlanCuidado()->getId() == $pae->getId();
+        });
+    }
 
     /**
      * Remove PlanesCuidado

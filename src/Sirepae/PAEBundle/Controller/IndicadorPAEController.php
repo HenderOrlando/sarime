@@ -255,4 +255,69 @@ class IndicadorPAEController extends Controller
             ->getForm()
         ;
     }
+    
+    /**
+     * Deletes a Indicador pae entity.
+     *
+     * @Route("/{id_indicador}/pae/{id_pae}/escala/{id_escala}/", name="toggle_indicador_to_pae")
+     * @Method("GET")
+     */
+    public function toggleIndicadorPAEAction(Request $request, $id_indicador,$id_pae, $id_escala)
+    {
+        if($request->isXmlHttpRequest()){
+            $json = array(
+                'error' =>  false,
+                'msg'   =>  'Hecho',
+                'clear'   =>  false,
+            );
+            $em = $this->getDoctrine()->getManager();
+            $indicador = $em->getRepository('SirepaePAEBundle:Indicador')->find($id_indicador);
+            if($indicador){
+                $pae = $em->getRepository('SirepaePAEBundle:PAE')->find($id_pae);
+                if($pae){
+                    $escala = $em->getRepository('SirepaePAEBundle:Escala')->find($id_escala);
+                    if($escala){
+                        $ipae = $em->getRepository('SirepaePAEBundle:IndicadorPAE')->findOneBy(array(
+                            'indicador' => $id_indicador,
+                            'planCuidado' => $id_pae,
+                        ));
+                        if($ipae){
+                            if($ipae->getEscala()->getId() == $id_escala){
+                                $em->remove($ipae);
+                                $json['add']  = false;
+                            }else{
+                                $ipae->setEscala($escala);
+                                $em->persist($ipae);
+                                $json['add']  = true;
+                                $json['clear']  = true;
+                            }
+                        }else{
+                            $ipae = new \Sirepae\PAEBundle\Entity\IndicadorPAE();
+                            $ipae
+                                ->setIndicador($indicador)
+                                ->setEscala($escala)
+                                ->setPlanCuidado($pae);
+                            $em->persist($ipae);
+                            $json['add']  = true;
+                        }
+                        $em->flush();
+                    }else{
+                        $json['error']  = true;
+                        $json['msg']    = 'Escala no válida';
+                    }
+                }else{
+                    $json['error']  = true;
+                    $json['msg']    = 'PAE no válido';
+                }
+            }else{
+                $json['error']  = true;
+                $json['msg']    = 'Indicador no válido';
+            }
+
+            return \Symfony\Component\HttpFoundation\JsonResponse::create($json);
+            
+        }else{
+            throw $this->createNotFoundException('Indicador o Escala o Plan de Indicadores de Enfermería no Encontradas');
+        }
+    }
 }

@@ -87,7 +87,8 @@ class ActividadPAEController extends Controller
     /**
      * Displays a form to create a new ActividadPAE entity.
      *
-     * @Route("/new", name="actividad_pae_new")
+     * @Route("/new/pae/{id}/", name="actividad_pae_new")
+     * @Route("/new/", name="actividad_pae_new_")
      * @Method("GET")
      * @Template()
      */
@@ -254,5 +255,56 @@ class ActividadPAEController extends Controller
             ->add('submit', 'submit', array('label' => 'Borrar', 'attr' => array( 'class' => 'btn-danger')))
             ->getForm()
         ;
+    }
+    
+    /**
+     * Deletes a Actividad pae entity.
+     *
+     * @Route("/{id_actividad}/pae/{id_pae}", name="toggle_actividad_to_pae")
+     * @Method("GET")
+     */
+    public function toggleActividadPAEAction(Request $request, $id_actividad,$id_pae)
+    {
+        if($request->isXmlHttpRequest()){
+            $json = array(
+                'error' =>  false,
+                'msg'   =>  'Hecho',
+                'clear'   =>  false,
+            );
+            $em = $this->getDoctrine()->getManager();
+            $actividad = $em->getRepository('SirepaePAEBundle:Actividad')->find($id_actividad);
+            if($actividad){
+                $pae = $em->getRepository('SirepaePAEBundle:PAE')->find($id_pae);
+                if($pae){
+                    $apae = $em->getRepository('SirepaePAEBundle:ActividadPAE')->findOneBy(array(
+                        'actividad' => $id_actividad,
+                        'planCuidado' => $id_pae,
+                    ));
+                    if($apae){
+                        $em->remove($apae);
+                        $json['add']  = false;
+                    }else{
+                        $apae = new \Sirepae\PAEBundle\Entity\ActividadPAE();
+                        $apae
+                            ->setActividad($actividad)
+                            ->setPlanCuidado($pae);
+                        $em->persist($apae);
+                        $json['add']  = true;
+                    }
+                    $em->flush();
+                }else{
+                    $json['error']  = true;
+                    $json['msg']    = 'PAE no válido';
+                }
+            }else{
+                $json['error']  = true;
+                $json['msg']    = 'Actividad no válida';
+            }
+
+            return \Symfony\Component\HttpFoundation\JsonResponse::create($json);
+            
+        }else{
+            throw $this->createNotFoundException('Actividad o Plan de Actividades de Enfermería no Encontradas');
+        }
     }
 }

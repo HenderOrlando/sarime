@@ -8,6 +8,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class FactorRelacionadoType extends AbstractType
 {
+    private $clase;
+    
+    public function __construct(\Sirepae\PAEBundle\Entity\Clase $clase = null) {
+        $this->clase = $clase;
+    }
         /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -17,9 +22,22 @@ class FactorRelacionadoType extends AbstractType
         $builder
             ->add('nombre')
             ->add('descripcion')
-            ->add('fecha_creado')
-            ->add('diagnostico')
-        ;
+         ;
+        $opts = array(
+            'label' => false,
+            'attr' => array('class' => 'hide'),
+        );
+
+        if(!is_null($this->clase)){
+            $opts = array(
+                'class' => 'SirepaePAEBundle:Diagnostico',
+                'query_builder' => function(\Doctrine\ORM\EntityRepository $er) {
+                    return $er->createQueryBuilder('c')
+                           ->andWhere('c.clase = '.$this->clase->getId());
+                    }
+                );
+            }
+        $builder->add('diagnostico', null, $opts);
     }
     
     /**

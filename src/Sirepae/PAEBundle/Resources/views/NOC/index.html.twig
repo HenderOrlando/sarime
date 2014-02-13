@@ -20,7 +20,8 @@
             <thead>
                 <tr>
                     <th>Isbn</th>
-                    <th>Version</th>
+                    <th>Versión</th>
+                    <th>Usado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -29,6 +30,7 @@
                 <tr>
                     <td>{{ entity.isbn }}</td>
                     <td>{{ entity.version }}</td>
+                    <td>{{ entity.usado?'Si':'no' }}</td>
                     <td>
                         <div class="btn-group btn-group-lg">
                             <a class="btn btn-primary" href="{{ path(path_ ~ '_edit', { 'id': entity.id }) }}">Editar</a>

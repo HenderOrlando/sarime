@@ -9,7 +9,7 @@ class Libro
 {
     /** 
      * @ORM\Id
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
@@ -18,6 +18,11 @@ class Libro
      * @ORM\Column(type="string", length=50, nullable=false)
      */
     private $isbn;
+    
+    /** 
+     * @ORM\Column(type="boolean", nullable=false)
+     */
+    private $usado;
 
     /** 
      * @ORM\Column(type="string", length=50, nullable=false)
@@ -35,6 +40,7 @@ class Libro
     
     public function __construct() {
         $this->setFechaCreado(new \DateTime('now'));
+        $this->usar = false;
     }
 
     /**
@@ -114,6 +120,30 @@ class Libro
     public function getFechaCreado()
     {
         return $this->fecha_creado;
+    }
+    
+    
+    /**
+     * Set usado
+     *
+     * @param boolean $usado
+     * @return Libro
+     */
+    public function setUsado($usado)
+    {
+        $this->usado = $usado;
+    
+        return $this;
+    }
+
+    /**
+     * Is usado
+     *
+     * @return boolean 
+     */
+    public function isUsado()
+    {
+        return $this->usado;
     }
     
     public function __toString() {

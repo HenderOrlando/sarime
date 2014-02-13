@@ -30,6 +30,7 @@
                 <tr>
                     <th>Nota</th>
                     <th>Registro de Enfermería</th>
+                    <th>Fecha</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -38,6 +39,7 @@
                 <tr>
                     <td>{{ entity.nota }}</td>
                     <td>{{ entity.registroEnfermeria }}</td>
+                    <td>{% if entity.fechacreado %}{{ entity.fechacreado|date('Y-m-d H:i:s') }}{% endif %}</td>
                     <td>
                         <div class="btn-group">
                             <a class="btn btn-success btn-lg" href="{{ path(path_ ~ '_edit', { 'id': entity.id }) }}">Editar</a>

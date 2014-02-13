@@ -9,10 +9,15 @@ class ResultadoEsperado
 {
     /** 
      * @ORM\Id
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+
+    /** 
+     * @ORM\Column(type="string", length=150, nullable=false)
+     */
+    private $nombre;
 
     /** 
      * @ORM\Column(type="text", nullable=true)
@@ -124,6 +129,29 @@ class ResultadoEsperado
     public function getDominio()
     {
         return $this->dominio;
+    }
+
+    /**
+     * Set nombre
+     *
+     * @param string $nombre
+     * @return ResultadoEsperado
+     */
+    public function setNombre($nombre)
+    {
+        $this->nombre = $nombre;
+    
+        return $this;
+    }
+
+    /**
+     * Get nombre
+     *
+     * @return string 
+     */
+    public function getNombre()
+    {
+        return $this->nombre;
     }
 
     /**

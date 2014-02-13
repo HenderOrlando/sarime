@@ -19,9 +19,9 @@ class PAEType extends AbstractType
             ->add('estudiante')
             ->add('val_objetiva')
             ->add('val_subjetiva')
-            ->add('evaluacion')
             ->add('objetivo')
-            ->add('calificacion', new CalificacionType())
+            ->add('evaluacion')
+//            ->add('calificacion', new CalificacionType())
         ;
     }
     

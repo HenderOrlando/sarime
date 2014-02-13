@@ -19,6 +19,7 @@
         <table class="records_list">
             <thead>
                 <tr>
+                    <th>Nombre</th>
                     <th>Definicion</th>
                     <th>Dominio</th>
                     <th>Clase</th>
@@ -29,12 +30,11 @@
             <tbody>
             {% for entity in entities %}
                 <tr>
-                    <td><a href="{{ path('resultado_esperado_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+                    <td>{{ entity.nombre }}</td>
                     <td>{{ entity.definicion }}</td>
                     <td>{{ entity.dominio }}</td>
                     <td>{{ entity.clase }}</td>
                     <td>{{ entity.codigo }}</td>
-                    <td>{% if entity.fechacreado %}{{ entity.fechacreado|date('Y-m-d H:i:s') }}{% endif %}</td>
                     <td>
                         <div class="btn-group btn-group-lg">
                             <a class="btn btn-primary" href="{{ path(path_ ~ '_edit', { 'id': entity.id }) }}">Editar</a>

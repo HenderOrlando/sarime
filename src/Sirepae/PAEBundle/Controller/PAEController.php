@@ -151,12 +151,19 @@ class PAEController extends Controller
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
 
+        $nanda = $em->getRepository('SirepaePAEBundle:NANDA')->findOneByUsado(true);
+        $nic = $em->getRepository('SirepaePAEBundle:NIC')->findOneByUsado(true);
+        $noc = $em->getRepository('SirepaePAEBundle:NOC')->findOneByUsado(true);
+        
         return array(
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
+            'nanda'         => $nanda,
+            'nic'           => $nic,
+            'noc'           => $noc,
+            'entity'        => $entity,
+            'edit_form'     => $editForm->createView(),
+            'delete_form'   => $deleteForm->createView(),
+            'active_edit'   =>  true,
             'active_paes_resumen'  =>  true,
-            'active_edit'  =>  true,
         );
     }
 

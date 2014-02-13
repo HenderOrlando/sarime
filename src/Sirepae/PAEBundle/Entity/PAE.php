@@ -243,6 +243,19 @@ class PAE
     }
 
     /**
+     * Exist actividades
+     *
+     * @param \Sirepae\PAEBundle\Entity\Actividad $actividad
+     * @return boolean
+     */
+    public function existActividad(\Sirepae\PAEBundle\Entity\Actividad $actividad)
+    {
+        return $this->actividades->exists(function($key, ActividadPAE $actividadPAE) use ($actividad){
+            return $actividadPAE->getActividad()->getId() == $actividad->getId();
+        });
+    }
+    
+    /**
      * Remove actividades
      *
      * @param \Sirepae\PAEBundle\Entity\ActividadPAE $actividades
@@ -273,6 +286,61 @@ class PAE
         $this->diagnosticos[] = $diagnosticos;
     
         return $this;
+    }
+    
+    /**
+     * Exist evidencia diagnosticos
+     *
+     * @param \Sirepae\PAEBundle\Entity\Evidencia $evidencia
+     * @param \Sirepae\PAEBundle\Entity\Diagnostico $diagnostico
+     * @return boolean
+     */
+    public function existEvidenciaDiagnostico(\Sirepae\PAEBundle\Entity\Evidencia $evidencia, \Sirepae\PAEBundle\Entity\DiagnosticoPAE $diagnostico = null)
+    {
+        if(is_null($diagnostico)){
+            foreach($this->diagnosticos as $diagnostico){
+                if($diagnostico->existEvidencia($evidencia)){
+                    return true;
+                }
+            }
+        }else{
+            return $diagnostico->existEvidencia($evidencia);
+        }
+        return false;
+    }
+    
+    /**
+     * Exist factorRelacionado diagnosticos
+     *
+     * @param \Sirepae\PAEBundle\Entity\Diagnostico $diagnostico
+     * @param \Sirepae\PAEBundle\Entity\FactorRelacionado $factorRelacionado
+     * @return boolean
+     */
+    public function existFactorRelacionadoDiagnostico(\Sirepae\PAEBundle\Entity\FactorRelacionado $factorRelacionado, \Sirepae\PAEBundle\Entity\DiagnosticoPAE $diagnostico = null)
+    {
+        if(is_null($diagnostico)){
+            foreach($this->diagnosticos as $diagnostico){
+                if($diagnostico->existFactorRelacionado($factorRelacionado)){
+                    return true;
+                }
+            }
+        }else{
+            return $diagnostico->existFactorRelacionado($factorRelacionado);
+        }
+        return false;
+    }
+    
+    /**
+     * Exist diagnosticos
+     *
+     * @param \Sirepae\PAEBundle\Entity\Diagnostico $diagnostico
+     * @return boolean
+     */
+    public function existDiagnostico(\Sirepae\PAEBundle\Entity\Diagnostico $diagnostico)
+    {
+        return $this->diagnosticos->exists(function($key, DiagnosticoPAE $diagnosticoPAE) use ($diagnostico){
+            return $diagnosticoPAE->getDiagnostico()->getId() == $diagnostico->getId();
+        });
     }
 
     /**
@@ -306,6 +374,19 @@ class PAE
         $this->indicadores[] = $indicadores;
     
         return $this;
+    }
+
+    /**
+     * Exist indicadores
+     *
+     * @param \Sirepae\PAEBundle\Entity\Indicador $indicador
+     * @return boolean
+     */
+    public function existIndicador(\Sirepae\PAEBundle\Entity\Indicador $indicador, \Sirepae\PAEBundle\Entity\Escala $escala )
+    {
+        return $this->indicadores->exists(function($key, IndicadorPAE $indicadorPAE) use ($indicador, $escala){
+            return $indicadorPAE->getIndicador()->getId() == $indicador->getId() && $indicadorPAE->getEscala()->getId() == $escala->getId();
+        });
     }
 
     /**

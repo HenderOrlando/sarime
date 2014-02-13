@@ -39,11 +39,13 @@ class EvidenciaController extends Controller
     /**
      * Creates a new Evidencia entity.
      *
+     * @Route("/diagnostico/{id}/", name="evidencia_create_diagnostico")
+     * @Route("/clase/{id_clase}/", name="evidencia_create_clase")
      * @Route("/", name="evidencia_create")
      * @Method("POST")
      * @Template("SirepaePAEBundle:Evidencia:new.html.twig")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $id = null, $id_clase = null)
     {
         $entity = new Evidencia();
         $form = $this->createCreateForm($entity);
@@ -54,6 +56,11 @@ class EvidenciaController extends Controller
             $em->persist($entity);
             $em->flush();
 
+            if(!is_null($id)){
+                return $this->redirect($this->generateUrl('diagnostico_edit',array('id' => $id)));
+            }elseif(!is_null($id_clase)){
+                return $this->redirect($this->generateUrl('clase_edit',array('id' => $id_clase)));
+            }
             return $this->redirect($this->generateUrl('evidencia'));
         }
 
@@ -72,10 +79,16 @@ class EvidenciaController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(Evidencia $entity)
+    private function createCreateForm(Evidencia $entity, \Sirepae\PAEBundle\Entity\Clase $clase = null, \Sirepae\PAEBundle\Entity\Diagnostico $diagnostico = null)
     {
-        $form = $this->createForm(new EvidenciaType(), $entity, array(
-            'action' => $this->generateUrl('evidencia_create'),
+        $url = $this->generateUrl('evidencia_create');
+        if (!is_null($clase)) {
+            $url = $this->generateUrl('evidencia_create_clase', array('id_clase' => $clase->getId()));
+        }elseif (!is_null($diagnostico)) {
+            $url = $this->generateUrl('evidencia_create_diagnostico', array('id' => $diagnostico->getId()));
+        }
+        $form = $this->createForm(new EvidenciaType($clase), $entity, array(
+            'action' => $url,
             'method' => 'POST',
         ));
 
@@ -87,20 +100,35 @@ class EvidenciaController extends Controller
     /**
      * Displays a form to create a new Evidencia entity.
      *
-     * @Route("/new", name="evidencia_new")
+     * @Route("/new/clase/{id_clase}/", name="evidencia_new_clase")
+     * @Route("/new/diagnostico/{id}/", name="evidencia_new_diagnostico")
+     * @Route("/new/", name="evidencia_new")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction($id = null, $id_clase = null)
     {
         $entity = new Evidencia();
-        $form   = $this->createCreateForm($entity);
+        $em = $this->getDoctrine()->getManager();
 
+        $diagnostico = null;
+        if(!is_null($id)){
+            $diagnostico = $em->getRepository('SirepaePAEBundle:Diagnostico')->find($id);
+            $entity->setDiagnostico($diagnostico);
+        }
+        $clase = null;
+        if(!is_null($id_clase)){
+            $clase = $em->getRepository('SirepaePAEBundle:Clase')->find($id_clase);
+        }
+        $form   = $this->createCreateForm($entity, $clase, $diagnostico);
+        
         return array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-            'active_evidencias_resumen'  =>  true,'active_nandas_resumen'  =>  true,
+            'entity'        => $entity,
+            'clase'         => $clase,
+            'diagnostico'   => $diagnostico,
             'active_evidencias_new'  =>  true,
+            'form'          => $form->createView(),
+            'active_evidencias_resumen'  =>  true,'active_nandas_resumen'  =>  true,
         );
     }
 

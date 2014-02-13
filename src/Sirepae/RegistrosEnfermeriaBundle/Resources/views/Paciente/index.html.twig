@@ -9,13 +9,11 @@
                 Tablero de {{ title_ }}
             </h1>
         </li>
-        {% if path_ == 'coordinador' or path_ == 'docente' %}
         <li class="text-align pull-right title">
             <a class="btn btn-primary btn-lg" href="{{ path( path_ ~ '_new') }}">
                 Nuevo {{ path_ }}
             </a>
         </li>
-        {% endif %}
     </ul>
     <div class="table-responsive">
         <table class="records_list">

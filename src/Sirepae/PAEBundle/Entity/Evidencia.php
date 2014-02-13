@@ -9,7 +9,7 @@ class Evidencia
 {
     /** 
      * @ORM\Id
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="bigint")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
@@ -35,12 +35,18 @@ class Evidencia
      */
     private $diagnostico;
     
+    /** 
+     * @ORM\ManyToMany(targetEntity="\Sirepae\PAEBundle\Entity\DiagnosticoPAE", mappedBy="evidenciasUsadas", cascade={"all"})
+     */
+    private $diagnosticos;
+    
     
     /******************* MÉTODOS *******************/
     
     
     public function __construct() {
         $this->setFechaCreado(new \DateTime('now'));
+        $this->diagnosticos = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -143,5 +149,51 @@ class Evidencia
     public function getDiagnostico()
     {
         return $this->diagnostico;
+    }
+
+    /**
+     * Add diagnosticos
+     *
+     * @param \Sirepae\PAEBundle\Entity\DiagnosticoPAE $diagnosticos
+     * @return Escala
+     */
+    public function addDiagnostico(\Sirepae\PAEBundle\Entity\DiagnosticoPAE $diagnosticos)
+    {
+        $this->diagnosticos[] = $diagnosticos;
+    
+        return $this;
+    }
+    
+    /**
+     * Exist diagnostico
+     *
+     * @param \Sirepae\PAEBundle\Entity\Diagnostico $diagnostico
+     * @return boolean
+     */
+    public function existDiagnostico(\Sirepae\PAEBundle\Entity\Diagnostico $diagnostico)
+    {
+        return $this->diagnosticos->exists(function($key, DiagnosticoPAE $diagnosticoPAE) use ($diagnostico){
+            return $diagnostico->getId() == $diagnosticoPAE->getDiagnostico()->getId();
+        });
+    }
+
+    /**
+     * Remove diagnosticos
+     *
+     * @param \Sirepae\PAEBundle\Entity\DiagnosticoPAE $diagnosticos
+     */
+    public function removeDiagnostico(\Sirepae\PAEBundle\Entity\DiagnosticoPAE $diagnosticos)
+    {
+        $this->diagnosticos->removeElement($diagnosticos);
+    }
+
+    /**
+     * Get diagnosticos
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getDiagnosticos()
+    {
+        return $this->diagnosticos;
     }
 }

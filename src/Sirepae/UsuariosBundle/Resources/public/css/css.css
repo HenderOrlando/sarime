@@ -57,3 +57,26 @@ form.form-all-inline div{
     right: 20px;
     top: 4px;
 }
+.panel>.panel-collapse>.list-group{
+    margin-bottom: 0;
+}
+.panel>.panel-collapse>.list-group .list-group-item:first-child {
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+}
+.panel>.panel-collapse>.list-group .list-group-item {
+    border-width: 1px 0;
+}
+.panel>.panel-collapse>.list-group .list-group-item:last-child {
+    border-bottom: 0;
+}
+.panel-group.panel-integrate{
+    margin: -16px;
+}
+.panel-group.panel-integrate > .panel{
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+p ~ .panel-group.panel-integrate{
+    margin-top: 10px;
+}

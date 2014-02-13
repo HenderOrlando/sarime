@@ -22,14 +22,18 @@ class RolController extends Controller
      * Lists all Rol entities.
      *
      * @Route("/", name="rol")
+     * @Route("/sede/{id}/", name="roles_sede")
      * @Method("GET")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction($id = null)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('SirepaeUsuariosBundle:Rol')->findAll();
+        if(is_null($id))
+            $entities = $em->getRepository('SirepaeUsuariosBundle:Rol')->findAll();
+        else
+            $entities = $em->getRepository('SirepaeUsuariosBundle:Rol')->findBySede($id);
 
         return array(
             'entities' => $entities,
@@ -40,17 +44,24 @@ class RolController extends Controller
      * Creates a new Rol entity.
      *
      * @Route("/", name="rol_create")
+     * @Route("/{id}/", name="rol_create_sede")
      * @Method("POST")
      * @Template("SirepaeUsuariosBundle:Rol:new.html.twig")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $id = null)
     {
+        $em = $this->getDoctrine()->getManager();
         $entity = new Rol();
+        if(!is_null($id)){
+            $sede = $em->getRepository('SirepaeUsuariosBundle:Sede')->find($id);
+            if($sede)
+                $entity->setSede($sede);
+        }
+        
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
 
@@ -87,13 +98,20 @@ class RolController extends Controller
     /**
      * Displays a form to create a new Rol entity.
      *
-     * @Route("/new", name="rol_new")
+     * @Route("/new/", name="rol_new")
+     * @Route("/new/{id}/", name="rol_new_sede")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction($id = null)
     {
+        $em = $this->getDoctrine()->getManager();
         $entity = new Rol();
+        if(!is_null($id)){
+            $sede = $em->getRepository('SirepaeUsuariosBundle:Sede')->find($id);
+            if($sede)
+                $entity->setSede($sede);
+        }
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -107,7 +125,8 @@ class RolController extends Controller
     /**
      * Finds and displays a Rol entity.
      *
-     * @Route("/{id}", name="rol_show")
+     * @Route("/{id}/", name="rol_show")
+     * @Route("/{id}/", name="rol_show")
      * @Method("GET")
      * @Template()
      */
@@ -134,7 +153,8 @@ class RolController extends Controller
     /**
      * Displays a form to edit an existing Rol entity.
      *
-     * @Route("/{id}/edit", name="rol_edit")
+     * @Route("/{id}/edit/", name="rol_edit")
+     * @Route("/{id_sede}/edit/{id}", name="rol_edit_sede")
      * @Method("GET")
      * @Template()
      */
@@ -181,7 +201,8 @@ class RolController extends Controller
     /**
      * Edits an existing Rol entity.
      *
-     * @Route("/{id}", name="rol_update")
+     * @Route("/{id}/", name="rol_update")
+     * @Route("/{id_sede}/{id}/", name="rol_update_sede")
      * @Method("PUT")
      * @Template("SirepaeUsuariosBundle:Rol:edit.html.twig")
      */
@@ -216,7 +237,7 @@ class RolController extends Controller
     /**
      * Deletes a Rol entity.
      *
-     * @Route("/{id}", name="rol_delete")
+     * @Route("/{id}/", name="rol_delete")
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, $id)
@@ -255,4 +276,5 @@ class RolController extends Controller
             ->getForm()
         ;
     }
+    
 }

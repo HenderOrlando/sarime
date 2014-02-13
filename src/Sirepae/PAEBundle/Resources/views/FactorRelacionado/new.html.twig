@@ -1,4 +1,4 @@
-{% extends 'SirepaePAEBundle:FactorRelacionado:index.html.twig' %}
+{% extends 'SirepaePAEBundle:PAE:index.html.twig' %}
 
 {% block content -%}
 
@@ -6,5 +6,11 @@
 
     {{ form(form) }}
 
-    <a class="btn btn-default btn-lg pull-right" href="{{ path('factor_relacionado') }}">Volver</a>
+    {% if diagnostico is defined and diagnostico is not null %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('diagnostico_edit',{id : diagnostico.id}) }}">Volver</a>
+    {% elseif clase is defined and clase is not null %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('clase_edit',{id : clase.id}) }}">Volver</a>
+    {% else %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('factor_relacionado') }}">Volver</a>
+    {% endif %}
 {% endblock %}

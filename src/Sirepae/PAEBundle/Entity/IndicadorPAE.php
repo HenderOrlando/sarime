@@ -42,7 +42,13 @@ class IndicadorPAE
     
     
     
-
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->setFechaCreado(new \DateTime('now'));
+    }
     /**
      * Get id
      *

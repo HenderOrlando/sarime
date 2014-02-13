@@ -15,9 +15,10 @@ class RegistroType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('nombre')
             ->add('tipo')
             ->add('unico', 'choice', array(
-                'choices'   =>  array(true => 'Un solo Registro', false => 'Varios Registros'),
+                'choices'   =>  array(true => 'Un solo Registro', false => 'Múltiples Registros'),
                 'expanded'  =>  true,
                 'multiple'  =>  false,
                 'label'     =>  false,

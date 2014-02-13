@@ -103,7 +103,7 @@
                         <a href="{{ path('pae') }}">
                             <h4>PAE</h4>
                         </a>
-                        <span class="text-muted"><span>{{ res | length }}</span> en total</span>
+                        <span class="text-muted"><span>{{ paes | length }}</span> en total</span>
                     </div>
                     <div class="col-xs-12 col-sm-4 placeholder">
                         {#<img class="img-responsive" alt="200x200" src="data:image/png;base64,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">#}
@@ -124,13 +124,13 @@
                                     <div class="row">
                                 {% endif %}
                                 <div class="col-sm-3">
-                                    <div class="panel panel-default">
+                                    <div class="panel panel-primary">
                                         <div class="panel-heading">
                                             Registro de {{ re.estudiante }} al paciente {{ re.paciente }}
                                         </div>
                                         <div class="panel-body">
                                                 {% for nota in re.notas|slice(0,6) %}
-                                                <div class="panel panel-default">
+                                                <div class="panel panel-primary">
                                                     <div class="panel-body">
                                                         {{ nota.nota }}
                                                     </div>
@@ -147,47 +147,49 @@
                     <h2 class="sub-header">Últimos PAE</h2> 
                     <div class="col-sm-12">
                         <div class="row">
-                            {% for pae in paes|slice(0,6) %}
-                                {% if loop.index is divisibleby(4) %}
-                                    </div>
-                                    <div class="row">
-                                {% endif %}
-                                <div class="col-sm-4">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">
-                                            {{ pae }}
-                                            {% if pae.calificacion is defined %}
-                                                {% set valor = pae.calificacion.valor %}
-                                                <span class="label label-{{ valor < 3?'danger':valor < 3.3?'warning':valor < 4?'info':'success' }}">{{ valor }}</span>
-                                            {% endif %}
+                            {% if paes is not empty %}
+                                {% for pae in paes|slice(0,6) %}
+                                    {% if loop.index is divisibleby(4) %}
                                         </div>
-                                        <div class="panel-body">
-                                            <dl class="dl-horizontal">
-                                                <dt>Valoración Objetica</dt>
-                                                <dd>{{ pae.valObjetiva }}</dd>
-                                            </dl>
-                                            <dl class="dl-horizontal">
-                                                <dt>Valoración Subjetiva</dt>
-                                                <dd>{{ pae.valSubjetiva }}</dd>
-                                            </dl>
-                                            <dl class="dl-horizontal">
-                                                <dt>Evaluación</dt>
-                                                <dd>{{ pae.evaluacion }}</dd>
-                                            </dl>
-                                            {% if pae.calificacion is defined %}
+                                        <div class="row">
+                                    {% endif %}
+                                    <div class="col-sm-4">
+                                        <div class="panel panel-primary">
+                                            <div class="panel-heading">
+                                                {{ pae }}
+                                                {% if pae.calificacion is defined and pae.calificacion is not null %}
+                                                    {% set valor = pae.calificacion.valor %}
+                                                    <span class="label label-{{ valor < 3?'danger':valor < 3.3?'warning':valor < 4?'info':'success' }}">{{ valor }}</span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="panel-body">
                                                 <dl class="dl-horizontal">
-                                                    <dt>Docente</dt>
-                                                    <dd>{{ pae.calificacion.docente }}</dd>
+                                                    <dt>Valoración Objetica</dt>
+                                                    <dd>{{ pae.valObjetiva }}</dd>
                                                 </dl>
                                                 <dl class="dl-horizontal">
-                                                    <dt>Observacion Docente</dt>
-                                                    <dd>{{ pae.calificacion.observacion }}</dd>
+                                                    <dt>Valoración Subjetiva</dt>
+                                                    <dd>{{ pae.valSubjetiva }}</dd>
                                                 </dl>
-                                            {% endif %}
+                                                <dl class="dl-horizontal">
+                                                    <dt>Evaluación</dt>
+                                                    <dd>{{ pae.evaluacion }}</dd>
+                                                </dl>
+                                                {% if pae.calificacion is defined and pae.calificacion is not null %}
+                                                    <dl class="dl-horizontal">
+                                                        <dt>Docente</dt>
+                                                        <dd>{{ pae.calificacion.docente }}</dd>
+                                                    </dl>
+                                                    <dl class="dl-horizontal">
+                                                        <dt>Observacion Docente</dt>
+                                                        <dd>{{ pae.calificacion.observacion }}</dd>
+                                                    </dl>
+                                                {% endif %}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            {% endfor %}
+                                {% endfor %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -201,13 +203,13 @@
                                 <div class="row">
                             {% endif %}
                             <div class="col-sm-4">
-                                <div class="panel panel-default">
+                                <div class="panel panel-primary">
                                     <div class="panel-heading">
                                         Práctica {{ p.nombre }} 
-                                        (<span class="text-muted">
+                                        (<span class="">
                                             Docente {{ p.docente }}
                                         </span> y 
-                                        <span class="text-muted">
+                                        <span class="">
                                             Coordinador {{ p.coordinador }}
                                         </span>)
                                     </div>
