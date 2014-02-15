@@ -30,9 +30,13 @@ class PracticaController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $entities = $em->getRepository('SirepaePracticasBundle:Practica')->createQueryBuilder('p')
-                ->orderBy('p.fecha_creado','DESC')
-                ->andWhere('p.coordinador = '.$this->getUser()->getId())
-                ->getQuery()->getResult();
+                ->orderBy('p.fecha_creado','DESC');
+        if($this->getUser()->hasRole('ROLE_COORDINADOR')){
+            $entities->andWhere('p.coordinador = '.$this->getUser()->getId());
+        }elseif(!$this->getUser()->hasRole('ROLE_SUPER_ADMIN')){
+            throw new \Symfony\Component\Security\Core\Exception\AccessDeniedException();
+        }
+        $entities = $entities->getQuery()->getResult();
 
         return array(
             'entities' => $entities,

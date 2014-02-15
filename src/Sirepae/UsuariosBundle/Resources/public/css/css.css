@@ -83,9 +83,9 @@ p ~ .panel-group.panel-integrate{
 .search{
     width: 100%;
 }
-.navbar-search{
+/*.navbar-search{
     width: 50%;
-}
+}*/
 .select2-container{
     width: 50%;
 }
@@ -95,4 +95,7 @@ p ~ .panel-group.panel-integrate{
 }
 .panel-primary>.panel-heading a{
     color: #fff;
+}
+.panel *{
+    word-break: break-word;
 }
