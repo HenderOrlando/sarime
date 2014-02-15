@@ -3,7 +3,7 @@
 {% block content -%}
     <div class="col-sm-12">
         <div class="pull-left">
-            <h1 class="title">Editando la Opción Respuesta {{ entity.enunciado }} de {{ entity.pregunta.enunciado }}</h1>
+            <h1 class="title">Observación de {{ entity.registroEnfermeria }}</h1>
         </div>
         <div class="pull-right">
             {{ form(delete_form) }}
@@ -12,5 +12,5 @@
 
     {{ form(edit_form) }}
 
-    <a class="btn btn-default btn-lg pull-right" href="{{ path('opcion_respuesta') }}">Volver</a>
+    <a class="btn btn-default btn-lg pull-right" href="{{ path('nota') }}">Volver</a>
 {% endblock %}

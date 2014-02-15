@@ -16,38 +16,40 @@
         </li>
     </ul>
 
-    <table class="records_list">
-        <thead>
-            <tr>
-                <th>Codigo</th>
-                <th>Nombre</th>
-                <th>Correo Electrónico</th>
-                <th>Práctica</th>
-                <th>Teléfono</th>
-                <th>Dirección</th>
-                <th>Semestre</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for entity in entities %}
-            <tr>
-                <td>{{ entity.codigo }}</td>
-                <td>{{ entity.usuario.getFullNombre }}</td>
-                <td>{{ entity.usuario.email }}</td>
-                <td>{{ entity.practica }}</td>
-                <td>{{ entity.usuario.telefonos }}</td>
-                <td>{{ entity.usuario.direccion }}</td>
-                <td>{{ entity.semestre }}</td>
-                <td>
+    <div class="table-responsive">
+        <table class="records_list">
+            <thead>
+                <tr>
+                    <th>Codigo</th>
+                    <th>Nombre</th>
+                    <th>Correo Electrónico</th>
+                    <th>Práctica</th>
+                    <th>Teléfono</th>
+                    <th>Dirección</th>
+                    <th>Semestre</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.codigo }}</td>
+                    <td>{{ entity.usuario.getFullNombre }}</td>
+                    <td>{{ entity.usuario.email }}</td>
+                    <td>{{ entity.practica }}</td>
+                    <td>{{ entity.usuario.telefonos }}</td>
+                    <td>{{ entity.usuario.direccion }}</td>
+                    <td>{{ entity.semestre }}</td>
                     <td>
-                        <div class="btn-group">
-                            <a class="btn btn-success btn-lg" href="{{ path('estudiante_edit', { 'id': entity.id }) }}">Editar</a>
-                        </div>
+                        <td>
+                            <div class="btn-group">
+                                <a class="btn btn-success btn-lg" href="{{ path('estudiante_edit', { 'id': entity.id }) }}">Editar</a>
+                            </div>
+                        </td>
                     </td>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+</div>
 {% endblock %}

@@ -39,22 +39,33 @@ class CalificacionController extends Controller
     /**
      * Creates a new Calificacion entity.
      *
+     * @Route("/pae/{id}/", name="calificacion_create_pae")
      * @Route("/", name="calificacion_create")
      * @Method("POST")
      * @Template("SirepaePAEBundle:Calificacion:new.html.twig")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, $id = null)
     {
         $entity = new Calificacion();
-        $form = $this->createCreateForm($entity);
+        $pae = null;
+        if(!is_null($id)){
+            $pae = $this->getDoctrine()->getManager()->getRepository('SirepaePAEBundle:PAE')->find($id);
+            $entity
+                ->setPAE($pae)
+                ->setDocente($this->getUser());
+        }
+        $form = $this->createCreateForm($entity, $pae);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
-
-            return $this->redirect($this->generateUrl('calificacion'));
+            
+            if($pae)
+                return $this->redirect($this->generateUrl('pae_edit',array('id' => $pae)));
+            else
+                return $this->redirect($this->generateUrl('calificacion'));
         }
 
         return array(
@@ -72,10 +83,14 @@ class CalificacionController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(Calificacion $entity)
+    private function createCreateForm(Calificacion $entity, \Sirepae\PAEBundle\Entity\PAE $pae = null)
     {
-        $form = $this->createForm(new CalificacionType(), $entity, array(
-            'action' => $this->generateUrl('calificacion_create'),
+        $url = $this->generateUrl('calificacion_create');
+        if(!is_null($pae)){
+            $url = $this->generateUrl('calificacion_create_pae',array('id' => $pae->getId()));
+        }
+        $form = $this->createForm(new CalificacionType($pae), $entity, array(
+            'action' => $url,
             'method' => 'POST',
         ));
 
@@ -87,17 +102,26 @@ class CalificacionController extends Controller
     /**
      * Displays a form to create a new Calificacion entity.
      *
+     * @Route("/new/pae/{id}/", name="calificacion_new_pae")
      * @Route("/new", name="calificacion_new")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction($id = NULL)
     {
         $entity = new Calificacion();
-        $form   = $this->createCreateForm($entity);
+        $pae = null;
+        if(!is_null($id)){
+            $pae = $this->getDoctrine()->getManager()->getRepository('SirepaePAEBundle:PAE')->find($id);
+            $entity
+                ->setPAE($pae)
+                ->setDocente($this->getUser());
+        }
+        $form   = $this->createCreateForm($entity, $pae);
 
         return array(
             'entity' => $entity,
+            'pae' => $pae,
             'form'   => $form->createView(),
             'active_calificaciones_resumen'  =>  true,
             'active_calificaciones_new'  =>  true,

@@ -28,6 +28,11 @@ class Registro
      * @ORM\Column(type="boolean", nullable=false)
      */
     private $unico;
+    
+    /** 
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $tabla;
 
     /** 
      * @ORM\Column(type="datetime", nullable=false)
@@ -55,6 +60,7 @@ class Registro
      */
     public function __construct()
     {
+        $this->tabla = false;
         $this->unico = true;
         $this->aplicaEnPaciente = false;
         $this->setFechaCreado(new \DateTime('now'));
@@ -187,13 +193,28 @@ class Registro
     }
 
     /**
-     * Get pregunta
+     * Get preguntas
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
     public function getPreguntas()
     {
         return $this->preguntas;
+    }
+
+    /**
+     * Get pregunta
+     *
+     * @return Pregunta El Objeto Pregunta si lo encuentra, NULL en los demás casos
+     */
+    public function getPregunta($id_pregunta)
+    {
+        foreach($this->preguntas as $preg){
+            if($preg->getId() === $id_pregunta){
+                return $preg;
+            }
+        }
+        return null;
     }
 
     /**
@@ -217,6 +238,29 @@ class Registro
     public function getTipo()
     {
         return $this->tipo;
+    }
+    
+    /**
+     * Set tabla
+     *
+     * @param boolean $tabla
+     * @return Pregunta
+     */
+    public function setTabla($tabla)
+    {
+        $this->tabla = $tabla;
+    
+        return $this;
+    }
+
+    /**
+     * Is tabla
+     *
+     * @return boolean 
+     */
+    public function isTabla()
+    {
+        return $this->tabla;
     }
     
     public function __toString() {

@@ -32,6 +32,7 @@
                     </a>
                 </div>
                 <div class="panel-body">
+                    {% if diagnostico.evidencias is not empty %}
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">
@@ -46,6 +47,8 @@
                             {% endfor %}
                         </div>
                     </div>
+                    {% endif %}
+                    {% if diagnostico.factoresRelacionados is not %}
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">
@@ -60,6 +63,7 @@
                             {% endfor %}
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

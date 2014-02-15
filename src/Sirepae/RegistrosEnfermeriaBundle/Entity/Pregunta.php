@@ -40,6 +40,16 @@ class Pregunta
     private $requerido;
 
     /** 
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $columna;
+    
+    /** 
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $tabla;
+
+    /** 
      * @ORM\Column(type="datetime", nullable=false)
      */
     private $fecha_creado;
@@ -81,6 +91,8 @@ class Pregunta
         $this->multi_rta = false;
         $this->expandido = false;
         $this->requerido = false;
+        $this->columna = false;
+        $this->tabla = false;
     }
     
     /**
@@ -206,6 +218,29 @@ class Pregunta
     public function isRequerido()
     {
         return $this->requerido;
+    }
+
+    /**
+     * Set columna
+     *
+     * @param boolean $columna
+     * @return Pregunta
+     */
+    public function setColumna($columna)
+    {
+        $this->columna = $columna;
+    
+        return $this;
+    }
+
+    /**
+     * Is columna
+     *
+     * @return boolean 
+     */
+    public function isColumna()
+    {
+        return $this->columna;
     }
 
     /**
@@ -341,6 +376,29 @@ class Pregunta
     public function getRegistro()
     {
         return $this->registro;
+    }
+    
+    /**
+     * Set tabla
+     *
+     * @param boolean $tabla
+     * @return Pregunta
+     */
+    public function setTabla($tabla)
+    {
+        $this->tabla = $tabla;
+    
+        return $this;
+    }
+
+    /**
+     * Is tabla
+     *
+     * @return boolean 
+     */
+    public function isTabla()
+    {
+        return $this->tabla;
     }
     
     public function __toString() {

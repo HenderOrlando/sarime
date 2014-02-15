@@ -9,9 +9,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 class UsuarioType extends AbstractType
 {
     private $rol;
+    private $usuario;
     
-    public function __construct(\Sirepae\UsuariosBundle\Entity\Rol $rol = null) {
+    public function __construct(\Sirepae\UsuariosBundle\Entity\Rol $rol = null, \Sirepae\UsuariosBundle\Entity\Usuario $usuario = null) {
         $this->rol = $rol;
+        $this->usuario = $usuario;
     }
         /**
      * @param FormBuilderInterface $builder
@@ -38,8 +40,12 @@ class UsuarioType extends AbstractType
                 'data' => $this->rol,
                 'attr' => array('class' => 'hide'),
             ));
-        }else
-            $builder->add('rol_usuario');
+        }elseif(!is_null($this->usuario)){
+            if($this->usuario->hasRole('ROLE_COORDINADOR')){
+                $builder->add('rol_usuario');
+            }
+        }else{
+        }
     }
     
     /**

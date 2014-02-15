@@ -6,8 +6,11 @@
 
     {{ form(form) }}
 
+    <div id="form-new-paciente">
+        {{ render(controller('SirepaeRegistrosEnfermeriaBundle:Paciente:new',{'ajax': true, 'registro': true})) }}
+    </div>
+    
     <div class="btn-group btn-group-lg pull-right">
         <a class="btn btn-default btn-lg" href="{{ path('registros_enfermeria') }}">Volver</a>
-        <a class="btn btn-info btn-lg" href="{{ path('paciente_new') }}">Agregar Paciente</a>
     </div>
 {% endblock %}

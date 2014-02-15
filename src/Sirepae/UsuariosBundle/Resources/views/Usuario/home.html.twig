@@ -12,31 +12,40 @@
                 </button>
                 {% set role = 'Usuario' %}
                 {% if is_granted('ROLE_SUPER_ADMIN') %}
+                    {% set role = 'super-administrador' %}
                     {% set icon = 'hospital-o' %}
                 {% elseif is_granted('ROLE_COORDINADOR') %}
-                    {% set icon = 'user-med' %}
+                    {% set role = 'coordinador' %}
+                    {% set icon = 'user-md' %}
                 {% elseif is_granted('ROLE_DOCENTE') %}
+                    {% set role = 'docente' %}
                     {% set icon = 'medkit' %}
                 {% elseif is_granted('ROLE_ESTUDIANTE') %}
+                    {% set role = 'estudiante' %}
                     {% set icon = 'stethoscope' %}
                 {% endif %}
                             
-                <a class="navbar-brand" href="{{ path('home') }}">
+                <a class="navbar-brand title" href="{{ path('home') }}">
                     Sirepae
                     <i class="fa fa-{{ icon }}"></i>
+                    {{ role }}
                 </a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
+                    {% if is_granted('ROLE_DOCENTE') or is_granted('ROLE_ESTUDIANTE') %}
                     <li>
                         <a href="{{ path('pae') }}">PAE</a>
                     </li>
                     <li>
                         <a href="{{ path('registros_enfermeria') }}">Registros de Enfermería</a>
                     </li>
+                    {% endif %}
+                    {% if is_granted('ROLE_COORDINADOR') %}
                     <li>
                         <a href="{{ path('practica') }}">Prácticas</a>
                     </li>
+                    {% endif %}
                     <li class="dropdown">
                         <a data-toggle="dropdown" href="#" class="btn btn-primary">
                             Cuenta
@@ -56,8 +65,8 @@
                         </ul>
                     </li>
                 </ul>
-                <form class="navbar-form navbar-right">
-                    <input type="text" class="form-control" placeholder="Search...">
+                <form class="navbar-form navbar-right navbar-search" action="">
+                    <input type="text" class="form-control search" placeholder="Buscar...">
                 </form>
             </div>
         </div>
@@ -67,21 +76,32 @@
             <div class="col-sm-3 col-md-2 sidebar">
                 {% block menu %}
                 <ul class="nav nav-sidebar">
+                    {% if is_granted('ROLE_COORDINADOR') %}
                     <li class="{{ active_home_resumen is defined ?'active':''}}">
                         <a href="{{ path('home') }}">Vista General</a>
                     </li>
                     <li class="{{ active_practicas_resumen is defined ?'active':''}}">
                         <a href="{{ path('practica') }}">Administrar Practicas</a>
                     </li>
+                    {% endif %}
+                    {% if is_granted('ROLE_COORDINADOR') %}
                     <li class="{{ active_usuarios_resumen is defined ?'active':''}}">
                         <a href="{{ path('usuario') }}">Administrar Usuarios</a>
                     </li>
+                    {% endif %}
+                    {% if is_granted('ROLE_DOCENTE') or is_granted('ROLE_ESTUDIANTE') %}
                     <li class="{{ active_registrosEnfermeria_resumen is defined ?'active':''}}">
                         <a href="{{ path('registros_enfermeria') }}">Administrar Registros de Enfermería</a>
                     </li>
                     <li class="{{ active_paes_resumen is defined ?'active':''}}">
-                        <a href="{{ path('pae') }}">Administrar Planes de Atención de Enfermería</a>
+                        <a href="{{ path('pae') }}">Administrar Procesos de Atención de Enfermería</a>
                     </li>
+                    {% endif %}
+                    {% if is_granted('ROLE_COORDINADOR') %}
+                    <li class="{{ active_consultas_resumen is defined ?'active':''}}">
+                        <a href="{{ path('consultas') }}">Consultas</a>
+                    </li>
+                    {% endif %}
                 </ul>
                 {% endblock menu %}
                 {% block submenu %}
@@ -89,180 +109,7 @@
             </div>
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                 {% block content %}
-                <h1 class="page-header">Tablero General - {{ "now"|date("Y") }}</h1>
-                <div class="row placeholders">
-                    <div class="col-xs-12 col-sm-4 placeholder">
-                        {#<img class="img-responsive" alt="200x200" src="data:image/png;base64,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">#}
-                        <a href="{{ path('registros_enfermeria') }}">
-                            <h4>Registros de Enfermería</h4>
-                        </a>
-                        <span class="text-muted"><span>{{ res | length }}</span> en total</span>
-                    </div>
-                    <div class="col-xs-12 col-sm-4 placeholder">
-                        {#<img class="img-responsive" alt="200x200" src="data:image/png;base64,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">#}
-                        <a href="{{ path('pae') }}">
-                            <h4>PAE</h4>
-                        </a>
-                        <span class="text-muted"><span>{{ paes | length }}</span> en total</span>
-                    </div>
-                    <div class="col-xs-12 col-sm-4 placeholder">
-                        {#<img class="img-responsive" alt="200x200" src="data:image/png;base64,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">#}
-                        <a href="{{ path('practica') }}">
-                            <h4>Prácticas</h4>
-                        </a>
-                        <span class="text-muted"><span>{{ ps | length }}</span> en total</span>
-                    </div>
-                </div>
-                
-                <div class="col-sm-12 col-xs-12">
-                    <h2 class="sub-header">Últimos Registros de Enfermería</h2> 
-                    <div class="col-sm-12">
-                        <div class="row">
-                            {% for re in res|slice(0,8) %}
-                                {% if loop.index is divisibleby(5) %}
-                                    </div>
-                                    <div class="row">
-                                {% endif %}
-                                <div class="col-sm-3">
-                                    <div class="panel panel-primary">
-                                        <div class="panel-heading">
-                                            Registro de {{ re.estudiante }} al paciente {{ re.paciente }}
-                                        </div>
-                                        <div class="panel-body">
-                                                {% for nota in re.notas|slice(0,6) %}
-                                                <div class="panel panel-primary">
-                                                    <div class="panel-body">
-                                                        {{ nota.nota }}
-                                                    </div>
-                                                </div>
-                                                {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12 col-xs-12">
-                    <h2 class="sub-header">Últimos PAE</h2> 
-                    <div class="col-sm-12">
-                        <div class="row">
-                            {% if paes is not empty %}
-                                {% for pae in paes|slice(0,6) %}
-                                    {% if loop.index is divisibleby(4) %}
-                                        </div>
-                                        <div class="row">
-                                    {% endif %}
-                                    <div class="col-sm-4">
-                                        <div class="panel panel-primary">
-                                            <div class="panel-heading">
-                                                {{ pae }}
-                                                {% if pae.calificacion is defined and pae.calificacion is not null %}
-                                                    {% set valor = pae.calificacion.valor %}
-                                                    <span class="label label-{{ valor < 3?'danger':valor < 3.3?'warning':valor < 4?'info':'success' }}">{{ valor }}</span>
-                                                {% endif %}
-                                            </div>
-                                            <div class="panel-body">
-                                                <dl class="dl-horizontal">
-                                                    <dt>Valoración Objetica</dt>
-                                                    <dd>{{ pae.valObjetiva }}</dd>
-                                                </dl>
-                                                <dl class="dl-horizontal">
-                                                    <dt>Valoración Subjetiva</dt>
-                                                    <dd>{{ pae.valSubjetiva }}</dd>
-                                                </dl>
-                                                <dl class="dl-horizontal">
-                                                    <dt>Evaluación</dt>
-                                                    <dd>{{ pae.evaluacion }}</dd>
-                                                </dl>
-                                                {% if pae.calificacion is defined and pae.calificacion is not null %}
-                                                    <dl class="dl-horizontal">
-                                                        <dt>Docente</dt>
-                                                        <dd>{{ pae.calificacion.docente }}</dd>
-                                                    </dl>
-                                                    <dl class="dl-horizontal">
-                                                        <dt>Observacion Docente</dt>
-                                                        <dd>{{ pae.calificacion.observacion }}</dd>
-                                                    </dl>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12 col-xs-12">
-                    <h2 class="sub-header">Prácticas</h2> 
-                    <div class="col-sm-12">
-                        <div class="row">
-                        {% for p in ps %}
-                            {% if loop.index is divisibleby(4) %}
-                                </div>
-                                <div class="row">
-                            {% endif %}
-                            <div class="col-sm-4">
-                                <div class="panel panel-primary">
-                                    <div class="panel-heading">
-                                        Práctica {{ p.nombre }} 
-                                        (<span class="">
-                                            Docente {{ p.docente }}
-                                        </span> y 
-                                        <span class="">
-                                            Coordinador {{ p.coordinador }}
-                                        </span>)
-                                    </div>
-                                    <div class="panel-body">
-                                        {{ p.nombre }}
-                                    </div>
-                                    {% if p.estudiantes is not empty %}
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>
-                                                        Nombre Completo
-                                                    </th>
-                                                    <th>
-                                                        Código
-                                                    </th>
-                                                    <th>
-                                                        Total
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for e in p.estudiantes %}
-                                                    <tr>
-
-                                                    <td>
-                                                        {{ e.usuario.fullNombre }}
-                                                    </td>
-                                                    <td>
-                                                        {{ e.codigo }}
-                                                    </td>
-                                                    <td>
-                                                        <div class="text-info title">
-                                                            {{ e.registrosEnfermeria | length }} de Registros de Enfermería
-                                                        </div>
-                                                        <div class="text-info title">
-                                                            {{ e.planesCuidado |length }} de Plantes de Cuidado
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                            <tfoot>
-                                            </tfoot>
-
-                                        </table>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endfor %}
-                        </div>
-                    </div>
-                </div>
+                    {% include 'SirepaeUsuariosBundle:Consultas:index_ajax.html.twig' %}
                 {% endblock content %}
             </div>
         </div>

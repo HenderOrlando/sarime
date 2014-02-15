@@ -382,9 +382,12 @@ class PAE
      * @param \Sirepae\PAEBundle\Entity\Indicador $indicador
      * @return boolean
      */
-    public function existIndicador(\Sirepae\PAEBundle\Entity\Indicador $indicador, \Sirepae\PAEBundle\Entity\Escala $escala )
+    public function existIndicador(\Sirepae\PAEBundle\Entity\Indicador $indicador, \Sirepae\PAEBundle\Entity\Escala $escala = null)
     {
         return $this->indicadores->exists(function($key, IndicadorPAE $indicadorPAE) use ($indicador, $escala){
+            if(is_null($escala)){
+                return $indicadorPAE->getIndicador()->getId() == $indicador->getId();
+            }
             return $indicadorPAE->getIndicador()->getId() == $indicador->getId() && $indicadorPAE->getEscala()->getId() == $escala->getId();
         });
     }
@@ -456,6 +459,60 @@ class PAE
     }
     
     public function __toString() {
-        return 'Plan de Atención de Enfermería de '.$this->getEstudiante()->getNombre().' ('.$this->getEstudiante()->getCodigo().') para el paciente '.$this->getPaciente()->getFullName().' ('.$this->getPaciente()->getCedula().')';
+        return 'Proceso de Atención de Enfermería de '.$this->getEstudiante()->getNombre().' ('.$this->getEstudiante()->getCodigo().') para el paciente '.$this->getPaciente()->getFullName().' ('.$this->getPaciente()->getCedula().')';
+    }
+    
+    public function getFactoresRelacionados(Diagnostico $diag = null){
+        $factores = array();
+        if(is_null($diag)){
+            foreach($this->diagnosticos as $diag){
+                foreach($diag->getFactorRelacionados() as $e){
+                    $factores[$e->getId()] = $e;
+                }
+            }
+        }else{
+            $diag_ = null;
+            foreach($this->diagnosticos as $diagnostico){
+                if($diagnostico->getDiagnostico()->getId() == $diag->getId()){
+                    $diag_ = $diagnostico;
+                    break;
+                }
+            }
+            if(!is_null($diag_)){
+                foreach($diag_->getFactorRelacionados() as $e){
+                    if($e->getDiagnostico()->getId() == $diag->getId())
+                        $factores[$e->getId()] = $e;
+                }
+            }
+        }
+        return $factores;
+    }
+    public function getEvidencias(Diagnostico $diag = null){
+        $evidencias = array();
+        if(is_null($diag)){
+            foreach($this->diagnosticos as $diag){
+                foreach($diag->getEvidencias() as $e){
+                    $evidencias[$e->getId()] = $e;
+                }
+            }
+        }else{
+            $diag_ = null;
+            foreach($this->diagnosticos as $diagnostico){
+                if($diagnostico->getDiagnostico()->getId() == $diag->getId()){
+                    $diag_ = $diagnostico;
+                    break;
+                }
+            }
+            if(!is_null($diag_)){
+                foreach($diag_->getEvidencias() as $e){
+                    if($e->getDiagnostico()->getId() == $diag->getId())
+                        $evidencias[$e->getId()] = $e;
+                }
+            }
+        }
+        return $evidencias;
+    }
+    public function getEvidenciasFactoresRelacionados(){
+        return \array_merge($this->getEvidencias(),$this->getFactoresRelacionados());
     }
 }

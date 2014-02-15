@@ -25,6 +25,10 @@ class OpcionRespuesta
     private $descripcion;
 
     /** 
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $columna;
+    /** 
      * @ORM\Column(type="datetime", nullable=false)
      */
     private $fecha_creado;
@@ -58,6 +62,7 @@ class OpcionRespuesta
     {
         $this->setFechaCreado(new \DateTime('now'));
         $this->respuesta = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->columna = false;
     }
     
     /**
@@ -217,6 +222,30 @@ class OpcionRespuesta
     {
         return $this->tipoRespuesta;
     }
+    
+    /**
+     * Set columna
+     *
+     * @param boolean $columna
+     * @return Pregunta
+     */
+    public function setColumna($columna)
+    {
+        $this->columna = $columna;
+    
+        return $this;
+    }
+
+    /**
+     * Is columna
+     *
+     * @return boolean 
+     */
+    public function isColumna()
+    {
+        return $this->columna;
+    }
+    
     
     public function __toString() {
         return $this->enunciado;

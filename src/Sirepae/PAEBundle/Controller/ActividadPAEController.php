@@ -304,7 +304,7 @@ class ActividadPAEController extends Controller
             return \Symfony\Component\HttpFoundation\JsonResponse::create($json);
             
         }else{
-            throw $this->createNotFoundException('Actividad o Plan de Actividades de Enfermería no Encontradas');
+            throw $this->createNotFoundException('Actividad o Proceso de Actividades de Enfermería no Encontradas');
         }
     }
 }

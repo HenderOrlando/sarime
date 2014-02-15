@@ -8,16 +8,30 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class RegistroEnfermeriaType extends AbstractType
 {
+    private $estudiante;
+    
+    public function __construct(\Sirepae\RegistrosEnfermeriaBundle\Entity\Estudiante $estudiante = null){
+        $this->estudiante = $estudiante;
+    }
         /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('estudiante')
-            ->add('paciente')
-        ;
+        $builder->add('paciente', null, array(
+                'empty_value'  =>  'Elija un paciente',
+//                'empty_data'   =>  '-1'
+            ));
+        if(!is_null($this->estudiante)){
+            $builder->add('estudiante',null, array(
+                'label' => false,
+                'data' => $this->estudiante,
+                'attr' => array('class' => 'hide'),
+            ));
+        }else{
+            $builder->add('estudiante');
+        }
     }
     
     /**

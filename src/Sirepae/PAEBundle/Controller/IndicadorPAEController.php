@@ -317,7 +317,7 @@ class IndicadorPAEController extends Controller
             return \Symfony\Component\HttpFoundation\JsonResponse::create($json);
             
         }else{
-            throw $this->createNotFoundException('Indicador o Escala o Plan de Indicadores de Enfermería no Encontradas');
+            throw $this->createNotFoundException('Indicador o Proceso de Enfermería no Encontradas');
         }
     }
 }

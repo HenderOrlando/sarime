@@ -1,0 +1,53 @@
+{% extends 'SirepaeUsuariosBundle:Consultas:index.html.twig' %}
+
+{% block content -%}
+    {% set path_ = 'pae' %}
+    {% set title_ = 'Proceso de Atención de Enfermería' %}
+    <ul class="list-unstyled list-inline">
+        <li>
+            <h1 class="title">
+                Tablero de {{ title_ }}
+            </h1>
+        </li>
+    </ul>
+    <div class="table-responsive">
+        <table class="records_list">
+            <thead>
+                <tr>
+                    <th>Paciente</th>
+                    <th>Estudiante</th>
+                    <th>Valoración Objetiva</th>
+                    <th>Valoración Subjetiva</th>
+                    <th>Evaluación</th>
+                    <th>Objetivo</th>
+                    <th>Realizado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.paciente }}</td>
+                    <td>{{ entity.estudiante }}</td>
+                    <td>{{ entity.valobjetiva }}</td>
+                    <td>{{ entity.valsubjetiva }}</td>
+                    <td>{{ entity.evaluacion }}</td>
+                    <td>{{ entity.objetivo }}</td>
+                    <td>
+                        {% if entity.fechacreado %}
+                            <div class="moment-date" title="{{ entity.fechaCreado|date('Y-m-d H:i:s') }}">
+                                {{ entity.fechacreado|date('Y-m-d H:i:s') }}
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-lg">
+                            <a class="btn btn-primary" href="{{ path(path_ ~ '_edit', { 'id': entity.id }) }}">Editar</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

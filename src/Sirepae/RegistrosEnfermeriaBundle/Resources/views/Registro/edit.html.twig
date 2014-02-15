@@ -29,7 +29,7 @@
                         </h3>
                     </a>
                     <span class="pull-right">
-                        {% if pregunta.respuestas is empty %}
+                        {% if not entity.isTabla and pregunta.respuestas is empty %}
                             {% render(controller("SirepaeRegistrosEnfermeriaBundle:Pregunta:getDeleteForm", { 'id': pregunta.id })) %}
                         {% endif %}
                     </span>

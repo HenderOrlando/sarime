@@ -220,4 +220,18 @@ class Intervencion
     public function __toString() {
         return $this->getNombre().' Cod. '.$this->getCodigo();
     }
+
+    /**
+     * Exist actividad
+     *
+     * @param \Sirepae\PAEBundle\Entity\ActividadPAE $actividadPAE
+     * @return boolean
+     */
+    public function existActividad(ActividadPAE $actividadPAE) 
+    {
+        return $this->actividades->exists(function($key, Actividad $actividad) use ($actividadPAE){
+            return $actividad->getId() == $actividadPAE->getId();
+        });
+    }
+
 }

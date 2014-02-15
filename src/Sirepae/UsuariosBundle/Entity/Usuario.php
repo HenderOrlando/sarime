@@ -36,6 +36,11 @@ class Usuario extends BaseUser
     private $direccion;
 
     /** 
+     * @ORM\Column(type="bigint", nullable=false)
+     */
+    private $ingresos;
+
+    /** 
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $fecha_creado;
@@ -72,6 +77,7 @@ class Usuario extends BaseUser
     public function __construct()
     {
         parent::__construct();
+        $this->ingresos = 0;
         $this->docentesPractica = new \Doctrine\Common\Collections\ArrayCollection();
         $this->coordinadoresPractica = new \Doctrine\Common\Collections\ArrayCollection();
         $this->calificaciones = new \Doctrine\Common\Collections\ArrayCollection();
@@ -111,6 +117,28 @@ class Usuario extends BaseUser
     public function getNombres()
     {
         return $this->nombres;
+    }
+
+    /**
+     * Add ingreso
+     *
+     * @return Usuario
+     */
+    public function addIngreso()
+    {
+        $this->ingresos = $this->ingresos+1;
+    
+        return $this;
+    }
+
+    /**
+     * Get ingresos
+     *
+     * @return integer 
+     */
+    public function getIngresos()
+    {
+        return $this->ingresos;
     }
 
     /**

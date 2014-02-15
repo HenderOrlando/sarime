@@ -40,11 +40,13 @@ class PacienteController extends Controller
      * Creates a new Paciente entity.
      *
      * @Route("/", name="paciente_create")
+     * @Route("/registro-enfermeria/", name="paciente_create_registro_enfermeria")
      * @Method("POST")
      * @Template("SirepaeRegistrosEnfermeriaBundle:Paciente:new.html.twig")
      */
     public function createAction(Request $request)
     {
+        $routeName = $request->get('_route');
         $entity = new Paciente();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
@@ -54,6 +56,9 @@ class PacienteController extends Controller
             $em->persist($entity);
             $em->flush();
 
+            if(strpos($routeName, 'registro_enfermeria') !== false){
+                return $this->redirect($this->generateUrl('registros_enfermeria_new_paciente',array('id_paciente' => $entity->getId())));
+            }
             return $this->redirect($this->generateUrl('paciente'));
         }
 
@@ -72,10 +77,13 @@ class PacienteController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createCreateForm(Paciente $entity)
+    private function createCreateForm(Paciente $entity, $registro = false)
     {
+        $url = $this->generateUrl('paciente_create');
+        if($registro)
+            $url = $this->generateUrl('paciente_create_registro_enfermeria');
         $form = $this->createForm(new PacienteType(), $entity, array(
-            'action' => $this->generateUrl('paciente_create'),
+            'action' => $url,
             'method' => 'POST',
         ));
 
@@ -87,21 +95,26 @@ class PacienteController extends Controller
     /**
      * Displays a form to create a new Paciente entity.
      *
-     * @Route("/new", name="paciente_new")
+     * @Route("/new/", name="paciente_new")
      * @Method("GET")
      * @Template()
      */
     public function newAction()
     {
         $entity = new Paciente();
-        $form   = $this->createCreateForm($entity);
+        $form   = $this->createCreateForm($entity, $this->getRequest()->get('registro'));
 
-        return array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
+        $datos = array(
+            'entity'    => $entity,
+            'ajax'      => $this->getRequest()->get('ajax'),
+            'form'      => $form->createView(),
             'active_pacientes_resumen'  =>  true,
             'active_new'  =>  true,
         );
+        if($this->getRequest()->get('ajax')){
+            return $this->render('SirepaeRegistrosEnfermeriaBundle:Paciente:new_ajax.html.twig', $datos);
+        }
+        return $datos;
     }
 
     /**

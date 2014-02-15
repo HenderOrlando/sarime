@@ -3,8 +3,9 @@
 {% block submenu %}
 <ul class="nav">
     <li>
-        Administrar Plan de Atención de Enfermería
+        Administrar Procesos de Atención de Enfermería
         <ul class="nav  nav-sidebar">
+            {% if is_granted('ROLE_COORDINADOR') %}
             <li class="{{ not (active_new is defined or active_edit is defined) and active_nics_resumen is defined ?'active':''}}">
                 <a href="{{ path('nic') }}">
                     Administrar NIC 
@@ -236,6 +237,8 @@
                     </ul>
                 {% endif %}
             </li>
+            {% endif %}
+            {% if is_granted('ROLE_DOCENTE') or is_granted('ROLE_ESTUDIANTE') %}
             <li class="{{ not (active_new is defined or active_edit is defined) and active_paes_resumen is defined ?'active':''}}">
                 <a href="{{ path('pae') }}">
                     Administrar PAE
@@ -255,13 +258,14 @@
                     {% endif %}
                 {% endif %}
             </li>
+            {% endif %}
         </ul>
     </li>
 </ul>
 {% endblock submenu%}
 {% block content -%}
     {% set path_ = 'pae' %}
-    {% set title_ = 'Planes de Atención de Enfermería' %}
+    {% set title_ = 'Proceso de Atención de Enfermería' %}
     <ul class="list-unstyled list-inline">
         <li>
             <h1 class="title">
@@ -269,29 +273,43 @@
             </h1>
         </li>
         <li class="text-align pull-right title">
+            {% if is_granted('ROLE_ESTUDIANTE') %}
             <a class="btn btn-primary btn-lg" href="{{ path( path_ ~ '_new') }}">
                 Nuevo <span class="text-upper" >{{ path_ }}</span>
             </a>
+            {% endif %}
         </li>
     </ul>
     <div class="table-responsive">
         <table class="records_list">
             <thead>
                 <tr>
+                    <th>Paciente</th>
+                    <th>Estudiante</th>
                     <th>Valoración Objetiva</th>
                     <th>Valoración Subjetiva</th>
                     <th>Evaluación</th>
                     <th>Objetivo</th>
+                    <th>Realizado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
             {% for entity in entities %}
                 <tr>
+                    <td>{{ entity.paciente }}</td>
+                    <td>{{ entity.estudiante }}</td>
                     <td>{{ entity.valobjetiva }}</td>
                     <td>{{ entity.valsubjetiva }}</td>
                     <td>{{ entity.evaluacion }}</td>
                     <td>{{ entity.objetivo }}</td>
+                    <td>
+                        {% if entity.fechacreado %}
+                            <div class="moment-date" title="{{ entity.fechaCreado|date('Y-m-d H:i:s') }}">
+                                {{ entity.fechacreado|date('Y-m-d H:i:s') }}
+                            </div>
+                        {% endif %}
+                    </td>
                     <td>
                         <div class="btn-group btn-group-lg">
                             <a class="btn btn-primary" href="{{ path(path_ ~ '_edit', { 'id': entity.id }) }}">Editar</a>

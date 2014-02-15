@@ -29,7 +29,17 @@ class RegistroEnfermeriaController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->findAll();
+        if($this->getUser()->hasRole('ROLE_ESTUDIANTE')){
+            $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->findAllEstudiante($this->getUser()->getEstudiantes()->getId());
+        }elseif($this->getUser()->hasRole('ROLE_DOCENTE')){
+            $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->findAllDocente($this->getUser()->getId());
+        }elseif($this->getUser()->hasRole('ROLE_COORDINADOR')){
+            $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->findAllCoordinador($this->getUser()->getId());
+        }elseif($this->getUser()->hasRole('ROLE_SUPER_ADMIN')){
+            $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->findAll();
+        }else{
+            $entities = array();
+        }
 
         return array(
             'entities' => $entities,
@@ -74,7 +84,7 @@ class RegistroEnfermeriaController extends Controller
     */
     private function createCreateForm(RegistroEnfermeria $entity)
     {
-        $form = $this->createForm(new RegistroEnfermeriaType(), $entity, array(
+        $form = $this->createForm(new RegistroEnfermeriaType($this->getUser()->getEstudiantes()), $entity, array(
             'action' => $this->generateUrl('registros_enfermeria_create'),
             'method' => 'POST',
         ));
@@ -87,15 +97,21 @@ class RegistroEnfermeriaController extends Controller
     /**
      * Displays a form to create a new RegistroEnfermeria entity.
      *
+     * @Route("/new/paciente/{id_paciente}/", name="registros_enfermeria_new_paciente")
      * @Route("/new", name="registros_enfermeria_new")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction($id_paciente = null)
     {
         $entity = new RegistroEnfermeria();
-        $form   = $this->createCreateForm($entity);
+        $paciente = null;
+        if(!is_null($id_paciente)){
+            $paciente = $this->getDoctrine()->getManager()->getRepository('SirepaeRegistrosEnfermeriaBundle:Paciente')->find($id_paciente);
+            $entity->setPaciente($paciente);
+        }
 
+        $form   = $this->createCreateForm($entity);
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
@@ -153,10 +169,6 @@ class RegistroEnfermeriaController extends Controller
         
         $registros = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Registro')->findAll();
         $optRtas = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:OpcionRespuesta')->findArrayAll();
-        
-        $filter = new \Twig_SimpleFilter('explode', function($string, $delimiter){
-            return explode($delimiter, $string);
-        });
 
         return array(
             'entity'        => $entity,
@@ -179,7 +191,7 @@ class RegistroEnfermeriaController extends Controller
     */
     private function createEditForm(RegistroEnfermeria $entity)
     {
-        $form = $this->createForm(new RegistroEnfermeriaType(), $entity, array(
+        $form = $this->createForm(new RegistroEnfermeriaType($this->getUser()->getEstudiantes()), $entity, array(
             'action' => $this->generateUrl('registros_enfermeria_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

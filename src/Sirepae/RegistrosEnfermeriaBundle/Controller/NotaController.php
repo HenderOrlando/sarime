@@ -32,11 +32,18 @@ class NotaController extends Controller
         
         $re = null;
         if(!is_null($id)){
-            $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Nota')->findByRegistroEnfermeria($id);
-            $re = $this->getDoctrine ()->getManager ()->getRepository ('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->find ($id);
+            $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Nota')->createQueryBuilder('n')
+                    ->andWhere('n.registroEnfermeria ='.$id)
+                    ->orderBy('n.fecha_creado', 'DESC')
+                    ->getQuery()
+                    ->getResult();
+            $re = $this->getDoctrine ()->getManager ()->getRepository ('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->find($id);
         }
-        else
+        elseif($this->getUser()->hasRole('ROLE_SUPER_ADMIN')){
             $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Nota')->findAll();
+        }else{
+            $entities = array();
+        }
 
         return array(
             'entities'              =>  $entities,

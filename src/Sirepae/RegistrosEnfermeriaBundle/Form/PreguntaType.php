@@ -22,6 +22,10 @@ class PreguntaType extends AbstractType
             ->add('multi_rta')
             ->add('expandido')
             ->add('requerido')
+            ->add('columna')
+            ->add('tabla',null,array(
+                'label' =>  'Ver como tabla'
+            ))
         ;
     }
     

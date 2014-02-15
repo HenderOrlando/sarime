@@ -29,7 +29,18 @@ class PAEController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('SirepaePAEBundle:PAE')->findAll();
+        if($this->getUser()->hasRole('ROLE_ESTUDIANTE')){
+            $entities = $em->getRepository('SirepaePAEBundle:PAE')->findAllEstudiante($this->getUser()->getEstudiantes()->getId());
+        }elseif($this->getUser()->hasRole('ROLE_DOCENTE')){
+            $entities = $em->getRepository('SirepaePAEBundle:PAE')->findAllDocente($this->getUser()->getId());
+        }elseif($this->getUser()->hasRole('ROLE_COORDINADOR')){
+            $entities = $em->getRepository('SirepaePAEBundle:PAE')->findAllCoordinador($this->getUser()->getId());
+        }elseif($this->getUser()->hasRole('ROLE_SUPER_ADMIN')){
+            $entities = $em->getRepository('SirepaePAEBundle:PAE')->findAll();
+        }else{
+            $entities = array();
+        }
+        
 
         return array(
             'entities' => $entities,
@@ -74,7 +85,7 @@ class PAEController extends Controller
     */
     private function createCreateForm(PAE $entity)
     {
-        $form = $this->createForm(new PAEType(), $entity, array(
+        $form = $this->createForm(new PAEType(null, $this->getUser()), $entity, array(
             'action' => $this->generateUrl('pae_create'),
             'method' => 'POST',
         ));
@@ -176,12 +187,12 @@ class PAEController extends Controller
     */
     private function createEditForm(PAE $entity)
     {
-        $form = $this->createForm(new PAEType(), $entity, array(
+        $form = $this->createForm(new PAEType($entity, $this->getUser()), $entity, array(
             'action' => $this->generateUrl('pae_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Actualizar', 'attr' => array( 'class' => 'btn-success')));
+        $form->add('submit', 'submit', array('label' => 'Guardar', 'attr' => array( 'class' => 'btn-success')));
 
         return $form;
     }

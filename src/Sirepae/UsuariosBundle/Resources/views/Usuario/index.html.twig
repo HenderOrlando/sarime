@@ -5,27 +5,29 @@
     <li>
         Administrar Usuarios
         <ul class="nav  nav-sidebar">
-            <li class="{{ not (active_new is defined or active_edit is defined) and active_coordinadores_resumen is defined ?'active':''}}">
-                <a href="{{ path('coordinador') }}">
-                    Administrar Coordinadores 
-                </a>
-                {% if active_coordinadores_resumen is defined %}
-                    <ul class="nav  nav-sidebar">
-                        <li class="{{ active_new is defined?'active':''}}">
-                            <a href="{{ path('coordinador_new') }}">
-                                Nuevo Coordinador
-                            </a>
-                        </li>
-                        {% if active_edit is defined %}
-                            <li class="active">
-                                <a href="{{ path('coordinador_edit', { 'id': entity.id }) }}">
-                                    Edita Coordinador {{ entity.nombre }}
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <li class="{{ not (active_new is defined or active_edit is defined) and active_coordinadores_resumen is defined ?'active':''}}">
+                    <a href="{{ path('coordinador') }}">
+                        Administrar Coordinadores 
+                    </a>
+                    {% if active_coordinadores_resumen is defined %}
+                        <ul class="nav  nav-sidebar">
+                            <li class="{{ active_new is defined?'active':''}}">
+                                <a href="{{ path('coordinador_new') }}">
+                                    Nuevo Coordinador
                                 </a>
                             </li>
-                        {% endif %}
-                    </ul>
-                {% endif %}
-            </li>
+                            {% if active_edit is defined %}
+                                <li class="active">
+                                    <a href="{{ path('coordinador_edit', { 'id': entity.id }) }}">
+                                        Edita Coordinador {{ entity.nombre }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endif %}
             <li class="{{ not (active_new is defined or active_edit is defined) and active_docentes_resumen is defined ?'active':''}}">
                 <a href="{{ path('docente') }}">
                     Administrar Docentes 
@@ -89,27 +91,29 @@
                     </ul>
                 {% endif %}
             </li>
-            <li class="{{ not (active_new is defined or active_edit is defined) and active_roles_resumen is defined ?'active':''}}">
-                <a href="{{ path('rol') }}">
-                    Administrar Roles 
-                </a>
-                {% if active_roles_resumen is defined %}
-                    <ul class="nav  nav-sidebar">
-                        <li class="{{ active_new is defined?'active':''}}">
-                            <a href="{{ path('rol_new') }}">
-                                Nuevo Rol
-                            </a>
-                        </li>
-                        {% if active_edit is defined %}
-                            <li class="active">
-                                <a href="{{ path('rol_edit', { 'id': entity.id }) }}">
-                                    Edita Rol {{ entity.nombre }}
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <li class="{{ not (active_new is defined or active_edit is defined) and active_roles_resumen is defined ?'active':''}}">
+                    <a href="{{ path('rol') }}">
+                        Administrar Roles 
+                    </a>
+                    {% if active_roles_resumen is defined %}
+                        <ul class="nav  nav-sidebar">
+                            <li class="{{ active_new is defined?'active':''}}">
+                                <a href="{{ path('rol_new') }}">
+                                    Nuevo Rol
                                 </a>
                             </li>
-                        {% endif %}
-                    </ul>
-                {% endif %}
-            </li>
+                            {% if active_edit is defined %}
+                                <li class="active">
+                                    <a href="{{ path('rol_edit', { 'id': entity.id }) }}">
+                                        Edita Rol {{ entity.nombre }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endif %}
         </ul>
     </li>
 </ul>

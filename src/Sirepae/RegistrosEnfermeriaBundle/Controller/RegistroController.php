@@ -380,11 +380,23 @@ class RegistroController extends Controller
         if($registro && $registroEnfermeria){
             $form = $this->constructForm($registro, $registroEnfermeria, $numero, $editar);
             $form->handleRequest($request);
-
+// id_col|balor
             if ($form->isValid()) {
                 $em->transactional(function($em) use ($registroEnfermeria, $form, $numero, $editar, $registro){
                     foreach($form->getData() as $id => $dato){
-                        if(count(explode('-', $id)) > 1){
+                        $id_col = null;
+                        $row = null;
+                        $col = null;
+                        $preg_id = null;
+                        if($registro->isTabla()){
+                            $id = explode('-', $id);
+                            $id_col = $id[0];
+                            $id_row = $id[1];
+                            $preg = $col = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($id_col);
+                            $row = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($id_row);
+                            $optRta_id = $col->getOpcionesRespuesta()->first()->getId();
+                            $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$id_row, $numero, $id_col);
+                        }elseif(count(explode('-', $id)) > 1){
                             $id = explode('-', $id);
                             $preg_id = $id[0];
                             $optRta_id = $id[1];
@@ -396,11 +408,15 @@ class RegistroController extends Controller
                                 $optRta_id = $dato;
                             }
                         }
-                        $preg = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($preg_id);
-                        if(empty($dato)){
-                            $optRta_id = $preg->getOpcionesRespuesta()->first()->getId();
+                        if(!is_null($preg_id)){
+                            $preg = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($preg_id);
+                            if(empty($dato)){
+                                $optRta_id = $preg->getOpcionesRespuesta()->first()->getId();
+                            }
                         }
-                        $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$preg->getId(), $numero);
+                        /**/
+                        $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$preg->getId(), $numero, $id_col);
+
                         if(!$editar && ($registro->isUnico() && !$rtaRe) || (!$editar && !$registro->isUnico())){
                             $rta = new \Sirepae\RegistrosEnfermeriaBundle\Entity\Respuesta();
                         }elseif($editar && $rtaRe){
@@ -408,17 +424,27 @@ class RegistroController extends Controller
                         }else{
                             return $this->redirect($this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())));
                         }
+                        /**/
                         $optRta = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:OpcionRespuesta')->find($optRta_id);
+
                         $tipoCampo = $optRta->getTipoRespuesta()->getTipoCampo();
                         if($tipoCampo === 'date' || $tipoCampo === 'time' || $tipoCampo === 'datetime'){
                             $format = '';
-                            if($optRta->getTipoRespuesta()->getTipoCampo() === 'date')
-                                $format .= 'Y/m/d';
-                            elseif($optRta->getTipoRespuesta()->getTipoCampo() === 'time')
-                                $format .= 'H:i:s';
-                            else
-                                $format .= 'Y/m/d H:i:s';
-                            $dato = $dato->format($format);
+                            if($tipoCampo === 'date'){
+                                $format = 'Y/m/d';
+                            }
+                            elseif($tipoCampo === 'time'){
+                                $format = 'H:i:s';
+                            }
+                            else{
+                                $format = 'Y/m/d H:i:s';
+                            }
+                            if(method_exists($dato, 'format')){
+                                $dato = $dato->format($format);
+                            }
+                            else{
+                                $dato = date($format, strtotime($dato));
+                            }
                         }elseif($tipoCampo === 'choice'){
                             if($preg->isMultiRta())
                                 if(empty($dato))
@@ -427,6 +453,10 @@ class RegistroController extends Controller
                                     $dato = implode('\#_*/|\*_#/',$dato);
                             else
                                 $dato = null;
+                        }
+                        
+                        if($registro->isTabla() && !is_null($col) && !is_null($row)){
+                            $dato = $col->getId().'-_#|#_-'.$row->getId().'-_#|#_-'.$dato;
                         }
                         
                         $rta
@@ -465,59 +495,73 @@ class RegistroController extends Controller
     public function constructForm(Registro $registro, \Sirepae\RegistrosEnfermeriaBundle\Entity\RegistroEnfermeria $registroEnfermeria, $numero = null, $editar = false, $btnSubmit = true){
         $form = $this->createFormBuilder();
         $em = $this->getDoctrine()->getManager();
-        foreach($registro->getPreguntas() as $preg){
-            $rta = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$preg->getId(), $numero);
-            $datos = array();
-            $datos['label'] = $preg->getEnunciado();
-            $tipo_campo = 'choice';
-            $id_campo = '';
-            $opts = array();
-            $datos['required'] = $preg->isRequerido();
-            if(count($preg->getOpcionesRespuesta()) > 1){
-                foreach($preg->getOpcionesRespuesta() as $optRta){
-                    $opts[$optRta->getId()] = $optRta->getEnunciado();
+        if($registro->isTabla()){
+            $cols = array();
+            $rows = array();
+            foreach($registro->getPreguntas() as $preg){
+                if($preg->isColumna()){
+                    $cols[$preg->getId()] = $preg;
+                }else {
+                    $rows[$preg->getId()] = $preg;
                 }
-                $datos['multiple'] = $preg->isMultiRta();
-                $datos['expanded'] = $preg->isExpandido();
-                $datos['choices'] = $opts;
-                $id_campo = $preg->getId();
+            }
+            $rtas = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),null, $numero);
+            if((count($rtas) > 1 && $editar) || $registro->isUnico()){
+                foreach($rtas as $rta){
+                    if(is_null($rta->getRespuesta()->getValor())){
+                        $dato = $rta->getRespuesta()->getOpcionRespuesta()->getId();
+                    }
+                    else{
+                        $dato = $rta->getRespuesta()->getValor();
+                    }
+                    $dato = explode('-_#|#_-', $dato);
+                    $col_id = $dato[0];
+                    $row_id = $dato[1];
+                    $dato = $dato[2];
+    //                $id_campo = $col_id.'-'.$row_id;
+                    $datos = $this->getConstructCampo(
+                        $editar, 
+                        $rows[$row_id],
+                        $registro, 
+                        $registroEnfermeria, 
+                        $rta,
+                        $cols[$col_id]->getOpcionesRespuesta(),
+                        $cols[$col_id]
+                    );
+                    $form->add( $datos['id_campo'], $datos['tipo_campo'], $datos['datos']);
+                }
             }else{
-                $optRta = $preg->getOpcionesRespuesta()->first();
-                if($optRta){
-                    $tipo_campo = $optRta->getTipoRespuesta()->getTipoCampo();
-                    $id_campo = $preg->getId().'-'.$optRta->getId();
+                foreach($rows as $row){
+                    foreach($cols as $col){
+                        $datos = $this->getConstructCampo(
+                            $editar, 
+                            $row,
+                            $registro, 
+                            $registroEnfermeria, 
+                            $rtas[0],
+                            $col->getOpcionesRespuesta(),
+                            $col
+                        );
+                        $form->add($datos['id_campo'], $datos['tipo_campo'], $datos['datos']);
+                    }
+                }
+            }
+        }else{
+            foreach($registro->getPreguntas() as $preg){
+                if($preg->isTabla()){
+
                 }else{
-                    return $this->redirect($this->generateUrl('addOpcionRespuesta_new',array('id' => $preg->getId())));
+                    $datos = $this->getConstructCampo(
+                        $editar, 
+                        $preg,
+                        $registro, 
+                        $registroEnfermeria, 
+                        $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$preg->getId(), $numero),
+                        $preg->getOpcionesRespuesta()
+                    );
+                    $form->add($datos['id_campo'], $datos['tipo_campo'], $datos['datos']);
                 }
             }
-            if($tipo_campo === 'date' || $tipo_campo === 'time' || $tipo_campo === 'datetime')
-                $datos['data'] = new \DateTime ('now');
-            if($editar && $rta){
-                if(is_null($rta->getRespuesta()->getValor())){
-                    $dato = $rta->getRespuesta()->getOpcionRespuesta()->getId();
-                }
-                else{
-                    $dato = $rta->getRespuesta()->getValor();
-                }
-                if($tipo_campo === 'date' || $tipo_campo === 'time' || $tipo_campo === 'datetime'){
-                    $dato = new \DateTime ($dato);
-                }
-                elseif($tipo_campo === 'choice' && $preg->isMultiRta()){
-                    $dato = explode('\#_*/|\*_#/',$dato);
-                }
-                elseif($tipo_campo !== 'textarea' && $tipo_campo !== 'choice'){
-                    $dato = $preg->getId().'-'.$dato;
-                }
-                $datos['data'] = $dato;
-            }elseif(!$editar && $rta && $registro->isUnico()){
-                return $this->redirect($this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())));
-//                return $this->redirect($this->generateUrl('editar_registro_enfermeria', array(
-//                    'idRegistro' => $registro->getId(),
-//                    'idRegistroEnfermeria' => $registroEnfermeria->getId(),
-//                    'numero' => $numero,
-//                )));
-            }
-            $form->add($id_campo, $tipo_campo, $datos);
         }
         if($btnSubmit && count($registro->getPreguntas())){
             $form
@@ -527,5 +571,96 @@ class RegistroController extends Controller
                 ;
         }
         return $form->getForm();
+    }
+    private function getConstructCampo($editar, $preg, $registro, $registroEnfermeria, $rta, $optRta_, $col = null){
+        $datos = array();
+        $tipo_campo = 'choice';
+        $id_campo = '';
+        $opts = array();
+        $datos['attr'] = array();
+        if(is_null($col)){
+            $datos['label'] = $preg->getEnunciado();
+            $datos['attr']['placeholder'] = $preg->getEnunciado();
+        }else{
+            $datos['label'] = false;
+            $datos['attr']['placeholder'] = $col->getEnunciado().'-'.$preg->getEnunciado();
+        }
+        $datos['required'] = $preg->isRequerido();
+        if(count($optRta_) > 1){
+            foreach($optRta_ as $optRta){
+                $opts[$optRta->getId()] = $optRta->getEnunciado();
+            }
+            $datos['multiple'] = $preg->isMultiRta();
+            $datos['expanded'] = $preg->isExpandido();
+            $datos['choices'] = $opts;
+            $id_campo = $preg->getId();
+        }else{
+            $optRta = $optRta_[0];
+            if($optRta){
+                $tipo_campo = $optRta->getTipoRespuesta()->getTipoCampo();
+                $id_campo = $preg->getId().'-'.$optRta->getId();
+            }else{
+                return $this->redirect($this->generateUrl('addOpcionRespuesta_new',array('id' => $preg->getId())));
+            }
+        }
+        if(!is_null($col)){
+            $id_campo = $col->getId().'-'.$preg->getId();
+        }
+        if($tipo_campo === 'date' || $tipo_campo === 'time' || $tipo_campo === 'datetime'){
+//            $datos['data'] = new \DateTime ('now');
+            $datos['widget'] = 'single_text';
+            if($tipo_campo === 'date'){
+//                    $datos['format'] = 'yyyy-MM-dd';
+                unset($datos['widget']);
+                $datos['attr']['class'] = $tipo_campo;
+                $datos['attr']['data-format'] = 'YYYY-MM-DD';
+//                $datos['data'] = $datos['data']->format('Y-m-d');
+                $tipo_campo = 'text';
+            }elseif($tipo_campo === 'time'){
+                $datos['format'] = 'hh:mm';
+            }else{
+                $datos['format'] = 'YYYY-MM-DD HH:mm';
+            }
+            if(isset($datos['format'])){
+                $datos['attr']  =   array(
+                    'class' =>  $tipo_campo,
+                    'data-format' =>  $datos['format'],
+                );
+            }
+        }
+        if($editar && $rta){
+            if(is_null($rta->getRespuesta()->getValor())){
+                $dato = $rta->getRespuesta()->getOpcionRespuesta()->getId();
+            }
+            else{
+                $dato = $rta->getRespuesta()->getValor();
+            }
+            if($registro->isTabla()){
+                $dato = explode('-_#|#_-',$dato);
+                $dato = $dato[2];
+            }
+            if($tipo_campo === 'date' || $tipo_campo === 'time' || $tipo_campo === 'datetime'){
+                $dato = new \DateTime ($dato);
+            }
+            elseif($tipo_campo === 'choice' && $preg->isMultiRta()){
+                $dato = explode('\#_*/|\*_#/',$dato);
+            }
+            elseif($tipo_campo !== 'textarea' && $tipo_campo !== 'choice' && $optRta->getTipoRespuesta()->getTipoCampo() !== 'date'){
+                $dato = $preg->getId().'-'.$dato;
+            }
+            $datos['data'] = $dato;
+        }elseif(!$editar && $rta && $registro->isUnico()){
+            return $this->redirect($this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())));
+//                return $this->redirect($this->generateUrl('editar_registro_enfermeria', array(
+//                    'idRegistro' => $registro->getId(),
+//                    'idRegistroEnfermeria' => $registroEnfermeria->getId(),
+//                    'numero' => $numero,
+//                )));
+        }
+        return array(
+            'datos' =>  $datos,
+            'id_campo' =>  $id_campo,
+            'tipo_campo' =>  $tipo_campo,
+        );
     }
 }

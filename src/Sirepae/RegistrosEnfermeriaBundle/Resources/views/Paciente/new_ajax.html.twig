@@ -1,0 +1,9 @@
+
+
+    <h1 class="title">Nuevo Paciente</h1>
+
+    {{ form(form) }}
+
+    {% if ajax is not defined or not ajax %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('paciente') }}">Volver</a>
+    {% endif %}

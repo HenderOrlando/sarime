@@ -54,6 +54,11 @@ class Respuesta
      */
     private $opcionRespuesta;
     
+    private $col = null;
+    private $row = null;
+    private $cleanValor = '';
+    private $cleanEnunciado = '';
+    
     
     /******************* MÉTODOS *******************/
     
@@ -93,6 +98,70 @@ class Respuesta
     public function getValor()
     {
         return $this->valor;
+    }
+
+    /**
+     * Get valor
+     *
+     * @return string 
+     */
+    public function cleanValor()
+    {
+        if(is_null($this->cleanValor) || $this->cleanValor === ''){
+            $dato = $this->getValor();
+            if(is_null($dato)){
+                $this->cleanValor = $this->getOpcionRespuesta()->getEnunciado();
+            }elseif($this->getPregunta()->getRegistro()->isTabla()){
+                $datos = explode('-_#|#_-',$dato);
+                if(is_null($this->col)){
+                    $this->col = $this->getPregunta()->getRegistro()->getPregunta($datos[0]);
+                }
+                if(is_null($this->row)){
+                    $this->row = $this->getPregunta()->getRegistro()->getPregunta($datos[1]);
+                }
+                $this->cleanValor = $datos[2];
+            }elseif($this->getPregunta()->isMultiRta()){
+                $datos = explode('\#_*/|\*_#/',$dato);
+                $str = array();
+                $glue = ', ';
+                foreach($this->getPregunta()->getOpcionesRespuesta() as $optRta){
+                    foreach($datos as $dato){
+                        if($optRta->getId() == $dato){
+                            $str[] = $optRta->getEnunciado();
+                        }
+                    }
+                }
+                $this->cleanValor = implode($glue, $str);
+            }else{
+                $this->cleanValor = $dato;
+            }
+        }
+        return $this->cleanValor;
+    }
+
+    /**
+     * Get valor
+     *
+     * @return string 
+     */
+    public function cleanEnunciado()
+    {
+        if(is_null($this->cleanEnunciado) || $this->cleanEnunciado === ''){
+            $dato = $this->getValor();
+            if($this->getPregunta()->getRegistro()->isTabla()){
+                $datos = explode('-_#|#_-',$dato);
+                if(is_null($this->col)){
+                    $this->col = $this->getPregunta()->getRegistro()->getPregunta($datos[0]);
+                }
+                if(is_null($this->row)){
+                    $this->row = $this->getPregunta()->getRegistro()->getPregunta($datos[1]);
+                }
+                $this->cleanEnunciado = $this->col->getEnunciado().' por '.$this->row->getEnunciado();
+            }else{
+                $this->cleanEnunciado = $this->getPregunta()->getEnunciado();
+            }
+        }
+        return $this->cleanEnunciado;
     }
 
     /**
@@ -209,4 +278,5 @@ class Respuesta
     {
         return $this->opcionRespuesta;
     }
+    
 }

@@ -5,6 +5,7 @@
     <li>
         Administrar Prácticas
         <ul class="nav  nav-sidebar">
+            {% if is_granted('ROLE_COORDINADOR') %}
             <li class="{{ not (active_new is defined or active_edit is defined) and active_areas_resumen is defined ?'active':''}}">
                 <a href="{{ path('area') }}">
                     Administrar Áreas 
@@ -110,7 +111,7 @@
                     </ul>
                 {% endif %}
             </li>
-            
+            {% endif %}
         </ul>
     </li>
 </ul>
@@ -136,8 +137,12 @@
                 <tr>
                     <th>Nombre</th>
                     <th>Descripcion</th>
-                    <th>Coordinador</th>
-                    <th>Docente</th>
+                    {% if not is_granted('ROLE_COORDINADOR') and (is_granted('ROLE_DOCENTE') or is_granted('ROLE_ESTUDIANTE')) %}
+                        <th>Coordinador</th>
+                    {% endif %}
+                    {% if is_granted('ROLE_COORDINADOR') or is_granted('ROLE_ESTUDIANTE') %}
+                        <th>Docente</th>
+                    {% endif %}
                     <th>Área</th>
                     <th>Sitio</th>
                     <th>Fecha_modifica</th>
@@ -149,11 +154,21 @@
                 <tr>
                     <td>{{ entity.nombre }}</td>
                     <td>{{ entity.descripcion }}</td>
+                    {% if not is_granted('ROLE_COORDINADOR') and (is_granted('ROLE_DOCENTE') or is_granted('ROLE_ESTUDIANTE')) %}
                     <td>{{ entity.coordinador }}</td>
-                    <td>{{ entity.docente }}</td>
+                    {% endif %}
+                    {% if is_granted('ROLE_COORDINADOR') or is_granted('ROLE_ESTUDIANTE') %}
+                        <td>{{ entity.docente }}</td>
+                    {% endif %}
                     <td>{{ entity.sitio }}</td>
                     <td>{{ entity.areaPractica }}</td>
-                    <td>{% if entity.fechamodifica %}{{ entity.fechamodifica|date('Y-m-d H:i:s') }}{% endif %}</td>
+                    <td>
+                        {% if entity.fechacreado %}
+                            <div class="moment-date" title="{{ entity.fechaCreado|date('Y-m-d H:i:s') }}">
+                                {{ entity.fechacreado|date('Y-m-d H:i:s') }}
+                            </div>
+                        {% endif %}
+                    </td>
                     <td>
                         <div class="btn-group">
                             <a class="btn btn-success btn-lg" href="{{ path('practica_edit', { 'id': entity.id }) }}">Editar</a>

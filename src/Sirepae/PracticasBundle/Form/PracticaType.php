@@ -8,6 +8,12 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class PracticaType extends AbstractType
 {
+    private $coordinador;
+    
+    public function __construct(\Sirepae\UsuariosBundle\Entity\Usuario $usuario) {
+        $this->coordinador = $usuario;
+    }
+    
         /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -25,14 +31,27 @@ class PracticaType extends AbstractType
                             ->andWhere('r.nombre LIKE \'%docente%\'');
                 },
             ))
-            ->add('coordinador', null, array(
+        ;
+        if(!is_null($this->coordinador)){
+            $builder->add('coordinador', null, array(
+                'class' => 'SirepaeUsuariosBundle:Usuario',
+                'query_builder' => function(\Doctrine\ORM\EntityRepository $er) {
+                    return $er->createQueryBuilder('u')
+                            ->andWhere('u.id = '.$this->coordinador->getId());
+                },
+                'label' => false,
+                'data' => $this->coordinador,
+                'attr' => array('class' => 'hide'),
+            ));
+        }else{
+            $builder->add('coordinador', null, array(
                 'class' => 'SirepaeUsuariosBundle:Usuario',
                 'query_builder' => function(\Doctrine\ORM\EntityRepository $er) {
                     return $er->createQueryBuilder('u')->leftJoin('u.rol_usuario', 'r')
                             ->andWhere('r.nombre LIKE \'%coordinador%\'');
                 },
-            ))
-        ;
+            ));
+        }
     }
     
     /**

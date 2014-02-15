@@ -178,4 +178,8 @@ class Calificacion
     {
         return $this->docente;
     }
+    
+    public function __toString() {
+        return (float)$this->getValor();
+    }
 }

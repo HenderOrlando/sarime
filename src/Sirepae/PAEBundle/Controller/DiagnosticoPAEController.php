@@ -265,7 +265,7 @@ class DiagnosticoPAEController extends Controller
      */
     public function toggleDiagnosticoPAEAction(Request $request, $id_diagnostico,$id_pae, $id_factorRelacionado = null, $id_evidencia = null)
     {
-//        if($request->isXmlHttpRequest()){
+        if($request->isXmlHttpRequest()){
             $json = array(
                 'error' =>  false,
                 'msg'   =>  'Hecho',
@@ -372,8 +372,8 @@ class DiagnosticoPAEController extends Controller
 
             return \Symfony\Component\HttpFoundation\JsonResponse::create($json);
             
-//        }else{
-//            throw $this->createNotFoundException('Diagnostico o Plan de Atención de Enfermería no Encontradas');
-//        }
+        }else{
+            throw $this->createNotFoundException('Diagnostico o Proceso de Atención de Enfermería no Encontradas');
+        }
     }
 }

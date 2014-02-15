@@ -1,0 +1,155 @@
+{% extends 'SirepaeUsuariosBundle:Consultas:index.html.twig' %}
+
+{% block content -%}
+        {% set title_ = 'Uso del Sistema' %}
+        {% set path_ = 'consulta_uso' %}
+    <ul class="list-unstyled list-inline">
+        <li>
+            <h1 class="title">
+                Tablero de {{ title_ }}
+            </h1>
+        </li>
+    </ul>
+    <div class="row">
+        <h2>
+            Entradas al Sistema
+        </h2>
+        {% set total_ingresos = 0 %}
+        {% set total_ingresos_semestre = ingresos.semestre | length %}
+        {% set total_ingresos_semana = ingresos.semana | length %}
+        {% set total_ingresos_mes = ingresos.mes | length %}
+        {% set total_ingresos_dia = ingresos.dia | length %}
+        {% for ingTotal in ingresos.total %}
+            {% set total_ingresos = ingTotal.ingresos+total_ingresos %}
+        {% endfor %}
+        <p>
+            {% set total_personas = ingresos.total | length %}
+            {% if total_personas > 1 %}
+                Las <span class="title text-primary">{{ total_personas }}</span> personas han entrado 
+                <span class="title text-primary">{{ total_ingresos }}</span> ve{{ total_ingresos != 1?'ces':'z' }} al sistema, 
+                desde que se instaló.
+            {% endif %}
+        </p>
+        <div class="row placeholders">
+            <div class="col-xs-12 col-sm-3 placeholder">
+                {% set uso = ((total_ingresos_semestre / total_personas)*100) |round %}
+                <h2 class="text-{{ uso > 85?'primary':uso >75?'success':uso>60?'info':uso>35?'warning':'danger' }}">{{ uso }}%</h2>
+                <h4>Hace un Semestre</h4>
+                <span class="text-info"><span>{{ total_ingresos_semestre }}</span> Personas</span>
+            </div>
+            <div class="col-xs-12 col-sm-3 placeholder">
+                {% set uso = ((total_ingresos_mes / total_personas)*100) |round %}
+                <h2 class="text-{{ uso > 85?'primary':uso >75?'success':uso>60?'info':uso>35?'warning':'danger' }}">{{ uso }}%</h2>
+                <h4>Hace un Mes</h4>
+                <span class="text-info"><span>{{ total_ingresos_mes }}</span> Personas</span>
+            </div>
+            <div class="col-xs-12 col-sm-3 placeholder">
+                {% set uso = ((total_ingresos_semana / total_personas)*100) |round %}
+                <h2 class="text-{{ uso > 85?'primary':uso >75?'success':uso>60?'info':uso>35?'warning':'danger' }}">{{ uso }}%</h2>
+                <h4>Hace una Semana</h4>
+                <span class="text-info"><span>{{ total_ingresos_semana | length }}</span> Personas</span>
+            </div>
+            <div class="col-xs-12 col-sm-3 placeholder">
+                {% set uso = ((total_ingresos_dia / total_personas)*100) |round %}
+                <h2 class="text-{{ uso > 85?'primary':uso >75?'success':uso>60?'info':uso>35?'warning':'danger' }}">{{ uso }}%</h2>
+                <h4>Hace un Día</h4>
+                <span class="text-info"><span>{{ total_ingresos_dia | length }}</span> Personas</span>
+            </div>
+        </div>
+        <h2>
+            Registros de Enfermería
+        </h2>
+        <p>
+            {% set total_registrosEnfermeria = registros.total.registrosEnfermeria | length %}
+            {% set total_estudiantes = registros.total.estudiantes | length %}
+            {% set total_pacientes = registros.total.pacientes | length %}
+            {% set total_registros = registros.total.registros | length %}
+            Se han llevado <span class="title text-primary">{{ total_registrosEnfermeria }}</span> 
+            Registros de Enfermería que {{ total_estudiantes != 1?'han hecho':'hizo' }} <span class="title text-primary">{{ registros.total.estudiantes | length }}</span> 
+            estudiante{{ total_estudiantes != 1?'s':'' }} con {{ total_registros != 1?'los':'' }} <span class="title text-primary">{{ total_registros }}</span> 
+            registro{{ total_registros != 1?'s':'' }} que hay disponible{{ total_registros != 1?'s':'' }} en el sistema, para 
+            <span class="title text-primary">{{  total_registros }}</span> paciente{{ total_pacientes != 1?'s':'' }}.
+        </p>
+        {% set total_registros_semestre = registros.semestre | length %}
+        {% set total_registros_semana = registros.semana | length %}
+        {% set total_registros_mes = registros.mes | length %}
+        {% set total_registros_dia = registros.dia | length %}
+        <div class="row placeholders">
+            <div class="col-xs-12 col-sm-3 placeholder">
+                {% set uso = ((total_registros_semestre / total_registrosEnfermeria)*100) |round %}
+                <h2 class="text-{{ uso > 85?'primary':uso >75?'success':uso>60?'info':uso>35?'warning':'danger' }}">{{ uso }}%</h2>
+                <h4>Hace un Semestre</h4>
+                <span class="text-info"><span>{{ total_registros_semestre }}</span>Registros en total</span>
+            </div>
+            <div class="col-xs-12 col-sm-3 placeholder">
+                {% set uso = ((total_registros_mes / total_registrosEnfermeria)*100) |round %}
+                <h2 class="text-{{ uso > 85?'primary':uso >75?'success':uso>60?'info':uso>35?'warning':'danger' }}">{{ uso }}%</h2>
+                <h4>Hace un Mes</h4>
+                <span class="text-info"><span>{{ total_registros_mes }}</span>Registros</span>
+            </div>
+            <div class="col-xs-12 col-sm-3 placeholder">
+                {% set uso = ((total_registros_semana / total_registrosEnfermeria)*100) |round %}
+                <h2 class="text-{{ uso > 85?'primary':uso >75?'success':uso>60?'info':uso>35?'warning':'danger' }}">{{ uso }}%</h2>
+                <h4>Hace un Semana</h4>
+                <span class="text-info"><span>{{ total_registros_semana }}</span>Registros</span>
+            </div>
+            <div class="col-xs-12 col-sm-3 placeholder">
+                {% set uso = ((total_registros_dia / total_registrosEnfermeria)*100) |round %}
+                <h2 class="text-{{ uso > 85?'primary':uso >75?'success':uso>60?'info':uso>35?'warning':'danger' }}">{{ uso }}%</h2>
+                <h4>Hace un Día</h4>
+                <span class="text-info"><span>{{ total_registros_dia }}</span>Registros</span>
+            </div>
+        </div>
+        <h2>
+            Procesos de Atención de Enfermería
+        </h2>
+        <p>
+            {% set total_paes = paes.total.paes | length %}
+            {% set total_libros = paes.total.libros | length %}
+            {% set total_actividades = paes.total.actividades | length %}
+            {% set total_indicadores = paes.total.indicadores | length %}
+            {% set total_diagnosticos = paes.total.diagnosticos | length %}
+            {{ total_paes != 1?'Los':'El' }} <span class="title text-primary">{{ total_paes }}</span> Proceso{{ total_paes != 1?'s':'' }} 
+            de Atención de Enfermería (PAE) usa{{ total_paes != 1?'n':'' }} <span class="title text-primary">{{ total_libros }}</span> libro{{ total_estudiantes != 1?'s':'' }} 
+            que contiene{{ total_estudiantes != 1?'n':'' }}  <span class="title text-primary">{{ total_actividades }}</span> actividad{{ total_estudiantes != 1?'es':'' }},
+            <span class="title text-primary">{{ total_indicadores }}</span> indicador{{ total_estudiantes != 1?'es':'' }} y 
+            <span class="title text-primary">{{ total_diagnosticos }}</span> diagnóstico{{ total_estudiantes != 1?'s':'' }}.
+        </p>
+        {% set total_paes_semestre = paes.semestre | length %}
+        {% set total_paes_semana = paes.semana | length %}
+        {% set total_paes_mes = paes.mes | length %}
+        {% set total_paes_dia = paes.dia | length %}
+        <div class="row placeholders">
+            <div class="col-xs-12 col-sm-3 placeholder">
+                {% set uso = ((total_paes_semestre / total_paes)*100) |round %}
+                <h2 class="text-{{ uso > 85?'primary':uso >75?'success':uso>60?'info':uso>35?'warning':'danger' }}">{{ uso }}%</h2>
+                <h4>Hace un Semestre</h4>
+                <span class="text-info"><span>{{ total_paes_semestre }}</span> PAEs</span>
+            </div>
+            <div class="col-xs-12 col-sm-3 placeholder">
+                {% set uso = ((total_paes_mes / total_paes)*100) |round %}
+                <h2 class="text-{{ uso > 85?'primary':uso >75?'success':uso>60?'info':uso>35?'warning':'danger' }}">{{ uso }}%</h2>
+                <h4>Hace un Mes</h4>
+                <span class="text-info"><span>{{ total_paes_mes }}</span> PAEs</span>
+            </div>
+            <div class="col-xs-12 col-sm-3 placeholder">
+                {% set uso = ((total_paes_semana / total_paes)*100) |round %}
+                <h2 class="text-{{ uso > 85?'primary':uso >75?'success':uso>60?'info':uso>35?'warning':'danger' }}">{{ uso }}%</h2>
+                <h4>Hace un Semana</h4>
+                <span class="text-info"><span>{{ total_paes_semana }}</span> PAEs</span>
+            </div>
+            <div class="col-xs-12 col-sm-3 placeholder">
+                {% set uso = ((total_paes_dia / total_paes)*100) |round %}
+                <h2 class="text-{{ uso > 85?'primary':uso >75?'success':uso>60?'info':uso>35?'warning':'danger' }}">{{ uso }}%</h2>
+                <h4>Hace un Día</h4>
+                <span class="text-info"><span>{{ total_paes_dia }}</span> PAEs</span>
+            </div>
+        </div>
+        {#<h1>Semestre</h1>
+        <ol>
+        {% for ingSem1 in ingresos.semestre %}
+            <li>{{ ingSem1 }}</li>
+        {% endfor %}
+        </ol>#}
+    </div>
+{% endblock %}

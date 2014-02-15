@@ -112,4 +112,12 @@ class UsuarioRepository extends EntityRepository implements UserProviderInterfac
             return $q;
         return $q->getQuery()->execute();
     }
+    
+    public function getUsuariosBetween($campo, $from, $to){
+        $qb = $this->createQueryBuilder('u');
+        return $this->createQueryBuilder('u')
+                ->andWhere($qb->expr()->between('u.'.$campo, $from , $to))
+                ->getQuery()
+                ->getResult();
+    }
 }

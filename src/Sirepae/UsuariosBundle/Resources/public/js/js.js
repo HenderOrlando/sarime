@@ -43,17 +43,15 @@ $(function(){
     backSlide();
     $('input:not(:checkbox):not(:radio), textarea').addClass('form-control')
     $('table').addClass('table table-striped')
-    $(':checkbox').each(function(){
+    $(':checkbox,:radio').each(function(){
         var id = $(this).attr('id');
-        if($(this).siblings('label').length > 1)
-            $(this).hide().siblings('label[for='+id+']').first().addClass('btn btn-default btn-toggle');
-        else
-            $(this).hide().siblings('label').first().addClass('btn btn-default btn-toggle');
-        if($(this).is(':checked'))
-            if($(this).siblings('label').length > 1)
-                $(this).siblings('label[for='+id+']').first().addClass('active');
-            else
-                $(this).siblings('label').first().addClass('active');
+//        if($(this).siblings('label').length >= 1){
+            $(this).parent().addClass('btn-group').attr('data-toggle','buttons');
+            var l = $(this).hide().siblings('label[for='+id+']').first().addClass('btn btn-default').append($(this));
+            if($(this).is(':checked')){
+                l.addClass('active');
+            }
+//        }
     });
     $('h1').addClass('title');
     $('button, :button').each(function(){
@@ -64,6 +62,28 @@ $(function(){
         if(!$(this).hasClass('panel-primary') && !$(this).hasClass('panel-success') && !$(this).hasClass('panel-info') && !$(this).hasClass('panel-warning') && !$(this).hasClass('panel-danger') && !$(this).hasClass('panel-link') && !$(this).hasClass('panel-default'))
             $(this).addClass('panel-default');
     });
+    $("select:not(.hide)").select2();
+    $('input.datetime, input.time, input.date').each(function(){
+        var datos_datetimepicker = {
+            language    :  'es'
+        }, format = "YYYY-MM-DD HH:mm";
+        if($(this).hasClass('time')){
+            format = "HH:mm"
+            datos_datetimepicker.pickDate = false;
+        }else if($(this).hasClass('date')){
+            format = "YYYY-MM-DD"
+            datos_datetimepicker.pickTime = false;
+        }
+        console.log($(this).val())
+        console.log($(this).val().length)
+        if($(this).val().length > 1){
+            datos_datetimepicker.defaultDate = moment($(this).val(), format);
+        }else{
+            datos_datetimepicker.defaultDate = moment().format();
+        }
+        $(this).datetimepicker(datos_datetimepicker);
+    });
+    
     $('body').on('click','a.list-group-item.ajax',function(e){
         e.preventDefault();
         var este = $(this),href = este.attr('href');
@@ -72,14 +92,34 @@ $(function(){
             url: href
         }).done(function(json){
             if(!json.error){
-                if(json.clear)
+                if(json.clear){
                     este.removeClass('active').siblings('a').removeClass('active');
-                if(json.add)
+                }
+                var n = 0;
+                if(json.add){
                     este.addClass('active');
-                else
+                    n = 1;
+                }
+                else{
                     este.removeClass('active');
+                    n = -1;
+                }
+                var t = parseInt(este.parents('.panel-primary').find('.total-definidos').text()), 
+                    id = este.attr('id');
+                este.parents('.panel-primary').find('.total-definidos').text(t+n);
+                if(typeof id !== 'undefined' && id !== false){
+                    id = id.replace('link-','');
+                    t = parseInt($('#num-'+id+'-diagnostico').text());
+                    $('#num-'+id+'-diagnostico').text(t+n);
+                }
             }
         });
         return false;
+    });
+    $('.moment-date').each(function(){
+        moment().lang('es');
+        var text_ = $(this).text();
+        $(this).text(moment(text_).fromNow());
+        $(this).attr('title',moment(text_).calendar());
     });
 });

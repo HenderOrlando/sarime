@@ -1,0 +1,60 @@
+{% extends 'SirepaeUsuariosBundle:Consultas:index.html.twig' %}
+
+{% block content -%}
+        {% set title_ = 'Docentes por Asignatura' %}
+        {% set path_ = 'docente' %}
+    <ul class="list-unstyled list-inline">
+        <li>
+            <h1 class="title">
+                Tablero de {{ title_ }}
+            </h1>
+        </li>
+    </ul>
+    <div class="table-responsive">
+
+        <table class="records_list">
+            <thead>
+                <tr>
+                    <th>Nombres</th>
+                    <th>Areas</th>
+                    <th>Apellidos</th>
+                    <th>Telefonos</th>
+                    <th>Direccion</th>
+                    {% if path_ == 'usuario' %}
+                        <th>Rol</th>
+                    {% endif %}
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.nombres }}</td>
+                    <td>
+                        <ul class="list-unstyled">
+                        {% for practica in entity.docentesPractica %}
+                            <li>
+                                {{ practica.nombre }}<span class="text-muted"> - {{ practica.areaPractica.nombre }}</span>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ entity.nombres }}</td>
+                    <td>{{ entity.apellidos }}</td>
+                    <td>{{ entity.telefonos }}</td>
+                    <td>{{ entity.direccion }}</td>
+                    {% if path_ == 'usuario' %}
+                        <td>{{ entity.rolUsuario }}</td>
+                    {% endif %}
+                    {#<td>{% if entity.fechacreado %}{{ entity.fechacreado|date('Y-m-d H:i:s') }}{% endif %}</td>#}
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-success btn-lg" href="{{ path('usuario_edit', { 'id': entity.id }) }}">Editar</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

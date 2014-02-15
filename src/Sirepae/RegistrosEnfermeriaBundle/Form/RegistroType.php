@@ -29,6 +29,9 @@ class RegistroType extends AbstractType
                 'expanded'  =>  true,
                 'multiple'  =>  false,
             ))
+            ->add('tabla',null,array(
+                'label' =>  'Ver como tabla'
+            ))
         ;
     }
     

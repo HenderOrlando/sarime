@@ -28,14 +28,38 @@ class UsuarioController extends Controller
     public function homeAction()
     {
         $em = $this->getDoctrine()->getManager();
-        $res = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->findAll();
-        $paes = $em->getRepository('SirepaePAEBundle:PAE')->findAll();
-        $ps = $em->getRepository('SirepaePracticasBundle:Practica')->findAll();
+        $res = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->createQueryBuilder('re')
+                ->join('re.estudiante','e')
+                ->join('e.practica','p')
+                ->orderBy('re.fecha_creado', 'DESC')
+                ;
+        $paes = $em->getRepository('SirepaePAEBundle:PAE')->createQueryBuilder('pae')
+                ->join('pae.estudiante','e')
+                ->join('e.practica','p')
+                ->orderBy('pae.fecha_creado', 'DESC')
+                ;
+        $ps = $em->getRepository('SirepaePracticasBundle:Practica')->createQueryBuilder('p')
+                ->join('p.estudiantes','e')
+                ->orderBy('p.fecha_creado', 'DESC')
+                ;
+        $cad = '';
+        if($this->getUser()->hasRole('ROLE_COORDINADOR')){
+            $cad = 'p.coordinador = '.$this->getUser()->getId();
+        }elseif($this->getUser()->hasRole('ROLE_DOCENTE')){
+            $cad = 'p.docente = '.$this->getUser()->getId();
+        }elseif($this->getUser()->hasRole('ROLE_ESTUDIANTE')){
+            $cad = 'e.usuario = '.$this->getUser()->getId();
+        }
+        if($cad !== ''){
+            $ps  = $ps->andWhere($cad);
+            $res = $res->andWhere($cad);
+            $paes= $paes->andWhere($cad);
+        }
 
         return array(
-            'res'   => $res,
-            'paes'  => $paes,
-            'ps'    => $ps,
+            'res'   => $res->getQuery()->getResult(),
+            'paes'  => $paes->getQuery()->getResult(),
+            'ps'    => $ps->getQuery()->getResult(),
             'active_home_resumen' => true,
         );
     }
@@ -167,12 +191,13 @@ class UsuarioController extends Controller
     */
     private function createCreateForm(Usuario $entity, \Sirepae\UsuariosBundle\Entity\Rol $rol = null)
     {
+        $url = $this->generateUrl('usuario_create');
+        if(!is_null($rol)){
+            $url = $this->generateUrl(strtolower($rol->getNombre()).'_create');
+        }
         $form = $this->createForm(new UsuarioType($rol), $entity, array(
-            'action' => $this->generateUrl(strtolower($rol->getNombre()).'_create'),
+            'action' => $url,
             'method' => 'POST',
-            'attr'   => array(
-                'class' =>  'form-all-inline'
-            ),
         ));
 
         $form->add('submit', 'submit', array('label' => 'Crear', 'attr' => array( 'class' => 'btn-success')));
@@ -253,12 +278,13 @@ class UsuarioController extends Controller
      * Displays a form to edit an existing Usuario entity.
      *
      * @Route("/usuario/{id}/edit/", name="usuario_edit")
+     * @Route("/usuario/{id}/edit/", name="usuario_edit")
      * @Route("/coordinador/{id}/edit/", name="coordinador_edit")
      * @Route("/docente/{id}/edit/", name="docente_edit")
      * @Method("GET")
      * @Template()
      */
-    public function editAction($id)
+    public function editAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -268,20 +294,26 @@ class UsuarioController extends Controller
             throw $this->createNotFoundException('Unable to find Usuario entity.');
         }
 
+        $ajax = $request->get('ajax');
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
         $active = 'usuarios';
-        if(method_exists($entity->getRolUsuario(), 'getNombre'))
+        if(method_exists($entity->getRolUsuario(), 'getNombre')){
             $active = strtolower ($entity->getRolUsuario()->getNombre());
-
-        return array(
-            'entity'      => $entity,
-            'active_'.$active.'_resumen' => true,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
+        }
+        $datos = array(
+            'active_edit'   => true,
+            'ajax'          => $ajax,
+            'entity'        => $entity,
             'active_usuarios_resumen'  =>  true,
-            'active_edit'  =>  true,
+            'active_'.$active.'_resumen' => true,
+            'edit_form'     => $editForm->createView(),
+            'delete_form'   => $deleteForm->createView(),
         );
+        if($ajax){
+            return $this->render ('SirepaeUsuariosBundle:Usuario:edit_ajax.html.twig', $datos);
+        }
+        return $datos;
     }
 
     /**
@@ -293,12 +325,9 @@ class UsuarioController extends Controller
     */
     private function createEditForm(Usuario $entity)
     {
-        $form = $this->createForm(new UsuarioType(), $entity, array(
+        $form = $this->createForm(new UsuarioType(null,$this->getUser()), $entity, array(
             'action' => $this->generateUrl('usuario_update', array('id' => $entity->getId())),
             'method' => 'PUT',
-            'attr'   => array(
-                'class' =>  'form-all-inline'
-            ),
         ));
 
         $form->add('Crear', 'submit', array('label' => 'Actualizar', 'attr' => array('class' => 'save btn-success')));

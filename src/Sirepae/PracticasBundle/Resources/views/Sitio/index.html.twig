@@ -22,7 +22,7 @@
                     <th>Nombre</th>
                     <th>Descripcion</th>
                     <th>Nombre del Director</th>
-                    <th>Áreas en el Sitio del Prácticas</th>
+                    {#<th>Áreas en el Sitio del Prácticas</th>#}
                     <th>Prácticas</th>
                     <th>Acciones</th>
                 </tr>
@@ -33,7 +33,7 @@
                     <td>{{ entity.nombre }} - {{ entity.sede.nombre }}</td>
                     <td>{{ entity.descripcion }}</td>
                     <td>{{ entity.nombredirector }}</td>
-                    <td>
+                    {#<td>
                         <ul class="list-unstyled">
                             {% if entity.areas is not empty %}
                                 {% for area in entity.areas %}
@@ -45,7 +45,7 @@
                                 <li>No tiene áreas definidas</li>
                             {% endif %}
                         </ul>
-                    </td>
+                    </td>#}
                     <td>
                         <ul class="list-unstyled">
                             {% if entity.practicas is not empty %}

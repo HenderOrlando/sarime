@@ -25,19 +25,23 @@ class RespuestaRegistroEnfermeriaRepository extends EntityRepository
                 ;
     }
     
-    public function getRespuestaByRegistroEnfermeriaPregunta($idRegistroEnfermeria, $idPregunta, $numero = null)
+    public function getRespuestaByRegistroEnfermeriaPregunta($idRegistroEnfermeria, $idPregunta, $numero = null, $id_col = null)
     {
-        return $this->getRespuestasByRegistroEnfermeriaPregunta(false, $idRegistroEnfermeria, $idPregunta, $numero);
+        return $this->getRespuestasByRegistroEnfermeriaPregunta(false, $idRegistroEnfermeria, $idPregunta, $numero, $id_col);
     }
     
-    public function getRespuestasByRegistroEnfermeriaPregunta($qb, $idRegistroEnfermeria, $idPregunta, $numero = null){
+    public function getRespuestasByRegistroEnfermeriaPregunta($qb, $idRegistroEnfermeria, $idPregunta, $numero = null, $idCol = null){
         $q = $this->createQueryBuilder('rre')
             ->andWhere('rre.registroEnfermeria = '.$idRegistroEnfermeria)
             ->leftJoin('rre.respuesta', 'r')
-            ->leftJoin('r.pregunta', 'p')
-            ->andWhere('p.id = '.$idPregunta);
+            ->leftJoin('r.pregunta', 'p');
         if(is_numeric($numero))
             $q->andWhere('rre.numero = '.$numero);
+        if(is_null($idCol) && !is_null($idPregunta)){
+            $q->andWhere('p.id = '.$idPregunta);
+        }elseif(!is_null($idPregunta) && !is_null($idCol)){
+            $q->andWhere("r.valor LIKE '%".$idCol.'-_#|#_-'.$idPregunta."-_#|#_-%'");
+        }
         if(is_integer($qb) && $qb === 1)
             return $q;
         elseif(is_integer($qb) && $qb === 2)
@@ -49,7 +53,7 @@ class RespuestaRegistroEnfermeriaRepository extends EntityRepository
         return $q->setMaxResults(1)->getQuery()->getOneOrNullResult();
     }
     
-    public function countRespuestasByRegistroEnfermeriaPregunta($idRegistroEnfermeria, $idPregunta, $numero = null){
-        return $this->getRespuestasByRegistroEnfermeriaPregunta(4, $idRegistroEnfermeria, $idPregunta, $numero);
+    public function countRespuestasByRegistroEnfermeriaPregunta($idRegistroEnfermeria, $idPregunta, $numero = null, $idCol){
+        return $this->getRespuestasByRegistroEnfermeriaPregunta(4, $idRegistroEnfermeria, $idPregunta, $numero, $idCol);
     }
 }

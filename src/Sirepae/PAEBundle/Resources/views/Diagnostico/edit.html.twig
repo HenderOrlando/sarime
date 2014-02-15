@@ -20,7 +20,8 @@
 
 <div class="clearfix"></div>
 <div class="row">
-    <div class="col-sm-6">
+    {% if entity.evidencias is not empty %}
+    <div class="col-sm-{{ entity.factoresRelacionados is empty?'12':'6' }}">
          <div class="panel panel-default">
             <div class="panel-heading">Evidencias</div>
             <div class="panel-body">
@@ -45,7 +46,9 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-6">
+    {% endif %}
+    {% if entity.factoresRelacionados is not empty %}
+    <div class="col-sm-{{ entity.evidencias is empty?'12':'6' }}">
         <div class="panel panel-default">
             <div class="panel-heading">Factres Relacionados</div>
             <div class="panel-body">
@@ -70,5 +73,6 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

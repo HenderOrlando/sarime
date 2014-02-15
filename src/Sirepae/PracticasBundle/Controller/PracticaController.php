@@ -29,7 +29,10 @@ class PracticaController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('SirepaePracticasBundle:Practica')->findAll();
+        $entities = $em->getRepository('SirepaePracticasBundle:Practica')->createQueryBuilder('p')
+                ->orderBy('p.fecha_creado','DESC')
+                ->andWhere('p.coordinador = '.$this->getUser()->getId())
+                ->getQuery()->getResult();
 
         return array(
             'entities' => $entities,
@@ -74,7 +77,7 @@ class PracticaController extends Controller
     */
     private function createCreateForm(Practica $entity)
     {
-        $form = $this->createForm(new PracticaType(), $entity, array(
+        $form = $this->createForm(new PracticaType($this->getUser()), $entity, array(
             'action' => $this->generateUrl('practica_create'),
             'method' => 'POST',
         ));

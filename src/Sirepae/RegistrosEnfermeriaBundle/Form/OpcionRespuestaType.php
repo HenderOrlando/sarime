@@ -19,6 +19,7 @@ class OpcionRespuestaType extends AbstractType
             ->add('descripcion')
             ->add('pregunta')
             ->add('tipoRespuesta')
+            ->add('columna')
         ;
     }
     

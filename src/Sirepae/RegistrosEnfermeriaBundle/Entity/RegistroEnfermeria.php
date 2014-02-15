@@ -34,6 +34,7 @@ class RegistroEnfermeria
      *     targetEntity="\Sirepae\RegistrosEnfermeriaBundle\Entity\RespuestaRegistroEnfermeria", 
      *     mappedBy="registroEnfermeria"
      * )
+     * @ORM\OrderBy({"fecha_creado" = "DESC"})
      */
     private $respuestas;
 

@@ -12,7 +12,52 @@
         {% endif %}
     </div>
 
-    {{ form(form) }}
-
+    {% if not reg.isTabla %}
+        {{ form(form) }}
+    {% else %}
+        {% set cols = [] %}
+        {% set rows = [] %}
+        {% for preg in reg.preguntas %}
+            {% if preg.isColumna %}
+                {% set cols = cols | merge([preg]) %}
+            {% else %}
+                {% set rows = rows | merge([preg]) %}
+            {% endif %}
+        {% endfor %}
+        {{ form_start(form) }}
+            {{ form_errors(form) }}
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                
+                            </th>
+                        {% for col in cols %}
+                            <th>
+                                {{ col.enunciado }}
+                            </th>
+                        {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in rows %}
+                        <tr>
+                            <th>
+                                {{ row.enunciado }}
+                            </th>
+                            {% for col in cols %}
+                            <td>
+                                {{ form_row(form[col.id~'-'~row.id]) }}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {{ form_end(form) }}
+    {% endif %}
+            
     <a class="btn btn-default btn-lg pull-right" href="{{ path('registros_enfermeria_edit',{'id':entity.id}) }}">Volver</a>
 {% endblock %}

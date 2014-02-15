@@ -80,3 +80,19 @@ form.form-all-inline div{
 p ~ .panel-group.panel-integrate{
     margin-top: 10px;
 }
+.search{
+    width: 100%;
+}
+.navbar-search{
+    width: 50%;
+}
+.select2-container{
+    width: 50%;
+}
+.list-group-item-info {
+    color: rgb(49, 112, 143);
+    background-color: rgb(217, 237, 247);
+}
+.panel-primary>.panel-heading a{
+    color: #fff;
+}
