@@ -49,6 +49,8 @@ class UsuarioController extends Controller
             $cad = 'p.docente = '.$this->getUser()->getId();
         }elseif($this->getUser()->hasRole('ROLE_ESTUDIANTE')){
             $cad = 'e.usuario = '.$this->getUser()->getId();
+        }elseif(!$this->getUser()->hasRole('ROLE_SUPER_ADMIN')){
+            throw new \Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException();
         }
         if($cad !== ''){
             $ps  = $ps->andWhere($cad);

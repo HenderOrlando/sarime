@@ -33,17 +33,25 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    {% if is_granted('ROLE_DOCENTE') or is_granted('ROLE_ESTUDIANTE') %}
-                    <li>
-                        <a href="{{ path('pae') }}">PAE</a>
+                    {% if is_granted('ROLE_COORDINADOR') %}
+                    <li class="{{ active_practicas_resumen is defined ?'active':''}}">
+                        <a href="{{ path('practica') }}">Practicas</a>
                     </li>
-                    <li>
-                        <a href="{{ path('registros_enfermeria') }}">Registros de Enfermería</a>
+                    <li class="{{ active_usuarios_resumen is defined ?'active':''}}">
+                        <a href="{{ path('usuario') }}">Usuarios</a>
+                    </li>
+                    {% endif %}
+                    {% if is_granted('ROLE_USER') %}
+                    <li class="{{ active_registrosEnfermeria_resumen is defined ?'active':''}}">
+                        <a href="{{ path('registros_enfermeria') }}">Registros</a>
+                    </li>
+                    <li class="{{ active_paes_resumen is defined ?'active':''}}">
+                        <a href="{{ path('pae') }}">PAE</a>
                     </li>
                     {% endif %}
                     {% if is_granted('ROLE_COORDINADOR') %}
-                    <li>
-                        <a href="{{ path('practica') }}">Prácticas</a>
+                    <li class="{{ active_consultas_resumen is defined ?'active':''}}">
+                        <a href="{{ path('consultas') }}">Consultas</a>
                     </li>
                     {% endif %}
                     <li class="dropdown">
@@ -65,9 +73,9 @@
                         </ul>
                     </li>
                 </ul>
-                <form class="navbar-form navbar-right navbar-search" action="">
+                {#<form class="navbar-form navbar-right navbar-search" action="">
                     <input type="text" class="form-control search" placeholder="Buscar...">
-                </form>
+                </form>#}
             </div>
         </div>
     </div>

@@ -192,28 +192,77 @@ class ConsultasController extends Controller
     /**
      * Consulta del pae
      *
-     * @Route("/planes-de-atencion-de-enfermeria-inferiores-a-{mayor}/", name="consulta_pae_mayor")
-     * @Route("/planes-de-atencion-de-enfermeria-superiores-a-{menor}/", name="consulta_pae_menor")
-     * @Route("/planes-de-atencion-de-enfermeria-superiores/", name="consulta_pae")
+     * @Route("/procesos-de-atencion-de-enfermeria-inferiores-a/{menor}/", name="consulta_pae_menor")
+     * @Route("/procesos-de-atencion-de-enfermeria-superiores-a/{mayor}/", name="consulta_pae_mayor")
+     * @Route("/procesos-de-atencion-de-enfermeria-superiores/form/", name="consulta_pae_form")
+     * @Route("/procesos-de-atencion-de-enfermeria-superiores/", name="consulta_pae")
      * @Method("GET")
      * @Template("SirepaeUsuariosBundle:Consultas:paeConsulta.html.twig")
      */
-    public function paesConsultaAction(Request $request)
+    public function paesConsultaAction(Request $request, $mayor = null, $menor = null)
     {
+        $routeName = $request->get('_route');
+        $form = $this->createFormBuilder(null,array('attr'   => array(
+                'class' =>  'form-all-inline'
+            )))
+            ->add('mayor', 'number', array(
+                'label' => false, 
+                'required' => false, 
+                'attr' => array( 
+                    'class' => '', 
+                    'Placeholder' => 'Mayor que'
+                    )
+                )
+            )
+            ->add('menor', 'number', array(
+                'label' => false, 
+                'required' => false, 
+                'attr' => array( 
+                    'class' => '', 
+                    'Placeholder' => 'Menor que'
+                    )
+                )
+            )
+            ->setAction($this->generateUrl('consulta_pae_form'))
+            ->setMethod('GET')
+            ->add('submit', 'submit', array('label' => 'Buscar', 'attr' => array( 'class' => 'btn-success btn-lg')))
+            ->getForm()
+        ;
+        if(strpos($routeName, 'form') !== false){
+            $form->handleRequest($request);
+            if ($form->isValid()){
+                $datos = $form->getData();
+                $valor = 4.5;
+                $param = 'mayor';
+                if(is_null($datos['menor'])){
+                    $valor = $datos['mayor'];
+                    $param = 'mayor';
+                }elseif(is_null($datos['mayor'])){
+                    $param = 'menor';
+                    $valor = $datos['menor'];
+                }
+                return $this->redirect($this->generateUrl('consulta_pae_'.$param, array(
+                    $param =>  $valor,
+                )));
+            }
+        }
         $entities = $this->getPAERepository()->createQueryBuilder('pae')
                 ->join('pae.calificacion', 'c');
-        $valor = (float)$request->get('mayor',3.8);
-        $mayor = true;
+        $valor = 4.5;
+        $mayor_ = true;
         $signo = '>';
-        if($request->get('menor')){
-            $signo = '>';
-            $mayor = false;
-            $valor = (float)$request->get('menor');
+        if(!is_numeric($mayor) && is_numeric($menor)){
+            $signo = '<';
+            $mayor_ = false;
+            $valor = (float)$menor;
+        }elseif(is_numeric($mayor) && !is_numeric($menor)){
+            $valor = (float)$mayor;
         }
         $entities->andWhere ('c.valor'.$signo.$valor);
         
         return array(
-            'mayor'     =>  $mayor,
+            'form'     =>  $form->createView(),
+            'mayor'     =>  $mayor_,
             'valor'     =>  $valor,
             'entities' => $entities->getQuery()->getResult(),
             'active_consulta_pae_sup_resumen' => true,
@@ -223,7 +272,7 @@ class ConsultasController extends Controller
     /**
      * Consulta del pae
      *
-     * @Route("/planes-de-atencion-de-enfermeria-incompletos/", name="consulta_pae_diagnostico")
+     * @Route("/procesos-de-atencion-de-enfermeria-incompletos/", name="consulta_pae_diagnostico")
      * @Method("GET")
      * @Template("SirepaeUsuariosBundle:Consultas:paesDiagnosticos.html.twig")
      */
