@@ -27,10 +27,9 @@ class RespuestaPaciente
     /** 
      * @ORM\OneToOne(
      *     targetEntity="\Sirepae\RegistrosEnfermeriaBundle\Entity\Paciente", 
-     *     inversedBy="respuestas", 
-     *     cascade={"all"}
+     *     inversedBy="respuestas"
      * )
-     * @ORM\JoinColumn(name="paciente_id", referencedColumnName="id", nullable=false, unique=false)
+     * @ORM\JoinColumn(name="paciente_id", referencedColumnName="id", nullable=false)
      */
     private $paciente;
 

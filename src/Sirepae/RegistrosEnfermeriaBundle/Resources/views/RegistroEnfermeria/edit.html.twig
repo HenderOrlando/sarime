@@ -41,72 +41,162 @@
                 {% set optRta_ = null %}
                 {% set reg_ = null %}
                 {% set rta_ = null %}
-            <div class="row">
             {% set n = 0 %}
             {% if respuestas is empty %}
                 <h3 class="title">
                     No se han encontrado Registros
                 </h3>
             {% else %}
+                    <div class="col-md-12">
+                        <h3 class="title">
+                            Entrevistas
+                        </h3>
+                    </div>
+                {% set no_aplica = [] %}
                 {% for rta in respuestas %}
-                    {% set preg = rta.respuesta.pregunta %}
-                    {% set optRta = rta.respuesta.opcionRespuesta %}
-                    {% set reg = preg.registro %}
-                    {% if reg_ is null or reg_.id != reg.id or (reg_.id == reg.id and rta_.numero != rta.numero) %}
-                        {% set rta_ = rta %}
-                        {% if reg_ is not null %}
-                            {% set n = n + 1 %}
+                    {% if rta.respuesta.pregunta.registro.aplicaEnPaciente is not null and rta.respuesta.pregunta.registro.aplicaEnPaciente %}
+                        {% set preg = rta.respuesta.pregunta %}
+                        {% set optRta = rta.respuesta.opcionRespuesta %}
+                        {% set reg = preg.registro %}
+                        {% if reg_ is null or reg_.id != reg.id or (reg_.id == reg.id and rta_.numero != rta.numero) %}
+                            {% set rta_ = rta %}
+                            {% if reg_ is not null %}
+                                {% set n = n + 1 %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        {% endif %}
-                        {% if n is divisibleby(3) %}
+                            {% endif %}
+                            {% if n is divisibleby(4) %}
                             </div>
-                            <div class="row">
-                        {% endif %}
-                        {% set reg_ = reg %}
-                        <div class="col-sm-4">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <{{ is_granted('ROLE_ESTUDIANTE')?'a':'span' }} class="title" href="{{ path('editar_registro_enfermeria',{idRegistroEnfermeria: entity.id, idRegistro: reg_.id, numero: rta.numero}) }}">
-                                        {{ reg.nombre ~' '~ rta.numero }}
-                                    </{{ is_granted('ROLE_ESTUDIANTE')?'a':'span' }}>
-                                    {% if reg.fechacreado %}
-                                        <span class="text-muted moment-date" title="{{ entity.fechaCreado|date('Y-m-d H:i:s') }}">
-                                            {{ reg.fechacreado|date('Y-m-d H:i:s') }}
-                                        </span>
+                                <div class="clearfix"></div>
+                            {% endif %}
+                            {% set reg_ = reg %}
+                            <div class="col-sm-4">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <div class="pull-right">
+                                            <a data-toggle="collapse" data-parent="#registro-{{ reg.id }}-pregunta-{{ preg.id }}-respuesta-{{ rta.id }}" href="#collapse-registro-{{ reg.id }}-pregunta-{{ preg.id }}-respuesta-{{ rta.id }}">
+                                                <i class="fa fa-plus fa-2x"></i>
+                                            </a>
+                                        </div>
+                                        <{{ is_granted('ROLE_ESTUDIANTE')?'a':'span' }} class="title" href="{{ path('editar_registro_enfermeria',{idRegistroEnfermeria: entity.id, idRegistro: reg_.id, numero: rta.numero}) }}">
+                                            {{ reg.nombre ~' '~ rta.numero }}
+                                        </{{ is_granted('ROLE_ESTUDIANTE')?'a':'span' }}>
+                                        {% if reg.fechacreado %}
+                                            <span class="text-muted moment-date" title="{{ entity.fechaCreado|date('Y-m-d H:i:s') }}">
+                                                {{ reg.fechacreado|date('Y-m-d H:i:s') }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <div id='collapse-registro-{{ reg.id }}-pregunta-{{ preg.id }}-respuesta-{{ rta.id }}' class="panel-collapse collapse">
+                                    <div class="panel-body">
+                                        <dl class="dl-horizontal">
+                                            <dt>
+                                                {{ rta.respuesta.cleanEnunciado }}
+                                            </dt>
+                                            <dd>
+                                                {% if rta.respuesta.valor is null %}
+                                                    {{ optRta.enunciado }}
+                                                {% else %}
+                                                    {{ rta.respuesta.cleanValor }}
+                                                {% endif %}
+                                            </dd>
+                                        </dl>
+                                    {% else %}
+                                        <dl class="dl-horizontal">
+                                            <dt>
+                                                {{ rta.respuesta.cleanEnunciado }}
+                                            </dt>
+                                            <dd>
+                                                {% if rta.respuesta.valor is null %}
+                                                    {{ optRta.enunciado }}
+                                                {% else %}
+                                                    {{ rta.respuesta.cleanValor }}
+                                                {% endif %}
+                                            </dd>
+                                        </dl>
                                     {% endif %}
-                                </div>
-                                <div class="panel-body">
-                                    <dl class="dl-horizontal">
-                                        <dt>
-                                            {{ rta.respuesta.cleanEnunciado }}
-                                        </dt>
-                                        <dd>
-                                            {% if rta.respuesta.valor is null %}
-                                                {{ optRta.enunciado }}
-                                            {% else %}
-                                                {{ rta.respuesta.cleanValor }}
-                                            {% endif %}
-                                        </dd>
-                                    </dl>
-                      {% else %}
-                                    <dl class="dl-horizontal">
-                                        <dt>
-                                            {{ rta.respuesta.cleanEnunciado }}
-                                        </dt>
-                                        <dd>
-                                            {% if rta.respuesta.valor is null %}
-                                                {{ optRta.enunciado }}
-                                            {% else %}
-                                                {{ rta.respuesta.cleanValor }}
-                                            {% endif %}
-                                        </dd>
-                                    </dl>
+                    {% else %}
+                        {% set no_aplica = no_aplica|merge([rta]) %}
                     {% endif %}
                 {% endfor %}
-            {% endif %}
+                </div>
             </div>
         </div>
     </div>
+    <div class="clearfix"></div>
+            <h3 class="title">
+                Valoraciones
+            </h3>
+        {% set preg_ = null %}
+        {% set optRta_ = null %}
+        {% set reg_ = null %}
+        {% set rta_ = null %}
+        {% set n = 0 %}
+        {% for rta in no_aplica %}
+                {% set preg = rta.respuesta.pregunta %}
+                {% set optRta = rta.respuesta.opcionRespuesta %}
+                {% set reg = preg.registro %}
+                {% if reg_ is null or reg_.id != reg.id or (reg_.id == reg.id and rta_.numero != rta.numero) %}
+                    {% set rta_ = rta %}
+                    {% if reg_ is not null %}
+                        {% set n = n + 1 %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if n is divisibleby(4) %}
+                        </div>
+                        <div class="row">
+                    {% endif %}
+                    {% set reg_ = reg %}
+                    <div class="col-sm-4" id="registro-{{ reg.id }}-pregunta-{{ preg.id }}-respuesta-{{ rta.id }}">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <div class="pull-right">
+                                    <a data-toggle="collapse" data-parent="#registro-{{ reg.id }}-pregunta-{{ preg.id }}-respuesta-{{ rta.id }}" href="#collapse-registro-{{ reg.id }}-pregunta-{{ preg.id }}-respuesta-{{ rta.id }}">
+                                        <i class="fa fa-plus fa-2x"></i>
+                                    </a>
+                                </div>
+                                <{{ is_granted('ROLE_ESTUDIANTE')?'a':'span' }} class="title" href="{{ path('editar_registro_enfermeria',{idRegistroEnfermeria: entity.id, idRegistro: reg_.id, numero: rta.numero}) }}">
+                                    {{ reg.nombre ~' '~ rta.numero }}
+                                </{{ is_granted('ROLE_ESTUDIANTE')?'a':'span' }}>
+                                {% if reg.fechacreado %}
+                                    <span class="text-muted moment-date" title="{{ entity.fechaCreado|date('Y-m-d H:i:s') }}">
+                                        {{ reg.fechacreado|date('Y-m-d H:i:s') }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div id='collapse-registro-{{ reg.id }}-pregunta-{{ preg.id }}-respuesta-{{ rta.id }}' class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <dl class="dl-horizontal">
+                                    <dt>
+                                        {{ rta.respuesta.cleanEnunciado }}
+                                    </dt>
+                                    <dd>
+                                        {% if rta.respuesta.valor is null %}
+                                            {{ optRta.enunciado }}
+                                        {% else %}
+                                            {{ rta.respuesta.cleanValor }}
+                                        {% endif %}
+                                    </dd>
+                                </dl>
+                            {% else %}
+                                <dl class="dl-horizontal">
+                                    <dt>
+                                        {{ rta.respuesta.cleanEnunciado }}
+                                    </dt>
+                                    <dd>
+                                        {% if rta.respuesta.valor is null %}
+                                            {{ optRta.enunciado }}
+                                        {% else %}
+                                            {{ rta.respuesta.cleanValor }}
+                                        {% endif %}
+                                    </dd>
+                                </dl>
+                            {% endif %}
+        {% endfor %}
+            {% endif %}
 {% endblock %}

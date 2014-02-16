@@ -47,9 +47,9 @@ class Paciente
     /** 
      * @ORM\OneToOne(
      *     targetEntity="\Sirepae\RegistrosEnfermeriaBundle\Entity\RespuestaPaciente", 
-     *     mappedBy="paciente", 
-     *     cascade={"all"}
+     *     mappedBy="paciente"
      * )
+     * @ORM\OrderBy({"fecha_creado" = "DESC"})
      */
     private $respuestas;
 

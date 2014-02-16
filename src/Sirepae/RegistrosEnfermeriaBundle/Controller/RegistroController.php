@@ -434,11 +434,11 @@ class RegistroController extends Controller
                             }
                         }
                         /**/
-                        if($registro->getAplicaEnPaciente()){
-                            $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaPaciente')->getRespuestaByPacientePregunta($paciente->getId(),$preg->getId(), $numero, $id_col);
-                        }else{
+//                        if($registro->getAplicaEnPaciente()){
+//                            $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaPaciente')->getRespuestaByPacientePregunta($paciente->getId(),$preg->getId(), $numero, $id_col);
+//                        }else{
                             $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$preg->getId(), $numero, $id_col);
-                        }
+//                        }
 
                         if(!$editar && ($registro->isUnico() && !$rtaRe) || (!$editar && !$registro->isUnico())){
                             $rta = new \Sirepae\RegistrosEnfermeriaBundle\Entity\Respuesta();
@@ -488,20 +488,20 @@ class RegistroController extends Controller
                             ->setValor($dato);
                         $em->persist($rta);
                         if(!$editar){
-                            if($registro->getAplicaEnPaciente()){
-                                $rtaRe = new \Sirepae\RegistrosEnfermeriaBundle\Entity\RespuestaPaciente();
-                                $rtaRe->setNumero(count($em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaPaciente')->getRespuestasByPacientePregunta(3,$paciente->getId(),$preg->getId()))+1);
-                            }else{
+//                            if($registro->getAplicaEnPaciente()){
+//                                $rtaRe = new \Sirepae\RegistrosEnfermeriaBundle\Entity\RespuestaPaciente();
+//                                $rtaRe->setNumero(count($em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaPaciente')->getRespuestasByPacientePregunta(3,$paciente->getId(),$preg->getId()))+1);
+//                            }else{
                                 $rtaRe = new \Sirepae\RegistrosEnfermeriaBundle\Entity\RespuestaRegistroEnfermeria();
                                 $rtaRe->setNumero(count($em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$preg->getId()))+1);
-                            }
+//                            }
                         }
                         $rtaRe->setRespuesta($rta);
-                        if($registro->getAplicaEnPaciente()){
-                            $rtaRe->setPaciente($registroEnfermeria->getPaciente());
-                        }else{
+//                        if($registro->getAplicaEnPaciente()){
+//                            $rtaRe->setPaciente($registroEnfermeria->getPaciente());
+//                        }else{
                             $rtaRe->setRegistroEnfermeria($registroEnfermeria);
-                        }
+//                        }
                         $em->persist($rtaRe);
                     }
                 });
