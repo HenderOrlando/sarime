@@ -391,7 +391,11 @@ class RegistroController extends Controller
             }
             $form = $this->constructForm($registro, $registroEnfermeria, $numero, $editar);
             if(!method_exists($form,'createView')){
-                return $form;
+                if(isset($form['ur'])){
+                    return $this->redirect($$form['url']);
+                }else{
+                    return $this->redirect('registroEnfermeria_edit',array('id' => $registroEnfermeria->getId()));
+                }
                 /*Mensaje por el form*/
             }
             $form->handleRequest($request);
@@ -552,7 +556,11 @@ class RegistroController extends Controller
                         $cols[$col_id]->getOpcionesRespuesta(),
                         $cols[$col_id]
                     );
-                    $form->add( $datos['id_campo'], $datos['tipo_campo'], $datos['datos']);
+                    if(isset($datos['id_campo']) && isset($datos['tipe_campo']) && isset($datos['datos'])){
+                        $form->add($datos['id_campo'], $datos['tipo_campo'], $datos['datos']);
+                    }else{
+                        return $datos;
+                    }
                 }
             }else{
                 foreach($rows as $row){
@@ -566,7 +574,11 @@ class RegistroController extends Controller
                             $col->getOpcionesRespuesta(),
                             $col
                         );
-                        $form->add($datos['id_campo'], $datos['tipo_campo'], $datos['datos']);
+                        if(isset($datos['id_campo']) && isset($datos['tipe_campo']) && isset($datos['datos'])){
+                            $form->add($datos['id_campo'], $datos['tipo_campo'], $datos['datos']);
+                        }else{
+                            return $datos;
+                        }
                     }
                 }
             }
@@ -585,7 +597,7 @@ class RegistroController extends Controller
                     );
                     if(isset($datos['id_campo']) && isset($datos['tipe_campo']) && isset($datos['datos'])){
                         $form->add($datos['id_campo'], $datos['tipo_campo'], $datos['datos']);
-                    }elseif(is_a($datos, 'Symfony\Component\HttpFoundation\RedirectResponse')){
+                    }else{
                         return $datos;
                     }
                 }
@@ -628,7 +640,8 @@ class RegistroController extends Controller
                 $tipo_campo = $optRta->getTipoRespuesta()->getTipoCampo();
                 $id_campo = $preg->getId().'-'.$optRta->getId();
             }else{
-                return $this->redirect($this->generateUrl('addOpcionRespuesta_new',array('id' => $preg->getId())));
+                return array('url' => $this->generateUrl('addOpcionRespuesta_new',array('id' => $preg->getId())), 'error' => true );
+//                return $this->redirect($this->generateUrl('addOpcionRespuesta_new',array('id' => $preg->getId())));
             }
         }
         if(!is_null($col)){
@@ -678,7 +691,8 @@ class RegistroController extends Controller
             }
             $datos['data'] = $dato;
         }elseif(!$editar && $rta && $registro->isUnico()){
-            return $this->redirect($this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())));
+            return array('url' => $this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())), 'error' => true );
+//            return $this->redirect($this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())));
 //                return $this->redirect($this->generateUrl('editar_registro_enfermeria', array(
 //                    'idRegistro' => $registro->getId(),
 //                    'idRegistroEnfermeria' => $registroEnfermeria->getId(),
