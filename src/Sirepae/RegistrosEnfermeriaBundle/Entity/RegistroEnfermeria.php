@@ -25,7 +25,7 @@ class RegistroEnfermeria
      *     mappedBy="registroEnfermeria", 
      *     cascade={"all"}
      * )
-     * @ORM\OrderBy({"fecha_creado"="ASC"})
+     * @ORM\OrderBy({"fecha_creado"="DESC"})
      */
     private $notas;
 

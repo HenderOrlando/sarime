@@ -70,6 +70,16 @@ class Usuario extends BaseUser
      * @ORM\JoinColumn(name="rol_id", referencedColumnName="id", nullable=true)
      */
     protected $rol_usuario;
+    
+    /** 
+     * @ORM\OneToMany(
+     *     targetEntity="\Sirepae\RegistrosEnfermeriaBundle\Entity\Nota", 
+     *     mappedBy="usuario", 
+     *     cascade={"all"}
+     * )
+     * @ORM\OrderBy({"fecha_creado"="ASC"})
+     */
+    private $notas;
 
     /**
      * Constructor
@@ -507,5 +517,38 @@ class Usuario extends BaseUser
     public function getCredentialsExpired()
     {
         return $this->credentialsExpired;
+    }
+    
+    /**
+     * Add notas
+     *
+     * @param \Sirepae\RegistrosEnfermeriaBundle\Entity\Nota $notas
+     * @return RegistroEnfermeria
+     */
+    public function addNota(\Sirepae\RegistrosEnfermeriaBundle\Entity\Nota $notas)
+    {
+        $this->notas[] = $notas;
+    
+        return $this;
+    }
+
+    /**
+     * Remove notas
+     *
+     * @param \Sirepae\RegistrosEnfermeriaBundle\Entity\Nota $notas
+     */
+    public function removeNota(\Sirepae\RegistrosEnfermeriaBundle\Entity\Nota $notas)
+    {
+        $this->notas->removeElement($notas);
+    }
+
+    /**
+     * Get notas
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getNotas()
+    {
+        return $this->notas;
     }
 }

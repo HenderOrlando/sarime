@@ -48,6 +48,9 @@
                     <li class="{{ active_paes_resumen is defined ?'active':''}}">
                         <a href="{{ path('pae') }}">PAE</a>
                     </li>
+                    <li class="{{ active_notas_resumen is defined ?'active':''}}">
+                        <a href="{{ path('nota') }}">Notas</a>
+                    </li>
                     {% endif %}
                     {% if is_granted('ROLE_COORDINADOR') %}
                     <li class="{{ active_consultas_resumen is defined ?'active':''}}">
@@ -97,12 +100,15 @@
                         <a href="{{ path('usuario') }}">Administrar Usuarios</a>
                     </li>
                     {% endif %}
-                    {% if is_granted('ROLE_DOCENTE') or is_granted('ROLE_ESTUDIANTE') %}
+                    {% if is_granted('ROLE_USER') %}
                     <li class="{{ active_registrosEnfermeria_resumen is defined ?'active':''}}">
                         <a href="{{ path('registros_enfermeria') }}">Administrar Registros de Enfermería</a>
                     </li>
                     <li class="{{ active_paes_resumen is defined ?'active':''}}">
                         <a href="{{ path('pae') }}">Administrar Procesos de Atención de Enfermería</a>
+                    </li>
+                    <li class="{{ active_consultas_resumen is defined ?'active':''}}">
+                        <a href="{{ path('nota') }}">Notas</a>
                     </li>
                     {% endif %}
                     {% if is_granted('ROLE_COORDINADOR') %}

@@ -29,6 +29,12 @@ class Nota
      * @ORM\JoinColumn(name="registro_enfermeria_id", referencedColumnName="id", nullable=false)
      */
     private $registroEnfermeria;
+
+    /** 
+     * @ORM\ManyToOne(targetEntity="\Sirepae\UsuariosBundle\Entity\Usuario", inversedBy="notas")
+     * @ORM\JoinColumn(name="estudiante_id", referencedColumnName="id", nullable=true)
+     */
+    private $usuario;
     
     
     /******************* MÉTODOS *******************/
@@ -115,5 +121,28 @@ class Nota
     public function getRegistroEnfermeria()
     {
         return $this->registroEnfermeria;
+    }
+
+    /**
+     * Set usuario
+     *
+     * @param \Sirepae\UsuariosBundle\Entity\Usuario $usuario
+     * @return Nota
+     */
+    public function setUsuario(\Sirepae\UsuariosBundle\Entity\Usuario $usuario)
+    {
+        $this->usuario = $usuario;
+    
+        return $this;
+    }
+
+    /**
+     * Get usuario
+     *
+     * @return \Sirepae\UsuariosBundle\Entity\Usuario 
+     */
+    public function getUsuario()
+    {
+        return $this->usuario;
     }
 }

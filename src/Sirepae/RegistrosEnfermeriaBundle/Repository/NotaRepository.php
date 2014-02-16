@@ -12,4 +12,13 @@ class NotaRepository extends EntityRepository
             )
             ->getResult();
     }
+    
+    public function findAllByUsuario()
+    {
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT p FROM SirepaeRegistrosEnfermeriaBundle:Nota p ORDER BY p.name ASC'
+            )
+            ->getResult();
+    }
 }

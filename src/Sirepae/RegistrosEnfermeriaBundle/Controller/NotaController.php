@@ -22,6 +22,7 @@ class NotaController extends Controller
      * Lists all Nota entities.
      *
      * @Route("/registro-enfermeria/{id}/", name="nota_")
+     * @Route("/usuario/{usuario}/", name="nota_")
      * @Route("/", name="nota")
      * @Method("GET")
      * @Template()
@@ -31,16 +32,17 @@ class NotaController extends Controller
         $em = $this->getDoctrine()->getManager();
         
         $re = null;
+        $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Nota')
+                ->createQueryBuilder('n')
+                ->orderBy('n.fecha_creado', 'DESC');
         if(!is_null($id)){
-            $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Nota')->createQueryBuilder('n')
-                    ->andWhere('n.registroEnfermeria ='.$id)
-                    ->orderBy('n.fecha_creado', 'DESC')
-                    ->getQuery()
-                    ->getResult();
+            $entities->andWhere('n.registroEnfermeria ='.$id);
             $re = $this->getDoctrine ()->getManager ()->getRepository ('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->find($id);
-        }
-        elseif($this->getUser()->hasRole('ROLE_SUPER_ADMIN')){
-            $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Nota')->findAll();
+        }elseif($this->getUser()->hasRole('ROLE_ESTUDIANTE') || $this->getUser()->hasRole('ROLE_DOCENTE') || $this->getUser()->hasRole('ROLE_COORDINADOR')){
+            $entities
+                ->andWhere('n.usuario = '.$this->getUser()->getId())
+                ->getQuery()
+                ->getResult();
         }else{
             $entities = array();
         }
@@ -90,7 +92,7 @@ class NotaController extends Controller
     */
     private function createCreateForm(Nota $entity, \Sirepae\RegistrosEnfermeriaBundle\Entity\RegistroEnfermeria $re = null)
     {
-        $form = $this->createForm(new NotaType($re), $entity, array(
+        $form = $this->createForm(new NotaType($re, $this->getUser()), $entity, array(
             'action' => $this->generateUrl('nota_create'),
             'method' => 'POST',
         ));

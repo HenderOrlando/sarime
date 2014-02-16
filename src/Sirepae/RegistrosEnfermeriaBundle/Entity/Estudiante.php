@@ -242,4 +242,5 @@ class Estudiante
     public function __toString() {
         return $this->getUsuario()->__toString().'('.$this->getCodigo().')';
     }
+    
 }

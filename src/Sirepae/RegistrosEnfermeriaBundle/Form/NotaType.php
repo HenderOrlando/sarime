@@ -9,9 +9,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 class NotaType extends AbstractType
 {
     private $re;
+    private $usuario;
     
-    public function __construct(\Sirepae\RegistrosEnfermeriaBundle\Entity\RegistroEnfermeria $re = null) {
+    public function __construct(\Sirepae\RegistrosEnfermeriaBundle\Entity\RegistroEnfermeria $re = null, \Sirepae\UsuariosBundle\Entity\Usuario $usuario = null) {
         $this->re = $re;
+        $this->usuario = $usuario;
     }
         /**
      * @param FormBuilderInterface $builder
@@ -31,7 +33,18 @@ class NotaType extends AbstractType
             ));
         }else
             $builder->add('registroEnfermeria');
-
+        if(!is_null($this->usuario) && $this->usuario->hasRole('ROLE_USER')){
+            $builder->add('usuario',null, array(
+                'label' => false,
+                'data' => $this->usuario,
+                'attr' => array('class' => 'hide'),
+            ));
+        }else{
+            $builder
+                ->add('usuario')
+                ->add('estudiante')
+            ;
+        }
     }
     
     /**
