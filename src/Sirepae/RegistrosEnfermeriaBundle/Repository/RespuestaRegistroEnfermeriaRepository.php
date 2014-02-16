@@ -30,11 +30,15 @@ class RespuestaRegistroEnfermeriaRepository extends EntityRepository
         return $this->getRespuestasByRegistroEnfermeriaPregunta(false, $idRegistroEnfermeria, $idPregunta, $numero, $id_col);
     }
     
-    public function getRespuestasByRegistroEnfermeriaPregunta($qb, $idRegistroEnfermeria, $idPregunta, $numero = null, $idCol = null){
+    public function getRespuestasByRegistroEnfermeriaPregunta($qb, $idRegistroEnfermeria, $idPregunta, $numero = null, $idCol = null, $tabla = false){
         $q = $this->createQueryBuilder('rre')
             ->andWhere('rre.registroEnfermeria = '.$idRegistroEnfermeria)
             ->leftJoin('rre.respuesta', 'r')
             ->leftJoin('r.pregunta', 'p');
+        if($tabla){
+            $q->leftJoin('p.registro', 'reg')
+                ->andWhere('reg.tabla = 1');
+        }
         if(is_numeric($numero))
             $q->andWhere('rre.numero = '.$numero);
         if(is_null($idCol) && !is_null($idPregunta)){
