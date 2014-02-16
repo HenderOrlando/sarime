@@ -260,7 +260,17 @@ class RegistroController extends Controller
                 if($registro){
                     $em->transactional(function($em) use ($idRegistroEnfermeria_, $registro, $numero_){
                         foreach($registro->getPreguntas() as $pregunta){
-                            $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($idRegistroEnfermeria_, $pregunta->getId(), $numero_);
+                            if($registro->isTabla()){
+                                $id = explode('-', $id);
+                                $id_col = $id[0];
+                                $id_row = $id[1];
+                                $preg = $col = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($id_col);
+                                $row = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($id_row);
+                                $optRta_id = $col->getOpcionesRespuesta()->first()->getId();
+                                $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$id_row, $numero, $id_col);
+                            }else{
+                                $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($idRegistroEnfermeria_, $pregunta->getId(), $numero_);
+                            }
                             $rta = $rtaRe->getRespuesta();
                             $em->remove($rtaRe);
                             $em->remove($rta);
@@ -411,8 +421,9 @@ class RegistroController extends Controller
                             $id = explode('-', $id);
                             $id_col = $id[0];
                             $id_row = $id[1];
-                            $preg = $col = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($id_col);
+                            $col = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($id_col);
                             $row = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($id_row);
+                            $preg_id = $row->getId();
                             $optRta_id = $col->getOpcionesRespuesta()->first()->getId();
                             $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$id_row, $numero, $id_col);
                         }elseif(count(explode('-', $id)) > 1){
@@ -433,12 +444,19 @@ class RegistroController extends Controller
                                 $optRta_id = $preg->getOpcionesRespuesta()->first()->getId();
                             }
                         }
+                        $col_id = null;
+                        if(!is_null($col)){
+                            $col_id = $col->getId();
+                        }
                         /**/
 //                        if($registro->getAplicaEnPaciente()){
-//                            $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaPaciente')->getRespuestaByPacientePregunta($paciente->getId(),$preg->getId(), $numero, $id_col);
+//                            $rtaRe = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$preg->getId(), $numero,$col_id,true,null,$registro->getId());
 //                        }else{
-                            $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$preg->getId(), $numero, $id_col);
+                            $rtaRe = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$preg->getId(), $numero,$col_id,true,null,$registro->getId());
 //                        }
+                        if(is_array($rtaRe)){
+                            $rtaRe = $rtaRe[0];
+                        }
 
                         if(!$editar && ($registro->isUnico() && !$rtaRe) || (!$editar && !$registro->isUnico())){
                             $rta = new \Sirepae\RegistrosEnfermeriaBundle\Entity\Respuesta();
@@ -481,7 +499,6 @@ class RegistroController extends Controller
                         if($registro->isTabla() && !is_null($col) && !is_null($row)){
                             $dato = $col->getId().'-_#|#_-'.$row->getId().'-_#|#_-'.$dato;
                         }
-                        
                         $rta
                             ->setOpcionRespuesta($optRta)
                             ->setPregunta($preg)
@@ -493,7 +510,12 @@ class RegistroController extends Controller
 //                                $rtaRe->setNumero(count($em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaPaciente')->getRespuestasByPacientePregunta(3,$paciente->getId(),$preg->getId()))+1);
 //                            }else{
                                 $rtaRe = new \Sirepae\RegistrosEnfermeriaBundle\Entity\RespuestaRegistroEnfermeria();
-                                $rtaRe->setNumero(count($em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$preg->getId()))+1);
+                                if($registro->isTabla() && !is_null($col) && !is_null($row)){
+                                    $rtas = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),null, $numero,null,true,null,$registro->getId());
+                                }else{
+                                    $rtas = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$row,null,$col,true, true);
+                                }
+                                $rtaRe->setNumero(count($rtas)+1);
 //                            }
                         }
                         $rtaRe->setRespuesta($rta);
@@ -537,18 +559,12 @@ class RegistroController extends Controller
                     $rows[$preg->getId()] = $preg;
                 }
             }
-            $rtas = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),null, $numero,null,true);
+            $rtas = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),null, $numero,null,true,null,$registro->getId());
             if((count($rtas) > 1 && $editar) || $registro->isUnico()){
 //                var_dump(count($rtas));
 //                die;
                 foreach($rtas as $rta){
-                    if(is_null($rta->getRespuesta()->getValor())){
-                        $dato = $rta->getRespuesta()->getOpcionRespuesta()->getId();
-                    }
-                    else{
-                        $dato = $rta->getRespuesta()->getValor();
-                    }
-                    $dato = explode('-_#|#_-', $dato);
+                    $dato = explode('-_#|#_-', $rta->getRespuesta()->getValor());
                     $col_id = $dato[0];
                     $row_id = $dato[1];
                     $dato = $dato[2];
@@ -720,5 +736,12 @@ class RegistroController extends Controller
             'id_campo' =>  $id_campo,
             'tipo_campo' =>  $tipo_campo,
         );
+    }
+    
+    /**
+     * @return Sirepae\RegistrosEnfermeriaBundle\Repository\RespuestaRegistroEnfermeriaRepository RespuestaRegistroEnfermeria
+     */
+    public function getRRE(){
+        return $this->getDoctrine()->getManager()->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria');
     }
 }

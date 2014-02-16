@@ -25,7 +25,7 @@ class RegistroType extends AbstractType
             ))
             ->add('aplicaEnPaciente', 'choice', array(
                 'label'     =>  false,
-                'choices'   =>  array(true => 'Es Entrevista', false => 'Es Valoración'),
+                'choices'   =>  array(true => 'Es Historia Clínica', false => 'Es Valoración'),
                 'expanded'  =>  true,
                 'multiple'  =>  false,
             ))

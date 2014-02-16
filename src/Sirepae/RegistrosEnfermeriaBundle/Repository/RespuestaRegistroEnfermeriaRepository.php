@@ -29,15 +29,27 @@ class RespuestaRegistroEnfermeriaRepository extends EntityRepository
     {
         return $this->getRespuestasByRegistroEnfermeriaPregunta(false, $idRegistroEnfermeria, $idPregunta, $numero, $id_col);
     }
-    
-    public function getRespuestasByRegistroEnfermeriaPregunta($qb, $idRegistroEnfermeria, $idPregunta, $numero = null, $idCol = null, $tabla = false){
+    /**
+     * @param boolean $qb                   QueryBuilder
+     * @param numeric $idRegistroEnfermeria Id del registro de enfermería
+     * @param numeric $idPregunta           Id de la pregunta o de la fila
+     * @param numeric $numero               Número
+     * @param numeric $idCol                Id de la Columna
+     * @param boolean $tabla                Busca sólo regitros que se muesten como tablas
+     * @param string  $groupBy              Agrupar por el parámetro pasado. Debe ser de RespuestaRegistroEnfermería
+     * @param numeric $idRegistro           Id del registro
+     */
+    public function getRespuestasByRegistroEnfermeriaPregunta($qb, $idRegistroEnfermeria, $idPregunta, $numero = null, $idCol = null, $tabla = false, $groupBy = null, $idRegistro = null){
         $q = $this->createQueryBuilder('rre')
             ->andWhere('rre.registroEnfermeria = '.$idRegistroEnfermeria)
-            ->leftJoin('rre.respuesta', 'r')
-            ->leftJoin('r.pregunta', 'p');
+            ->join('rre.respuesta', 'r')
+            ->join('r.pregunta', 'p');
         if($tabla){
-            $q->leftJoin('p.registro', 'reg')
+            $q->join('p.registro', 'reg')
                 ->andWhere('reg.tabla = 1');
+            if(!is_null($idRegistro) && is_numeric($idRegistro)){
+                $q->andWhere('reg.id = '.$idRegistro);
+            }
         }
         if(is_numeric($numero))
             $q->andWhere('rre.numero = '.$numero);
@@ -45,6 +57,9 @@ class RespuestaRegistroEnfermeriaRepository extends EntityRepository
             $q->andWhere('p.id = '.$idPregunta);
         }elseif(!is_null($idPregunta) && !is_null($idCol)){
             $q->andWhere("r.valor LIKE '%".$idCol.'-_#|#_-'.$idPregunta."-_#|#_-%'");
+        }
+        if(!is_null($groupBy) && is_string($groupBy)){
+            $q->groupBy('rre.'.$groupBy);
         }
         if(is_integer($qb) && $qb === 1)
             return $q;

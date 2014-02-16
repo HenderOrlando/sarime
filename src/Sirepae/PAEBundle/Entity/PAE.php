@@ -79,6 +79,7 @@ class PAE
         $this->actividades = new \Doctrine\Common\Collections\ArrayCollection();
         $this->diagnosticos = new \Doctrine\Common\Collections\ArrayCollection();
         $this->indicadores = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->calificacion = null;
     }
     
     /**
@@ -227,6 +228,16 @@ class PAE
     public function getCalificacion()
     {
         return $this->calificacion;
+    }
+    
+    /**
+     * Is calificado
+     *
+     * @return boolean
+     */
+    public function isCalificado()
+    {
+        return $this->calificacion && $this->calificacion != null && !empty($this->calificacion);
     }
 
     /**

@@ -275,7 +275,7 @@ class ActividadPAEController extends Controller
             $actividad = $em->getRepository('SirepaePAEBundle:Actividad')->find($id_actividad);
             if($actividad){
                 $pae = $em->getRepository('SirepaePAEBundle:PAE')->find($id_pae);
-                if($pae){
+                if($pae && !$pae->isCalificado()){
                     $apae = $em->getRepository('SirepaePAEBundle:ActividadPAE')->findOneBy(array(
                         'actividad' => $id_actividad,
                         'planCuidado' => $id_pae,
@@ -294,7 +294,7 @@ class ActividadPAEController extends Controller
                     $em->flush();
                 }else{
                     $json['error']  = true;
-                    $json['msg']    = 'PAE no válido';
+                    $json['msg']    = $pae->isCalificado()?'PAE Calificado':'PAE no válido';
                 }
             }else{
                 $json['error']  = true;

@@ -6,7 +6,7 @@
             <h1 class="title">{{ entity }}</h1>
         </div>
         <div class="pull-right">
-            {% if is_granted('ROLE_ESTUDIANTE') %}
+            {% if is_granted('ROLE_ESTUDIANTE') and not entity.isCalificado %}
                 {{ form(delete_form) }}
             {% endif %}
             <div class="btn-group btn-group-lg pull-right">
@@ -21,12 +21,12 @@
         </h2>
         {% endif %}
     </div>
-{% if is_granted('ROLE_DOCENTE') or entity.calificacion is not defined or entity.calificacion is empty or entity.calificacion is null %}
+{% if is_granted('ROLE_DOCENTE') or is_granted('ROLE_ESTUDIANTE') and not entity.isCalificado %}
 {{ form_start(edit_form) }}
     {{ form_errors(edit_form) }}
 {% endif %}
 
-    {% if is_granted('ROLE_ESTUDIANTE') %}
+    {% if is_granted('ROLE_ESTUDIANTE') and not entity.isCalificado %}
         {{ form_row(edit_form.paciente) }}
         {% if edit_form.estudiante is defined %}
             {{ form_row(edit_form.estudiante) }}
@@ -120,7 +120,7 @@
                                                                     <div id="evidencias-{{ diagnostico.id }}" class="panel-collapse collapse">
                                                                         <{{ is_granted('ROLE_ESTUDIANTE')?'div':'ul' }} class="list-group">
                                                                         {% for evidencia in diagnostico.evidencias %}
-                                                                            {% if is_granted('ROLE_ESTUDIANTE') %}
+                                                                            {% if is_granted('ROLE_ESTUDIANTE') and not entity.isCalificado %}
                                                                                     <a href="{{ path('toggle_diagnostico_to_pae_e',{'id_pae': entity.id, 'id_diagnostico': diagnostico.id, 'id_evidencia': evidencia.id}) }}"  class="list-group-item{{ entity.existEvidenciaDiagnostico(evidencia)?' active':'' }} ajax" title="{{ evidencia.descripcion }}" id="link-evidencias-{{ diagnostico.id }}">
                                                                                         {{ evidencia.nombre }}
                                                                                     </a>
@@ -144,7 +144,7 @@
                                                                     <div id="factores-relacionados-{{ diagnostico.id }}" class="panel-collapse collapse">
                                                                         <{{ is_granted('ROLE_ESTUDIANTE')?'div':'ul' }} class="list-group">
                                                                         {% for factorRelacionado in diagnostico.factoresRelacionados %}
-                                                                            {% if is_granted('ROLE_ESTUDIANTE') %}
+                                                                            {% if is_granted('ROLE_ESTUDIANTE') and not entity.isCalificado %}
                                                                                     <a href="{{ path('toggle_diagnostico_to_pae_fr',{'id_pae': entity.id, 'id_diagnostico': diagnostico.id, 'id_factorRelacionado': factorRelacionado.id}) }}"  class="list-group-item{{ entity.existFactorRelacionadoDiagnostico(factorRelacionado)?' active':'' }} ajax" title="{{ factorRelacionado.descripcion }}" id="link-factorRelacionados-{{ diagnostico.id }}">
                                                                                         {{ factorRelacionado.nombre }}
                                                                                     </a>
@@ -238,7 +238,7 @@
                                                                     <div id="escalas-indicador-{{ indicador.id }}-resultado-esperado-{{ resultadoEsperado.id }}" class="panel-collapse collapse">
                                                                         <{{ is_granted('ROLE_ESTUDIANTE')?'div':'ul' }} class="list-group">
                                                                         {% for escala in resultadoEsperado.escalas %}
-                                                                            {% if is_granted('ROLE_ESTUDIANTE') %}
+                                                                            {% if is_granted('ROLE_ESTUDIANTE') and not entity.isCalificado %}
                                                                                     <a href="{{ path('toggle_indicador_to_pae',{'id_pae': entity.id, 'id_indicador': indicador.id, 'id_escala': escala.id}) }}" class="list-group-item{{ entity.existIndicador(indicador,escala)?' active':'' }} ajax" title="{{ escala.descripcion }}">
                                                                                         {{ escala.nombre }} <span class="label label-success">{{ escala.valor }}</span>
                                                                                     </a>
@@ -274,7 +274,7 @@
                     <span id="num-indicadores" class="total-definidos">{{ num_ind }}</span> 
                     Indicador{{ num_ind != 1?'es':'' }}
                 </div>
-                {% if is_granted('ROLE_DOCENTE') or entity.calificacion is not defined or entity.calificacion is empty or entity.calificacion is null %}
+                {% if is_granted('ROLE_DOCENTE') or not entity.isCalificado %}
                     {% if edit_form.objetivo is defined %}
                         <div class="panel-footer">
                                 {{ form_row(edit_form.objetivo) }}
@@ -312,7 +312,7 @@
                                     </div>
                                     <{{ is_granted('ROLE_ESTUDIANTE')?'div':'ul' }} class="list-group">
                                     {% for actividad in intervencion.actividades %}
-                                        {% if is_granted('ROLE_ESTUDIANTE') %}
+                                        {% if is_granted('ROLE_ESTUDIANTE') and not entity.isCalificado %}
                                                 <a href="{{ path('toggle_actividad_to_pae',{'id_pae': entity.id, 'id_actividad': actividad.id}) }}" class="list-group-item{{ entity.existActividad(actividad)?' active':'' }} ajax">
                                                     {{ actividad.nombre }}
                                                 </a>

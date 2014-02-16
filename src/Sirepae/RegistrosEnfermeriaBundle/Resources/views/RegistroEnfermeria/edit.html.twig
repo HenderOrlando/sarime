@@ -15,7 +15,6 @@
     {% if is_granted('ROLE_ESTUDIANTE') %}
     {{ form(edit_form) }}
     {% endif %}
-
 <div class="btn-group btn-group-lg pull-right">
     <a class="btn btn-default btn-lg" href="{{ path('registros_enfermeria') }}">Volver</a>
     {% if is_granted('ROLE_DOCENTE') or is_granted('ROLE_ESTUDIANTE') %}
@@ -49,7 +48,7 @@
             {% else %}
                     <div class="col-md-12">
                         <h3 class="title">
-                            Entrevistas
+                            Historia Clínica
                         </h3>
                     </div>
                 {% set no_aplica = [] %}

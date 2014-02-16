@@ -275,7 +275,7 @@ class DiagnosticoPAEController extends Controller
             $diagnostico = $em->getRepository('SirepaePAEBundle:Diagnostico')->find($id_diagnostico);
             if($diagnostico){
                 $pae = $em->getRepository('SirepaePAEBundle:PAE')->find($id_pae);
-                if($pae){
+                if($pae && !$pae->isCalificado()){
                     if(is_null($id_factorRelacionado)){
                         $evidencia = $em->getRepository('SirepaePAEBundle:Evidencia')->find($id_evidencia);
                         if($evidencia){
@@ -363,7 +363,7 @@ class DiagnosticoPAEController extends Controller
                     }
                 }else{
                     $json['error']  = true;
-                    $json['msg']    = 'PAE no válido';
+                    $json['msg']    = $pae->isCalificado()?'PAE Calificado':'PAE no válido';
                 }
             }else{
                 $json['error']  = true;

@@ -274,7 +274,7 @@ class IndicadorPAEController extends Controller
             $indicador = $em->getRepository('SirepaePAEBundle:Indicador')->find($id_indicador);
             if($indicador){
                 $pae = $em->getRepository('SirepaePAEBundle:PAE')->find($id_pae);
-                if($pae){
+                if($pae && !$pae->isCalificado()){
                     $escala = $em->getRepository('SirepaePAEBundle:Escala')->find($id_escala);
                     if($escala){
                         $ipae = $em->getRepository('SirepaePAEBundle:IndicadorPAE')->findOneBy(array(
@@ -307,7 +307,7 @@ class IndicadorPAEController extends Controller
                     }
                 }else{
                     $json['error']  = true;
-                    $json['msg']    = 'PAE no válido';
+                    $json['msg']    = $pae->isCalificado()?'PAE Calificado':'PAE no válido';
                 }
             }else{
                 $json['error']  = true;
