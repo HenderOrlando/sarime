@@ -272,15 +272,15 @@ class ConsultasController extends Controller
     /**
      * Consulta del pae
      *
-     * @Route("/procesos-de-atencion-de-enfermeria-incompletos/", name="consulta_pae_diagnostico")
+     * @Route("/procesos-de-atencion-de-enfermeria/diagnósticos/", name="consulta_pae_diagnostico")
      * @Method("GET")
-     * @Template("SirepaeUsuariosBundle:Consultas:paesDiagnosticos.html.twig")
+     * @Template("SirepaeUsuariosBundle:Consultas:paeDiagnostico.html.twig")
      */
     public function paesDiagnosticosAction()
     {
         $em = $this->getDoctrine()->getManager();
         
-        $entities = $em->getRepository('SirepaePAEBundle:PAE')->findAllDocentes();
+        $entities = $em->getRepository('SirepaePAEBundle:PAE')->findAllPaesGroupByDiagnostico($this->getUser()->getId());
         
         return array(
             'entities' => $entities,

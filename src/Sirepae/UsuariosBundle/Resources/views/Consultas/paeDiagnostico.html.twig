@@ -1,0 +1,81 @@
+{% extends 'SirepaeUsuariosBundle:Consultas:index.html.twig' %}
+
+{% block content -%}
+    {% set path_ = 'diagnostico' %}
+    {% set title_ = 'Diagnósticos' %}
+    <ul class="list-unstyled list-inline">
+        <li>
+            <h1 class="title">
+                Tablero de {{ title_ }}
+            </h1>
+        </li>
+    </ul>
+    <div class="table-responsive">
+        <table class="records_list">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Definicion</th>
+                    <th>Código</th>
+                    <th>Procesos de Atención de Enfermería</th>
+                    <th>Factores Relacionados</th>
+                    <th>Evidencias</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.nombre }}</td>
+                    <td>{{ entity.definicion }}</td>
+                    <td>{{ entity.codigo }}</td>
+                    <td>
+                        {% if entity.planesCuidado is not empty %}
+                        <div class="list-group">
+                            {% for dpae in entity.planesCuidado %}
+                            <a class="list-group-item" href="{{ path('pae_edit',{id:dpae.planCuidado.id}) }}">
+                                {{ dpae.planCuidado }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        No tiene PAEs relacionados
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entity.factoresRelacionados is not empty %}
+                        <ul class="list-group">
+                            {% for fr in entity.factoresRelacionados %}
+                            <li class="list-group-item">
+                                {{ fr.nombre }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        No tiene Factores relacionados
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entity.evidencias is not empty %}
+                        <ul class="list-group">
+                            {% for e in entity.evidencias %}
+                            <li class="list-group-item">
+                                {{ e.nombre }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        No tiene Evidencias relacionadas
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-lg">
+                            <a class="btn btn-primary" href="{{ path(path_ ~ '_edit', { 'id': entity.id }) }}">Editar</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

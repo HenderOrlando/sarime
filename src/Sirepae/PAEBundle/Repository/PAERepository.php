@@ -13,35 +13,43 @@ class PAERepository extends EntityRepository
             ->getResult();
     }
     
-    public function findAllEstudiante($id_estudiante)
+    public function findAllEstudiante($id_estudiante, $qb = false)
     {
-        return $this->createQueryBuilder('pae')
+        $q = $this->createQueryBuilder('pae')
             ->andWhere('pae.estudiante = '.$id_estudiante)
             ->orderBy('pae.fecha_creado','DESC')
-            ->getQuery()
-            ->getResult();
+            ;
+        if($qb){
+            return $q;
+        }
+        return $q->getQuery()->getResult();
     }
     
-    public function findAllDocente($id_docente)
+    public function findAllDocente($id_docente, $qb = false)
     {
-        return $this->createQueryBuilder('pae')
+        $q = $this->createQueryBuilder('pae')
             ->join('pae.estudiante', 'e')
             ->join('e.practica', 'p')
             ->andWhere('p.docente = '.$id_docente)
             ->orderBy('pae.fecha_creado','DESC')
-            ->getQuery()
-            ->getResult();
+            ;
+        if($qb){
+            return $q;
+        }
+        return $q->getQuery()->getResult();
     }
     
-    public function findAllCoordinador($id_coordinador)
+    public function findAllCoordinador($id_coordinador, $qb = false)
     {
-        return $this->createQueryBuilder('pae')
+        $q = $this->createQueryBuilder('pae')
             ->join('pae.estudiante', 'e')
             ->join('e.practica', 'p')
             ->andWhere('p.coordinador = '.$id_coordinador)
-            ->orderBy('pae.fecha_creado','DESC')
-            ->getQuery()
-            ->getResult();
+            ->orderBy('pae.fecha_creado','DESC');
+        if($qb){
+            return $q;
+        }
+        return $q->getQuery()->getResult();
     }
     
     public function getPaesBetween($campo, $from, $to){
@@ -85,4 +93,28 @@ class PAERepository extends EntityRepository
         
     }
 
+    public function findAllPaesGroupByDiagnostico($id, $roles='ROLE_COORDINADOR'){
+        $q = $this->getEntityManager()
+                ->getRepository('SirepaePAEBundle:Diagnostico')
+                ->createQueryBuilder('d')
+                ->join('d.planesCuidado', 'paed')
+                ->join('paed.planCuidado', 'pae');
+        if(strpos($roles, 'COORDINADOR')){
+            $q  ->join('pae.estudiante', 'e')
+                ->join('e.practica', 'p')
+                ->andWhere('p.coordinador = '.$id)
+                ->orderBy('pae.fecha_creado','DESC');
+        }elseif(strpos($roles, 'DOCENTE')){
+            $q  ->join('pae.estudiante', 'e')
+                ->join('e.practica', 'p')
+                ->andWhere('p.docente = '.$id)
+                ->orderBy('pae.fecha_creado','DESC');
+        }
+        return $q
+//            ->join('pae.diagnosticos', 'd')
+            ->groupBy('d.id')
+            //->addSelect('COUNT(d.id) as num_diagnostico')
+            ->getQuery()
+            ->getResult();
+    }
 }
