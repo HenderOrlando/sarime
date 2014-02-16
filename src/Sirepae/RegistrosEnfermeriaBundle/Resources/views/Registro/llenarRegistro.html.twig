@@ -47,9 +47,11 @@
                                 {{ row.enunciado }}
                             </th>
                             {% for col in cols %}
-                            <td>
-                                {{ form_row(form[col.id~'-'~row.id]) }}
-                            </td>
+                                {% if form[col.id~'-'~row.id] is defined %}
+                                <td>
+                                    {{ form_row(form[col.id~'-'~row.id]) }}
+                                </td>
+                                {% endif %}
                             {% endfor %}
                         </tr>
                     {% endfor %}
