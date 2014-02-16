@@ -30,7 +30,7 @@ class RespuestaPaciente
      *     inversedBy="respuestas", 
      *     cascade={"all"}
      * )
-     * @ORM\JoinColumn(name="paciente_id", referencedColumnName="id", nullable=false, unique=true)
+     * @ORM\JoinColumn(name="paciente_id", referencedColumnName="id", nullable=false, unique=false)
      */
     private $paciente;
 
