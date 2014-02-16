@@ -18,7 +18,7 @@
 
 <div class="btn-group btn-group-lg pull-right">
     <a class="btn btn-default btn-lg" href="{{ path('registros_enfermeria') }}">Volver</a>
-    {% if is_granted('ROLE_DOCENTE') || is_granted('ROLE_ESTUDIANTE') %}
+    {% if is_granted('ROLE_DOCENTE') or is_granted('ROLE_ESTUDIANTE') %}
         <a class="btn btn-info btn-lg" href="{{ path('nota_new_registro_enfermeria',{id: entity.id}) }}">Agregar Observación</a>
     {% endif %}
         <a class="btn btn-primary btn-lg" href="{{ path('nota_',{id: entity.id}) }}">Ver Observaciones</a>
