@@ -390,6 +390,10 @@ class RegistroController extends Controller
                 }
             }
             $form = $this->constructForm($registro, $registroEnfermeria, $numero, $editar);
+            if(!method_exists($form,'createView')){
+                return $form;
+                /*Mensaje por el form*/
+            }
             $form->handleRequest($request);
 // id_col|valor
             if ($form->isValid()) {
@@ -579,7 +583,11 @@ class RegistroController extends Controller
                         $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$preg->getId(), $numero),
                         $preg->getOpcionesRespuesta()
                     );
-                    $form->add($datos['id_campo'], $datos['tipo_campo'], $datos['datos']);
+                    if(isset($datos['id_campo']) && isset($datos['tipe_campo']) && isset($datos['datos'])){
+                        $form->add($datos['id_campo'], $datos['tipo_campo'], $datos['datos']);
+                    }elseif(is_a($datos, 'Symfony\Component\HttpFoundation\RedirectResponse')){
+                        return $datos;
+                    }
                 }
             }
         }
