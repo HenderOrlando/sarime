@@ -497,7 +497,11 @@ class RegistroController extends Controller
                             }
                         }
                         $rtaRe->setRespuesta($rta);
-                        $rtaRe->setRegistroEnfermeria($registroEnfermeria);
+                        if($registro->getAplicaEnPaciente()){
+                            $rtaRe->setPaciente($registroEnfermeria->getPaciente());
+                        }else{
+                            $rtaRe->setRegistroEnfermeria($registroEnfermeria);
+                        }
                         $em->persist($rtaRe);
                     }
                 });
