@@ -189,6 +189,19 @@ class Area
     
         return $this;
     }
+    
+    /**
+     * Exist materia
+     *
+     * @param \Sirepae\PracticasBundle\Entity\Materia $materia
+     * @return boolean
+     */
+    public function existMateria(\Sirepae\PracticasBundle\Entity\Materia $materia_)
+    {
+        return $this->materias->exists(function($key, Materia $materia) use ($materia_){
+            return $materia->getId() == $materia_->getId();
+        });
+    }
 
     /**
      * Remove materias
@@ -223,6 +236,19 @@ class Area
         return $this;
     }
 
+    /**
+     * Exist sitio
+     *
+     * @param \Sirepae\PracticasBundle\Entity\Sitio $sitio
+     * @return boolean
+     */
+    public function existSitio(\Sirepae\PracticasBundle\Entity\Sitio $sitio_)
+    {
+        return $this->sitios->exists(function($key, Sitio $sitio) use ($sitio_){
+            return $sitio->getId() == $sitio_->getId();
+        });
+    }
+    
     /**
      * Remove sitios
      *

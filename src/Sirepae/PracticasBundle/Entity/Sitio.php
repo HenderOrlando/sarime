@@ -203,6 +203,32 @@ class Sitio
     }
 
     /**
+     * Exist area
+     *
+     * @param \Sirepae\PracticasBundle\Entity\Area $area
+     * @return boolean
+     */
+    public function existArea(\Sirepae\PracticasBundle\Entity\Area $area_)
+    {
+        return $this->areas->exists(function($key, Area $area) use ($area_){
+            return $area->getId() == $area_->getId();
+        });
+    }
+
+    /**
+     * Exist materia
+     *
+     * @param \Sirepae\PracticasBundle\Entity\Materia $materia
+     * @return boolean
+     */
+    public function existMateria(\Sirepae\PracticasBundle\Entity\Materia $materia_)
+    {
+        return $this->areas->exists(function($key, Area $area) use ($materia_){
+            return $area->existMateria($materia_);
+        });
+    }
+
+    /**
      * Remove areas
      *
      * @param \Sirepae\PracticasBundle\Entity\Area $areas

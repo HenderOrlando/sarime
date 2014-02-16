@@ -17,7 +17,7 @@ class AreaType extends AbstractType
         $builder
             ->add('nombre')
             ->add('descripcion')
-//            ->add('sitios')
+            ->add('sitios')
         ;
     }
     

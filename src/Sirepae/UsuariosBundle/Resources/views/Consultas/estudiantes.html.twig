@@ -12,38 +12,112 @@
     </ul>
     <div class="table-responsive">
         <table class="records_list">
-        <thead>
-            <tr>
-                <th>Codigo</th>
-                <th>Nombre</th>
-                <th>Correo Electrónico</th>
-                <th>Práctica</th>
-                <th>Teléfono</th>
-                <th>Dirección</th>
-                <th>Semestre</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for entity in entities %}
-            <tr>
-                <td>{{ entity.codigo }}</td>
-                <td>{{ entity.usuario.getFullNombre }}</td>
-                <td>{{ entity.usuario.email }}</td>
-                <td>{{ entity.practica }}</td>
-                <td>{{ entity.usuario.telefonos }}</td>
-                <td>{{ entity.usuario.direccion }}</td>
-                <td>{{ entity.semestre }}</td>
-                <td>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripcion</th>
+                    <th>Sitios</th>
+                    <th>Estudiantes</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.nombre }}</td>
+                    <td>{{ entity.descripcion }}</td>
                     <td>
-                        <div class="btn-group">
-                            <a class="btn btn-success btn-lg" href="{{ path('estudiante_edit', { 'id': entity.id }) }}">Editar</a>
+                        <div class="panel-group" id="accordion-planes">
+                            {% set num = entity.sitios|length %}
+                            {% if num > 0 %}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion-planes" href="#planes-cuidado-{{ entity.id }}">
+                                              Ver {{ num == 1?'el':'los'}} {{ num }}
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="planes-cuidado-{{ entity.id }}" class="panel-collapse collapse">
+                                        <div class="list-group">
+                                        {% for sitio in entity.sitios %}
+                                            <a href="{{ path('sitio_edit',{id:sitio.id}) }}" class="list-group-item">
+                                                {{ sitio.nombre }}
+                                            </a>
+                                        {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                Sitios no encontradas
+                            {% endif %}
                         </div>
                     </td>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                    <td>
+                        <div class="panel-group" id="accordion-planes-">
+                            {% set num = entity.practicas|length %}
+                            {% if num > 0 %}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion-planes-" href="#practicas-planes-{{ entity.id }}">
+                                              Ver {{ num == 1?'el':'las'}} {{ num }}
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="practicas-planes-{{ entity.id }}" class="panel-collapse collapse">
+                                        {% for practica in entity.practicas %}
+                                            {% set num_est = practica.estudiantes|length %}
+                                            {% if num_est > 0 %}
+                                                <div class="panel panel-default panel-integrate panel-primary">
+                                                    <div class="panel-heading">
+                                                        <h4 class="panel-title">
+                                                            <a data-toggle="collapse" data-parent="#practicas-planes" href="#estudiantes-{{ practica.id }}-{{ entity.id }}">
+                                                              {{ practica.nombre }}
+                                                            </a>
+                                                        </h4>
+                                                    </div>
+                                                    <div id="estudiantes-{{ practica.id }}-{{ entity.id }}" class="panel-collapse collapse">
+                                                        <div class="list-group">
+                                                        {% for estudiante in practica.estudiantes %}
+                                                            <a href="{{ path('estudiante_edit',{id:estudiante.id}) }}" class="list-group-item">
+                                                                {{ estudiante.getNombre }}
+                                                            </a>
+                                                        {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="panel-footer">
+                                                        {{ num_est }} estudiante{{ num_est == 1?'':'s'}}
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class="panel panel-default panel-integrate panel-info">
+                                                    <div class="panel-heading">
+                                                        <h4 class="panel-title">
+                                                            {{ practica.nombre }}
+                                                        </h4>
+                                                    </div>
+                                                    <div class="panel-footer">
+                                                        Sin Estudiantes
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                Prácticas no encontradas
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-success btn-lg" href="{{ path('area_edit', { 'id': entity.id }) }}">Editar</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 {% endblock %}

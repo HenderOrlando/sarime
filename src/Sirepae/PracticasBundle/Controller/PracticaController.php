@@ -176,7 +176,7 @@ class PracticaController extends Controller
     */
     private function createEditForm(Practica $entity)
     {
-        $form = $this->createForm(new PracticaType(), $entity, array(
+        $form = $this->createForm(new PracticaType($this->getUser()), $entity, array(
             'action' => $this->generateUrl('practica_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

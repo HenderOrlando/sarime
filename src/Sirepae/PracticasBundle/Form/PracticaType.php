@@ -10,7 +10,7 @@ class PracticaType extends AbstractType
 {
     private $coordinador;
     
-    public function __construct(\Sirepae\UsuariosBundle\Entity\Usuario $usuario) {
+    public function __construct(\Sirepae\UsuariosBundle\Entity\Usuario $usuario = null) {
         $this->coordinador = $usuario;
     }
     

@@ -67,25 +67,20 @@ class ConsultasController extends Controller
      * @Method("GET")
      * @Template("SirepaeUsuariosBundle:Consultas:docentes.html.twig")
      */
-    public function DocentesAction()
+    public function docentesAction()
     {
-        $em = $this->getDoctrine()->getManager();
         
-        $entities = $em->getRepository('SirepaeUsuariosBundle:Usuario')->createQueryBuilder('d')
-                ->join('d.docentesPractica', 'dp')
-                ->join('dp.areaPractica', 'ap')
-                ->join('ap.materias', 'm')
-                ->addOrderBy('m.nombre', 'ASC')
-                ->addOrderBy('ap.nombre', 'ASC')
-                ->addOrderBy('dp.docente', 'ASC');
-        if($this->getUser()->hasRole('ROLE_COORDINADOR')){
-            $entities = $entities->andWhere('dp.coordinador = '.$this->getUser()->getId());
-        }elseif(!$this->getUser()->hasRole('ROLE_SUPER_ADMIN')){
-            $entities = array();
+        $entities = $this->getAreas();
+        $docentes = array();
+        foreach($entities as $area){
+            foreach($area->getPracticas() as $practica){
+                $docentes[$practica->getDocente()->getId()] = $practica->getDocente();
+            }
         }
-        $entities = $entities->getQuery()->getResult();
+        
         return array(
             'entities' => $entities,
+            'docentes' => $docentes,
             'active_consulta_docentes_resumen' => true,
         );
     }
@@ -297,30 +292,30 @@ class ConsultasController extends Controller
      */
     public function estudiantesAction()
     {
-        $em = $this->getDoctrine()->getManager();
+        $entities = $this->getAreas();
         
-        $entities = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Estudiante')->createQueryBuilder('e')
-                ->join('e.practica', 'ep')
-                ->join('ep.areaPractica', 'ap')
-                ->join('ap.materias', 'm')
-                ->addOrderBy('m.nombre', 'ASC')
-                ->addOrderBy('ap.nombre', 'ASC')
-                ->addOrderBy('e.semestre', 'DESC')
-                ->addOrderBy('ep.docente', 'ASC');
-        $asignaturas = $em->getRepository('SirepaePracticasBundle:Area')->createQueryBuilder('a')
-                ->join('a.practicas','p')
-                ->join('a.sitios','p')
-            ;
-        if($this->getUser()->hasRole('ROLE_COORDINADOR')){
-            $entities = $entities->andWhere('ep.coordinador = '.$this->getUser()->getId());
-        }elseif(!$this->getUser()->hasRole('ROLE_SUPER_ADMIN')){
-            $entities = array();
-        }
-        $entities = $entities->getQuery()->getResult();
         return array(
             'entities' => $entities,
             'active_consulta_estudiantes_resumen' => true,
         );
+    }
+    
+    private function getAreas($qb = false){
+        $a = $this
+                ->getDoctrine()
+                ->getManager()
+                ->getRepository('SirepaePracticasBundle:Area')->createQueryBuilder('a')
+                ->join('a.practicas','p')
+//                ->join('a.sitios','s')
+                ;
+        if($this->getUser()->hasRole('ROLE_COORDINADOR')){
+            $a = $a->andWhere('p.coordinador = '.$this->getUser()->getId());
+        }elseif(!$this->getUser()->hasRole('ROLE_SUPER_ADMIN')){
+            $a = array();
+        }
+        if($qb)
+            return $a;
+        return $a->getQuery()->getResult();
     }
     /**
      * @return \Sirepae\PAEBundle\Repository\PAERepository PAERepository

@@ -19,6 +19,7 @@ class SitioType extends AbstractType
             ->add('descripcion')
             ->add('nombre_director')
             ->add('sede')
+//            ->add('areas')
         ;
     }
     

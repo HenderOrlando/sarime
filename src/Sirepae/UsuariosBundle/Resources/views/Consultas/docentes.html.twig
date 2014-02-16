@@ -11,45 +11,78 @@
         </li>
     </ul>
     <div class="table-responsive">
-
         <table class="records_list">
             <thead>
                 <tr>
-                    <th>Nombres</th>
-                    <th>Areas</th>
-                    <th>Apellidos</th>
-                    <th>Telefonos</th>
-                    <th>Direccion</th>
-                    {% if path_ == 'usuario' %}
-                        <th>Rol</th>
-                    {% endif %}
+                    <th>Nombre</th>
+                    <th>Descripcion</th>
+                    <th>Sitios</th>
+                    <th>Docentes</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
             {% for entity in entities %}
                 <tr>
-                    <td>{{ entity.nombres }}</td>
+                    <td>{{ entity.nombre }}</td>
+                    <td>{{ entity.descripcion }}</td>
                     <td>
-                        <ul class="list-unstyled">
-                        {% for practica in entity.docentesPractica %}
-                            <li>
-                                {{ practica.nombre }}<span class="text-muted"> - {{ practica.areaPractica.nombre }}</span>
-                            </li>
-                        {% endfor %}
-                        </ul>
+                        <div class="panel-group" id="accordion-planes">
+                            {% set num = entity.sitios|length %}
+                            {% if num > 0 %}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion-planes" href="#planes-cuidado-{{ entity.id }}">
+                                              Ver {{ num == 1?'el':'los'}} {{ num }}
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="planes-cuidado-{{ entity.id }}" class="panel-collapse collapse">
+                                        <div class="list-group">
+                                        {% for sitio in entity.sitios %}
+                                            <a href="{{ path('sitio_edit',{id:sitio.id}) }}" class="list-group-item">
+                                                {{ sitio.nombre }}
+                                            </a>
+                                        {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                Sitios no encontradas
+                            {% endif %}
+                        </div>
                     </td>
-                    <td>{{ entity.nombres }}</td>
-                    <td>{{ entity.apellidos }}</td>
-                    <td>{{ entity.telefonos }}</td>
-                    <td>{{ entity.direccion }}</td>
-                    {% if path_ == 'usuario' %}
-                        <td>{{ entity.rolUsuario }}</td>
-                    {% endif %}
-                    {#<td>{% if entity.fechacreado %}{{ entity.fechacreado|date('Y-m-d H:i:s') }}{% endif %}</td>#}
+                    <td>
+                        <div class="panel-group" id="accordion-planes-">
+                            {% set num = entity.practicas|length %}
+                            {% if num > 0 %}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion-planes-" href="#practicas-planes-{{ entity.id }}">
+                                              Ver {{ num == 1?'el':'las'}} {{ num }}
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="practicas-planes-{{ entity.id }}" class="panel-collapse collapse">
+                                        <div class="list-group">
+                                        {% for practica in entity.practicas %}
+                                            <a href="{{ path('usuario_edit',{id:practica.docente.id}) }}" class="list-group-item">
+                                                {{ docentes[practica.docente.id] }}
+                                            </a>
+                                        {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                Prácticas no encontradas
+                            {% endif %}
+                        </div>
+                    </td>
                     <td>
                         <div class="btn-group">
-                            <a class="btn btn-success btn-lg" href="{{ path('usuario_edit', { 'id': entity.id }) }}">Editar</a>
+                            <a class="btn btn-success btn-lg" href="{{ path('area_edit', { 'id': entity.id }) }}">Editar</a>
                         </div>
                     </td>
                 </tr>
