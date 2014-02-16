@@ -21,8 +21,9 @@ class NotaController extends Controller
     /**
      * Lists all Nota entities.
      *
-     * @Route("/registro-enfermeria/{id}/", name="nota_")
-     * @Route("/usuario/{usuario}/", name="nota_")
+     * @Route("/registro-enfermeria/{id}/", name="nota_registro")
+     * @Route("/usuario/{usuario}/", name="nota_usuario")
+     * @Route("/usuario/{usuario}/registro-enfermeria/{id}/", name="nota_usuario_registro")
      * @Route("/", name="nota")
      * @Method("GET")
      * @Template()
@@ -38,17 +39,22 @@ class NotaController extends Controller
         if(!is_null($id)){
             $entities->andWhere('n.registroEnfermeria ='.$id);
             $re = $this->getDoctrine ()->getManager ()->getRepository ('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->find($id);
-        }elseif($this->getUser()->hasRole('ROLE_ESTUDIANTE') || $this->getUser()->hasRole('ROLE_DOCENTE') || $this->getUser()->hasRole('ROLE_COORDINADOR')){
-            $entities
-                ->andWhere('n.usuario = '.$this->getUser()->getId())
-                ->getQuery()
-                ->getResult();
-        }else{
-            $entities = array();
         }
-
+        if($this->getUser()->hasRole('ROLE_ESTUDIANTE') || $this->getUser()->hasRole('ROLE_DOCENTE') || $this->getUser()->hasRole('ROLE_COORDINADOR')){
+            $registros = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')
+                ->createQueryBuilder('re')
+                ->join('re.estudiante','e')
+                ->where('e.usuario = '.$this->getUser()->getId())
+                ->orderBy('re.fecha_creado', 'DESC');
+            if(is_null($id)){
+                $entities->orWhere($entities->expr()->In('n.registroEnfermeria', $registros->getDQL()));
+            }
+            $entities->orWhere('n.usuario = '.$this->getUser()->getId());
+        }else{
+            throw new \Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException();
+        }
         return array(
-            'entities'              =>  $entities,
+            'entities'              =>  $entities->getQuery()->getResult(),
             'id_re'                 =>  $id,
             're'                    =>  $re,
             'active_notas_resumen'  =>  true
@@ -172,6 +178,9 @@ class NotaController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Nota entity.');
         }
+        if(!$this->getUser()->hasRole('ROLE_SUPER_ADMIN') && $entity->getUsuario()->getId() != $this->getUser()->getId()){
+            throw new \Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException();
+        }
 
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
@@ -194,7 +203,7 @@ class NotaController extends Controller
     */
     private function createEditForm(Nota $entity)
     {
-        $form = $this->createForm(new NotaType(), $entity, array(
+        $form = $this->createForm(new NotaType(null,$this->getUser()), $entity, array(
             'action' => $this->generateUrl('nota_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

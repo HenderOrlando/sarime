@@ -1,36 +1,36 @@
-{% extends '::base.html.twig' %}
+{% extends 'SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria:index.html.twig' %}
 
-{% block body -%}
+{% block content -%}
     <h1>Nota</h1>
 
+    
     <table class="record_properties">
         <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ entity.id }}</td>
-            </tr>
             <tr>
                 <th>Nota</th>
                 <td>{{ entity.nota }}</td>
             </tr>
             <tr>
+                <th>Autor</th>
+                <td>{{ entity.nota }}</td>
+            </tr>
+            <tr>
+                <th>Registro de Enfermería</th>
+                <td>{{ entity.registroEnfermeria }}</td>
+            </tr>
+            <tr>
                 <th>Fecha_creado</th>
-                <td>{{ entity.fechacreado|date('Y-m-d H:i:s') }}</td>
+                <td class="moment-date">{{ entity.fechacreado|date('Y-m-d H:i:s') }}</td>
             </tr>
         </tbody>
     </table>
 
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('nota') }}">
-            Back to the list
-        </a>
-    </li>
-    <li>
-        <a href="{{ path('nota_edit', { 'id': entity.id }) }}">
-            Edit
-        </a>
-    </li>
-    <li>{{ form(delete_form) }}</li>
-</ul>
+    {% if re is defined and re is not null %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('registros_enfermeria_edit',{id: re.id}) }}">Volver</a>
+    {% elseif is_granted('ROLE_USER') %}
+        <a class="btn btn-default btn-lg pull-right" href="{{ path('nota_usuario',{usuario:app.user.username}) }}">Volver</a>
+    {% endif %}
+    {% if entity.usuario is null or (entity.usuario is not null and entity.usuario.id == app.user.id) %}
+        {{ form(delete_form) }}
+    {% endif %}
 {% endblock %}

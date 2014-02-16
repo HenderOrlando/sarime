@@ -21,7 +21,7 @@
     {% if is_granted('ROLE_DOCENTE') or is_granted('ROLE_ESTUDIANTE') %}
         <a class="btn btn-info btn-lg" href="{{ path('nota_new_registro_enfermeria',{id: entity.id}) }}">Agregar Observación</a>
     {% endif %}
-        <a class="btn btn-primary btn-lg" href="{{ path('nota_',{id: entity.id}) }}">Ver Observaciones</a>
+        <a class="btn btn-primary btn-lg" href="{{ path('nota_usuario_registro',{usuario: app.user.username,id:entity.id}) }}">Ver Observaciones</a>
 </div>
 <div class="clearfix"></div>
     <div class="row">

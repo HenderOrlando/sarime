@@ -13,7 +13,7 @@
             </h1>
         </li>
         <li class="text-align pull-right title">
-            {% if id_re is defined and id_re is not null and is_granted('ROLE_DOCENTE') %}
+            {% if id_re is defined and id_re is not null and is_granted('ROLE_USER') %}
                 <a class="btn btn-primary btn-lg" href="{{ path( path_ ~ '_new_registro_enfermeria', { 'id': id_re }) }}">
                     Nueva Observación
                 </a>
@@ -32,6 +32,7 @@
                     {% if id_re is not defined or id_re is null %}
                         <th>Registro de Enfermería</th>
                     {% endif %}
+                    <th>Autor</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -49,9 +50,14 @@
                     {% if id_re is not defined or id_re is null %}
                         <td>{{ entity.registroEnfermeria }}</td>
                     {% endif %}
+                    <td>{{ entity.usuario }}</td>
                     <td>
                         <div class="btn-group">
-                            <a class="btn btn-success btn-lg" href="{{ path(path_ ~ '_edit', { 'id': entity.id }) }}">Editar</a>
+                            {% if entity.usuario is not null and app.user.id == entity.usuario.id %}
+                                <a class="btn btn-success btn-lg" href="{{ path(path_ ~ '_edit', { 'id': entity.id }) }}">Editar</a>
+                            {% else %}
+                                <a class="btn btn-info btn-lg" href="{{ path(path_ ~ '_show', { 'id': entity.id }) }}">Ver</a>
+                            {% endif %}
                         </div>
                     </td>
                 </tr>

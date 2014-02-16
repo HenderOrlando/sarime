@@ -32,7 +32,7 @@ class Nota
 
     /** 
      * @ORM\ManyToOne(targetEntity="\Sirepae\UsuariosBundle\Entity\Usuario", inversedBy="notas")
-     * @ORM\JoinColumn(name="estudiante_id", referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name="usuario_id", referencedColumnName="id", nullable=true)
      */
     private $usuario;
     

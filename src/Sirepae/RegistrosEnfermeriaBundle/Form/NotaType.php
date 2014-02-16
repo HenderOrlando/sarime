@@ -42,7 +42,6 @@ class NotaType extends AbstractType
         }else{
             $builder
                 ->add('usuario')
-                ->add('estudiante')
             ;
         }
     }
