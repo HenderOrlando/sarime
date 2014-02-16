@@ -73,6 +73,7 @@ class Calificacion
     public function setValor($valor)
     {
         $this->valor = $valor;
+        $this->setFechaCreado(new \DateTime('now'));
     
         return $this;
     }

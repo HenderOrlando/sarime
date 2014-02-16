@@ -31,12 +31,26 @@
                     <td>{{ entity.codigo }}</td>
                     <td>
                         {% if entity.planesCuidado is not empty %}
-                        <div class="list-group">
-                            {% for dpae in entity.planesCuidado %}
-                            <a class="list-group-item" href="{{ path('pae_edit',{id:dpae.planCuidado.id}) }}">
-                                {{ dpae.planCuidado }}
-                            </a>
-                            {% endfor %}
+                        <div class="panel-group" id="accordion-planes">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion-planes" href="#planes-cuidado-{{ entity.id }}">
+                                            {% set num = entity.planesCuidado|length %}
+                                          Ver {{ num == 1?'el':'los'}} {{ num }}
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="planes-cuidado-{{ entity.id }}" class="panel-collapse collapse">
+                                    <div class="list-group">
+                                        {% for dpae in entity.planesCuidado %}
+                                        <a class="list-group-item" href="{{ path('pae_edit',{id:dpae.planCuidado.id}) }}">
+                                            {{ dpae.planCuidado }}
+                                        </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         {% else %}
                         No tiene PAEs relacionados
@@ -44,26 +58,62 @@
                     </td>
                     <td>
                         {% if entity.factoresRelacionados is not empty %}
-                        <ul class="list-group">
-                            {% for fr in entity.factoresRelacionados %}
-                            <li class="list-group-item">
-                                {{ fr.nombre }}
-                            </li>
-                            {% endfor %}
-                        </ul>
+                        <div class="panel-group" id="accordion-factores">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion-factores" href="#factores-relacionados-{{ entity.id }}">
+                                            {% set num = entity.factoresRelacionados|length %}
+                                          Ver {{ num == 1?'el':'los'}} {{ num }}
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="factores-relacionados-{{ entity.id }}" class="panel-collapse collapse">
+                                    <ul class="list-group">
+                                        {% for fr in entity.factoresRelacionados %}
+                                        {% set num_usado = 0 %}
+                                            {% for dpae in entity.planesCuidado %}
+                                                {% set num_usado = num_usado+(dpae.existFactorRelacionado(fr)?1:0) %}
+                                            {% endfor %}
+                                        <li class="list-group-item">
+                                            {{ fr.nombre }} <span class="label label-info">{{ num_usado }}</span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>                                
                         {% else %}
                         No tiene Factores relacionados
                         {% endif %}
                     </td>
                     <td>
                         {% if entity.evidencias is not empty %}
-                        <ul class="list-group">
-                            {% for e in entity.evidencias %}
-                            <li class="list-group-item">
-                                {{ e.nombre }}
-                            </li>
-                            {% endfor %}
-                        </ul>
+                        <div class="panel-group" id="accordion-evidencias">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion-evidencias" href="#evidencias-{{ entity.id }}">
+                                            {% set num = entity.evidencias|length %}
+                                          Ver {{ num == 1?'el':'los'}} {{ num }}
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="evidencias-{{ entity.id }}" class="panel-collapse collapse">
+                                    <ul class="list-group">
+                                        {% for e in entity.evidencias %}
+                                        {% set num_usado = 0 %}
+                                        {% for dpae in entity.planesCuidado %}
+                                                {% set num_usado = num_usado+(dpae.existEvidencia(e)?1:0) %}
+                                            {% endfor %}
+                                        <li class="list-group-item">
+                                            {{ e.nombre }} <span class="label label-info">{{ num_usado }}</span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                         {% else %}
                         No tiene Evidencias relacionadas
                         {% endif %}

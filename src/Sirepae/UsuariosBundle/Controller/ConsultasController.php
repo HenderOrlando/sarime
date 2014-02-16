@@ -307,6 +307,10 @@ class ConsultasController extends Controller
                 ->addOrderBy('ap.nombre', 'ASC')
                 ->addOrderBy('e.semestre', 'DESC')
                 ->addOrderBy('ep.docente', 'ASC');
+        $asignaturas = $em->getRepository('SirepaePracticasBundle:Area')->createQueryBuilder('a')
+                ->join('a.practicas','p')
+                ->join('a.sitios','p')
+            ;
         if($this->getUser()->hasRole('ROLE_COORDINADOR')){
             $entities = $entities->andWhere('ep.coordinador = '.$this->getUser()->getId());
         }elseif(!$this->getUser()->hasRole('ROLE_SUPER_ADMIN')){

@@ -23,7 +23,7 @@ class PAEType extends AbstractType
     {
         if($this->usuario->hasRole('ROLE_DOCENTE')){
             $builder->add('calificacion', new CalificacionType($this->pae,  $this->usuario));
-        }elseif($this->usuario->hasRole('ROLE_ESTUDIANTE') && (!is_null($this->pae->getCalificacion()) || !$this->pae->getCalificacion())){
+        }elseif($this->usuario->hasRole('ROLE_ESTUDIANTE') && (is_null($this->pae) || !is_null($this->pae->getCalificacion()) || !$this->pae->getCalificacion())){
             $builder
                 ->add('paciente')
                 ->add('estudiante',null, array(

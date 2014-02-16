@@ -21,7 +21,7 @@
         </h2>
         {% endif %}
     </div>
-{% if entity.calificacion is not defined or entity.calificacion is empty or entity.calificacion is null %}
+{% if is_granted('ROLE_DOCENTE') or entity.calificacion is not defined or entity.calificacion is empty or entity.calificacion is null %}
 {{ form_start(edit_form) }}
     {{ form_errors(edit_form) }}
 {% endif %}
@@ -274,7 +274,7 @@
                     <span id="num-indicadores" class="total-definidos">{{ num_ind }}</span> 
                     Indicador{{ num_ind != 1?'es':'' }}
                 </div>
-                {% if entity.calificacion is not defined or entity.calificacion is empty or entity.calificacion is null %}
+                {% if is_granted('ROLE_DOCENTE') or entity.calificacion is not defined or entity.calificacion is empty or entity.calificacion is null %}
                     {% if edit_form.objetivo is defined %}
                         <div class="panel-footer">
                                 {{ form_row(edit_form.objetivo) }}
@@ -343,7 +343,7 @@
     {% if edit_form.calificacion is defined and is_granted('ROLE_DOCENTE') %}
         {{ form_row(edit_form.calificacion) }}
     {% endif %}
-{% if entity.calificacion is not defined or entity.calificacion is empty or entity.calificacion is null %}
+{% if is_granted('ROLE_DOCENTE') or entity.calificacion is not defined or entity.calificacion is empty or entity.calificacion is null %}
     {{ form_row(edit_form.submit) }}
 {{ form_end(edit_form) }}
 {% endif %}

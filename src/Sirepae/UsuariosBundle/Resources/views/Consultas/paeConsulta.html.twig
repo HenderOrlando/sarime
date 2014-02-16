@@ -19,11 +19,11 @@
                 <tr>
                     <th>Paciente</th>
                     <th>Estudiante</th>
-                    <th>Valoración Objetiva</th>
-                    <th>Valoración Subjetiva</th>
-                    <th>Evaluación</th>
-                    <th>Objetivo</th>
+                    <th>Observaciones</th>
                     <th>Realizado</th>
+                    <th>Calificación</th>
+                    <th>Docente</th>
+                    <th>Fecha Calificado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -32,15 +32,26 @@
                 <tr>
                     <td>{{ entity.paciente }}</td>
                     <td>{{ entity.estudiante }}</td>
-                    <td>{{ entity.valobjetiva }}</td>
-                    <td>{{ entity.valsubjetiva }}</td>
-                    <td>{{ entity.evaluacion }}</td>
-                    <td>{{ entity.objetivo }}</td>
+                    <td>{{ entity.calificacion.observacion }}</td>
                     <td>
                         {% if entity.fechacreado %}
                             <div class="moment-date" title="{{ entity.fechaCreado|date('Y-m-d H:i:s') }}">
                                 {{ entity.fechacreado|date('Y-m-d H:i:s') }}
                             </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ entity.calificacion.valor }}
+                    </td>
+                    <td>
+                        {{ entity.calificacion.docente }}
+                    </td>
+                    <td>
+                        {% if entity.calificacion.fechaCreado %}
+                            <div class="moment-date" title="{{ entity.calificacion.fechaCreado|date('Y-m-d H:i:s') }}">
+                                {{ entity.calificacion.fechaCreado|date('Y-m-d H:i:s') }}
+                            </div>
+                        <span>{{ entity.calificacion.fechaCreado|date('Y-m-d') }}</span>
                         {% endif %}
                     </td>
                     <td>
