@@ -21,9 +21,9 @@ class NotaController extends Controller
     /**
      * Lists all Nota entities.
      *
+     * @Route("/usuario/{usuario}/registro-enfermeria/{id}/", name="nota_usuario_registro")
      * @Route("/registro-enfermeria/{id}/", name="nota_registro")
      * @Route("/usuario/{usuario}/", name="nota_usuario")
-     * @Route("/usuario/{usuario}/registro-enfermeria/{id}/", name="nota_usuario_registro")
      * @Route("/", name="nota")
      * @Method("GET")
      * @Template()
@@ -40,12 +40,23 @@ class NotaController extends Controller
             $entities->andWhere('n.registroEnfermeria ='.$id);
             $re = $this->getDoctrine ()->getManager ()->getRepository ('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->find($id);
         }
-        if($this->getUser()->hasRole('ROLE_ESTUDIANTE') || $this->getUser()->hasRole('ROLE_DOCENTE') || $this->getUser()->hasRole('ROLE_COORDINADOR')){
+        if($this->getUser()->hasRole('ROLE_USER')){
             $registros = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')
                 ->createQueryBuilder('re')
                 ->join('re.estudiante','e')
-                ->where('e.usuario = '.$this->getUser()->getId())
                 ->orderBy('re.fecha_creado', 'DESC');
+            if($this->getUser()->hasRole('ROLE_ESTUDIANTE')){
+                $registros
+                    ->where('e.usuario = '.$this->getUser()->getId())
+                ;
+            }elseif($this->getUser()->hasRole('ROLE_DOCENTE') || $this->getUser()->hasRole('ROLE_COORDINADOR')){
+                $registros->join('e.practica','p');
+                if($this->getUser()->hasRole('ROLE_DOCENTE')){
+                    $registros->where('p.docente = '.$this->getUser()->getId());
+                }else{
+                    $registros->where('p.coordinador = '.$this->getUser()->getId());
+                }
+            }
             if(is_null($id)){
                 $entities->orWhere($entities->expr()->In('n.registroEnfermeria', $registros->getDQL()));
             }

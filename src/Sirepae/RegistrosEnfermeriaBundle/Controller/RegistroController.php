@@ -360,12 +360,14 @@ class RegistroController extends Controller
     /**
      * Procesa y Guarda el Formulario de un Registro.
      *
+     * @Route("/actualizar_registro/{idRegistro}/{numero}/paciente/{idPaciente}/", name="update_llenar_registro_paciente")
+     * @Route("/guardar-registro/{idRegistro}/paciente/{idPaciente}/", name="guardar_llenar_registro_paciente")
      * @Route("/actualizar_registro/{idRegistro}/{idRegistroEnfermeria}/{numero}/", name="update_llenar_registro")
      * @Route("/guardar-registro/{idRegistro}/{idRegistroEnfermeria}/", name="guardar_llenar_registro")
      * @Method("POST")
      * @Template("SirepaeRegistrosEnfermeriaBundle:Registro:llenarRegistro.html.twig")
      */
-    public function guardarLlenarRegistroAction(Request $request, $idRegistro, $idRegistroEnfermeria, $numero = null)
+    public function guardarLlenarRegistroAction(Request $request, $idRegistro, $idRegistroEnfermeria, $numero = null, $idPaciente = null)
     {
         $routeName = $request->get('_route');
         $editar = false;
@@ -377,12 +379,21 @@ class RegistroController extends Controller
 
         $registro = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Registro')->find($idRegistro);
         $registroEnfermeria = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RegistroEnfermeria')->find($idRegistroEnfermeria);
+        $paciente = null;
         if($registro && $registroEnfermeria){
+            if(is_null($idPaciente)){
+                $paciente = $registroEnfermeria->getPaciente();
+            }else{
+                $paciente = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Paciente')->find($idPaciente);
+                if(!$paciente){
+                    throw $this->createNotFoundException('Unable to find Registro entity.');
+                }
+            }
             $form = $this->constructForm($registro, $registroEnfermeria, $numero, $editar);
             $form->handleRequest($request);
-// id_col|balor
+// id_col|valor
             if ($form->isValid()) {
-                $em->transactional(function($em) use ($registroEnfermeria, $form, $numero, $editar, $registro){
+                $em->transactional(function($em) use ($registroEnfermeria, $form, $numero, $editar, $registro, $paciente){
                     foreach($form->getData() as $id => $dato){
                         $id_col = null;
                         $row = null;
@@ -415,7 +426,11 @@ class RegistroController extends Controller
                             }
                         }
                         /**/
-                        $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$preg->getId(), $numero, $id_col);
+                        if($registro->getAplicaEnPaciente()){
+                            $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaPaciente')->getRespuestaByPacientePregunta($paciente->getId(),$preg->getId(), $numero, $id_col);
+                        }else{
+                            $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$preg->getId(), $numero, $id_col);
+                        }
 
                         if(!$editar && ($registro->isUnico() && !$rtaRe) || (!$editar && !$registro->isUnico())){
                             $rta = new \Sirepae\RegistrosEnfermeriaBundle\Entity\Respuesta();
@@ -465,8 +480,13 @@ class RegistroController extends Controller
                             ->setValor($dato);
                         $em->persist($rta);
                         if(!$editar){
-                            $rtaRe = new \Sirepae\RegistrosEnfermeriaBundle\Entity\RespuestaRegistroEnfermeria();
-                            $rtaRe->setNumero(count($em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$preg->getId()))+1);
+                            if($registro->getAplicaEnPaciente()){
+                                $rtaRe = new \Sirepae\RegistrosEnfermeriaBundle\Entity\RespuestaPaciente();
+                                $rtaRe->setNumero(count($em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaPaciente')->getRespuestasByPacientePregunta(3,$paciente->getId(),$preg->getId()))+1);
+                            }else{
+                                $rtaRe = new \Sirepae\RegistrosEnfermeriaBundle\Entity\RespuestaRegistroEnfermeria();
+                                $rtaRe->setNumero(count($em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$preg->getId()))+1);
+                            }
                         }
                         $rtaRe->setRespuesta($rta);
                         $rtaRe->setRegistroEnfermeria($registroEnfermeria);
