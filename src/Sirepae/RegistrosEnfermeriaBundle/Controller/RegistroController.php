@@ -454,7 +454,7 @@ class RegistroController extends Controller
 //                        }else{
                             $rtaRe = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$preg->getId(), $numero,$col_id,true,null,$registro->getId());
 //                        }
-                        if(is_array($rtaRe)){
+                        if(is_array($rtaRe) && !empty($rtaRe)){
                             $rtaRe = $rtaRe[0];
                         }
 
@@ -560,7 +560,11 @@ class RegistroController extends Controller
                 }
             }
             $rtas = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),null, $numero,null,true,null,$registro->getId());
-            if((count($rtas) > 1 && $editar) || $registro->isUnico()){
+//            var_dump(count($rtas) < 1);
+//            var_dump($registro->isUnico());
+//            var_dump($editar);
+//            die;
+            if(count($rtas) > 1 && $editar || (count($rtas) > 1 && !$editar && $registro->isUnico())){
 //                var_dump(count($rtas));
 //                die;
                 foreach($rtas as $rta){
@@ -592,7 +596,7 @@ class RegistroController extends Controller
                             $row,
                             $registro, 
                             $registroEnfermeria, 
-                            $rtas[0],
+                            null,
                             $col->getOpcionesRespuesta(),
                             $col
                         );

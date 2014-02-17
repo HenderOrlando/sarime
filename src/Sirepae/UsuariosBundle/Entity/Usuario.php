@@ -4,7 +4,7 @@ use Doctrine\ORM\Mapping AS ORM;
 use FOS\UserBundle\Model\User as BaseUser;
 
 /** 
- * @ORM\Entity(repositoryClass="Sirepae\UsuariosBundle\Repository\UsuarioRepository")
+ * @ORM\Entity(repositoryClass="\Sirepae\UsuariosBundle\Repository\UsuarioRepository")
  */
 class Usuario extends BaseUser
 {
@@ -46,7 +46,7 @@ class Usuario extends BaseUser
     private $fecha_creado;
 
     /** 
-     * @ORM\OneToOne(targetEntity="\Sirepae\RegistrosEnfermeriaBundle\Entity\Estudiante", mappedBy="usuario")
+     * @ORM\OneToOne(targetEntity="Sirepae\RegistrosEnfermeriaBundle\Entity\Estudiante", mappedBy="usuario")
      */
     private $estudiantes;
 

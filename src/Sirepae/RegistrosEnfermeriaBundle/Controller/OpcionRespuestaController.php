@@ -205,12 +205,29 @@ class OpcionRespuestaController extends Controller
             throw $this->createNotFoundException('Unable to find OpcionRespuesta entity.');
         }
 
+        $tipoRta_ = $entity->getTipoRespuesta()->getTipoCampo();
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
-            $em->flush();
+            $tipoRta = $entity->getTipoRespuesta()->getTipoCampo();
+            if(
+                count($entity->getRespuesta()) === 0 ||
+                strstr($tipoRta_, 'text') !== false && strstr($tipoRta, 'text') !== false ||
+                (
+                    (
+                        strstr($tipoRta_, 'date') !== false || strstr($tipoRta_, 'time') !== false
+                    ) && 
+                    (
+                        strstr($tipoRta, 'date') !== false || strstr($tipoRta, 'time') !== false
+                    )   
+                )
+            ){
+                $em->flush();
+            }else{
+                //Tipos de dato no compatibles
+            }
 
             return $this->redirect($this->generateUrl('opcion_respuesta_edit', array('id' => $id)));
         }
