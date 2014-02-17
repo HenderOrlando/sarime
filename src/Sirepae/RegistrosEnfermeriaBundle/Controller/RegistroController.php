@@ -249,7 +249,8 @@ class RegistroController extends Controller
     {
         $form = $this->createDeleteFormLleno($nombre, $numero, $idRegistro, $idRegistroEnfermeria);
         $form->handleRequest($request);
-
+        $referer = $request->headers->get('referer');
+        
         if ($form->isValid()) {
             $data = $form->getData();
             $idRegistroEnfermeria_ = $data['id_registro_enfermeria'];
@@ -259,29 +260,35 @@ class RegistroController extends Controller
                 $registro = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Registro')->find($idRegistro);
                 if($registro){
                     $em->transactional(function($em) use ($idRegistroEnfermeria_, $registro, $numero_){
+                        if($registro->isTabla()){
+                            $rtas = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$idRegistroEnfermeria_,null, $numero_,null,true,null,$registro->getId());
+                            foreach($rtas as $rta){
+                                $em->remove($rta);
+                                $em->remove($rta->getRespuesta());
+                            }
+                        }
                         foreach($registro->getPreguntas() as $pregunta){
                             if($registro->isTabla()){
-                                $id = explode('-', $id);
-                                $id_col = $id[0];
-                                $id_row = $id[1];
-                                $preg = $col = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($id_col);
-                                $row = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($id_row);
-                                $optRta_id = $col->getOpcionesRespuesta()->first()->getId();
-                                $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$id_row, $numero, $id_col);
+                                $rtaRe = null;
                             }else{
-                                $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($idRegistroEnfermeria_, $pregunta->getId(), $numero_);
+                                $rtaRe = $this->getRRE()->getRespuestaByRegistroEnfermeriaPregunta($idRegistroEnfermeria_, $pregunta->getId(), $numero_);
                             }
-                            $rta = $rtaRe->getRespuesta();
-                            $em->remove($rtaRe);
-                            $em->remove($rta);
+                            if(!is_null($rtaRe) && $rtaRe){
+                                $rta = $rtaRe->getRespuesta();
+                                $em->remove($rtaRe);
+                                $em->remove($rta);
+                            }
+//                            $em->remove($pregunta);
                         }
                     });
                 }
             } else {
                 throw $this->createNotFoundException('Unable to find Registro Lleno entity.');
             }
+        }else{
+            $referer = $request->headers->get('referer');
+            return new RedirectResponse($referer);
         }
-
         return $this->redirect($this->generateUrl('registros_enfermeria_edit',array('id' => $idRegistroEnfermeria_)));
     }
 
@@ -425,7 +432,7 @@ class RegistroController extends Controller
                             $row = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:Pregunta')->find($id_row);
                             $preg_id = $row->getId();
                             $optRta_id = $col->getOpcionesRespuesta()->first()->getId();
-                            $rtaRe = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaRegistroEnfermeria')->getRespuestaByRegistroEnfermeriaPregunta($registroEnfermeria->getId(),$id_row, $numero, $id_col);
+                            $rtaRe = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$preg->getId(), $numero,$col_id,true,null,$registro->getId());
                         }elseif(count(explode('-', $id)) > 1){
                             $id = explode('-', $id);
                             $preg_id = $id[0];
@@ -487,13 +494,12 @@ class RegistroController extends Controller
                                 $dato = date($format, strtotime($dato));
                             }
                         }elseif($tipoCampo === 'choice'){
-                            if($preg->isMultiRta())
-                                if(empty($dato))
-                                    $dato = '';
-                                else
-                                    $dato = implode('\#_*/|\*_#/',$dato);
-                            else
-                                $dato = null;
+                            if(empty($dato)){
+                                $dato = '';
+                            }
+                            elseif(is_array($dato)){
+                                $dato = implode('\#_*/|\*_#/',$dato);
+                            }
                         }
                         
                         if($registro->isTabla() && !is_null($col) && !is_null($row)){
@@ -654,7 +660,9 @@ class RegistroController extends Controller
         $datos['required'] = $preg->isRequerido();
         if(count($optRta_) > 1){
             foreach($optRta_ as $optRta){
-                $opts[$optRta->getId()] = $optRta->getEnunciado();
+//                if($optRta->getTipoRespuesta()->getTipoCampo() === 'choice'){
+                    $opts[$optRta->getId()] = $optRta->getEnunciado();
+//                }
             }
             $datos['multiple'] = $preg->isMultiRta();
             $datos['expanded'] = $preg->isExpandido();
@@ -718,7 +726,7 @@ class RegistroController extends Controller
             elseif($tipo_campo === 'choice' && $preg->isMultiRta()){
                 $dato = explode('\#_*/|\*_#/',$dato);
             }
-            elseif($tipo_campo !== 'textarea' && $tipo_campo !== 'choice' && $optRta->getTipoRespuesta()->getTipoCampo() !== 'date'){
+            elseif($tipo_campo !== 'text' && $tipo_campo !== 'textarea' && $tipo_campo !== 'choice' && $optRta->getTipoRespuesta()->getTipoCampo() !== 'date'){
                 $dato = $preg->getId().'-'.$dato;
             }
             $datos['data'] = $dato;
