@@ -339,7 +339,20 @@
             </div>
         </div>
     </div>
-    
+    {% if is_granted('ROLE_ESTUDIANTE') and not entity.isCalificado and edit_form.evaluacion is defined %}
+        {{ form_row(edit_form.evaluacion) }}
+    {% else %}
+        <div class="col-sm-12">
+            <div class="col-sm-4">
+                <h4 class="title">Evaluación</h4>
+                <div class="col-sm-8">
+                    <p>
+                        {{ entity.evaluacion }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
     {% if edit_form.calificacion is defined and is_granted('ROLE_DOCENTE') %}
         {{ form_row(edit_form.calificacion) }}
     {% endif %}
