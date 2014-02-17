@@ -459,12 +459,11 @@ class RegistroController extends Controller
 //                        if($registro->getAplicaEnPaciente()){
 //                            $rtaRe = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$preg->getId(), $numero,$col_id,true,null,$registro->getId());
 //                        }else{
-                            $rtaRe = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$preg->getId(), $numero,$col_id,true,null,$registro->getId());
+                            $rtaRe = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$preg_id,$numero,$col_id,$registro->isTabla(), null,$registro->getId());
 //                        }
                         if(is_array($rtaRe) && !empty($rtaRe)){
                             $rtaRe = $rtaRe[0];
                         }
-
                         if(!$editar && ($registro->isUnico() && !$rtaRe) || (!$editar && !$registro->isUnico())){
                             $rta = new \Sirepae\RegistrosEnfermeriaBundle\Entity\Respuesta();
                         }elseif($editar && $rtaRe){
@@ -474,8 +473,9 @@ class RegistroController extends Controller
                         }
                         /**/
                         $optRta = $em->getRepository('SirepaeRegistrosEnfermeriaBundle:OpcionRespuesta')->find($optRta_id);
-
+                        
                         $tipoCampo = $optRta->getTipoRespuesta()->getTipoCampo();
+                        
                         if($tipoCampo === 'date' || $tipoCampo === 'time' || $tipoCampo === 'datetime'){
                             $format = '';
                             if($tipoCampo === 'date'){
@@ -505,6 +505,7 @@ class RegistroController extends Controller
                         if($registro->isTabla() && !is_null($col) && !is_null($row)){
                             $dato = $col->getId().'-_#|#_-'.$row->getId().'-_#|#_-'.$dato;
                         }
+                        
                         $rta
                             ->setOpcionRespuesta($optRta)
                             ->setPregunta($preg)
@@ -515,13 +516,17 @@ class RegistroController extends Controller
 //                                $rtaRe = new \Sirepae\RegistrosEnfermeriaBundle\Entity\RespuestaPaciente();
 //                                $rtaRe->setNumero(count($em->getRepository('SirepaeRegistrosEnfermeriaBundle:RespuestaPaciente')->getRespuestasByPacientePregunta(3,$paciente->getId(),$preg->getId()))+1);
 //                            }else{
-                                $rtaRe = new \Sirepae\RegistrosEnfermeriaBundle\Entity\RespuestaRegistroEnfermeria();
-                                if($registro->isTabla() && !is_null($col) && !is_null($row)){
-                                    $rtas = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),null, $numero,null,true,null,$registro->getId());
-                                }else{
-                                    $rtas = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$row,null,$col,true, true);
-                                }
-                                $rtaRe->setNumero(count($rtas)+1);
+                                    $rtaRe = new \Sirepae\RegistrosEnfermeriaBundle\Entity\RespuestaRegistroEnfermeria();
+                                    $rtas = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$preg_id,$numero,null,$registro->isTabla(), null,$registro->getId());
+                                    $num_ = count($rtas)+1;
+                                    $valid = false;
+                                    while(!$valid){
+                                        $rtaRe_ = $this->getRRE()->getRespuestasByRegistroEnfermeriaPregunta(3,$registroEnfermeria->getId(),$preg->getId(), $num_,null,true,null,$registro->getId());
+                                        if(!$rtaRe_){
+                                            $rtaRe->setNumero($num_);
+                                            $valid = true;
+                                        }
+                                    }
 //                            }
                         }
                         $rtaRe->setRespuesta($rta);
@@ -533,7 +538,11 @@ class RegistroController extends Controller
                         $em->persist($rtaRe);
                     }
                 });
-                return $this->redirect($this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())));
+                if($numero){
+                    return $this->redirect($this->generateUrl('editar_registro_enfermeria', array('idRegistro' => $registro->getId(), 'idRegistroEnfermeria' => $registroEnfermeria->getId(), 'numero' => $numero)));
+                }else{
+                    return $this->redirect($this->generateUrl('registros_enfermeria_edit', array('id' => $registroEnfermeria->getId())));
+                }
             }
             return array(
                 'reg' => $registro,
