@@ -37,22 +37,19 @@
         {% if edit_form.val_subjetiva is defined %}
             {{ form_row(edit_form.val_subjetiva) }}
         {% endif %}
-        {% if edit_form.evaluacion is defined %}
-            {{ form_row(edit_form.evaluacion) }}
-        {% endif %}
     {% else %}
         <div class="col-sm-12">
-            <div class="col-sm-4">
+            <div class="col-sm-6">
                 <h4 class="title">Valoración Objetiva</h4>
-                <div class="col-sm-8">
+                <div class="col-sm-12">
                     <p>
                         {{ entity.valObjetiva }}
                     </p>
                 </div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-6">
                 <h4 class="title">Valoración Subjetiva</h4>
-                <div class="col-sm-8">
+                <div class="col-sm-12">
                     <p>
                         {{ entity.valSubjetiva }}
                     </p>
